@@ -7,6 +7,8 @@ import Stream exposing (Stream)
 import Time
 import Tui
 
+
+main : Tui.Program Model Msg
 main =
     Tui.defineProgram
         { init = init

@@ -1,6 +1,7 @@
 module Tui exposing
     ( defineProgram
     , Input(..)
+    , Program
     )
 
 
@@ -13,6 +14,10 @@ import Terminal
 
 
 -- PROGRAM INIT
+
+
+type alias Program model msg =
+    Node.Program (Model model) (Msg msg)
 
 
 type alias AppConfig model msg =
