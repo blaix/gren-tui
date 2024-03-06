@@ -42,17 +42,20 @@ init :
 init appInit appView env =
     Init.await (appInit env) <| \app ->
         Init.await Terminal.initialize <| \termConfig ->
-            Node.startProgram
-                { model =
+            let
+                model =
                     { stdin = env.stdin
                     , stdout = env.stdout
                     , stderr = env.stderr
                     , appModel = app.model
                     }
+            in
+            Node.startProgram
+                { model = model
                 , command =
                     Cmd.batch
                         [ Cmd.map AppMsg app.command
-                        , Stream.sendLine env.stdout (appView app.model)
+                        , view model (appView app.model)
                         , case termConfig of
                             Just config ->
                                 Terminal.setStdInRawMode config.permission True
@@ -95,10 +98,27 @@ update appUpdate appView msg model =
                 { model | appModel = appResult.model }
             , command =
                 Cmd.batch
-                    [ Stream.sendLine model.stdout (appView appResult.model)
+                    [ view model (appView appResult.model)
                     , Cmd.map AppMsg appResult.command
                     ]
             }
+
+
+view : Model model -> String -> Cmd (Msg msg)
+view model appViewResult =
+    Cmd.batch
+        [ resetScreen model
+        , Stream.sendLine model.stdout appViewResult
+        ]
+
+
+resetScreen : Model model -> Cmd (Msg msg)
+resetScreen model =
+    Cmd.batch
+        -- unicode escape sequences
+        [ Stream.sendString model.stdout "\u{001b}[2J" -- clear
+        , Stream.sendString model.stdout "\u{001b}[H" -- move cursor to home
+        ]
 
 
 bytesToString : Bytes -> Maybe String
