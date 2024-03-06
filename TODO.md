@@ -9,5 +9,7 @@
     * [ ] Prompt
     * [ ] Choice
     * [ ] LoadingSpinner
+* [ ] [asciinema][2] demos
 
 [1]: https://github.com/charmbracelet/bubbles
+[2]: https://docs.asciinema.org/getting-started/
