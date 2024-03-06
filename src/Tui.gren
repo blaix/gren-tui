@@ -28,7 +28,7 @@ type alias AppConfig model msg =
     , onInput : (Input -> msg)
     }
 
-defineProgram : AppConfig model msg -> Node.Program (Model model) (Msg msg)
+defineProgram : AppConfig model msg -> Program model msg
 defineProgram appConfig =
     Node.defineProgram
         { init = init appConfig
