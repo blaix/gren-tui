@@ -2,17 +2,8 @@
  
 * [X] Clear and redraw screen on update
 * [X] onKeyPress event
-* [ ] Only clear printed lines by default
-  * Given a view that is N lines long:
-    * Use [[#Escape Codes]] to move cursor up N lines
-    * Repeat N times:
-      * Use carriage return to move cursor to beginning of line
-      * Print space Screen.width times, followed by a newline
-    * Move cursor up N lines again
-    * Print new view
-* [ ] Optionally clear whole screen:
-  * `"My view" |> Tui.UI.fullscreen`
-  * ^ prefixes with [[#Escape Codes]] to clear + move home
+* [X] Only clear printed lines by default
+* [ ] `Tui.UI.fullscreen`
 * [ ] Exit on ctrl-c
 * [ ] Background on ctrl-z
 * [ ] Other signals to handle automatically?

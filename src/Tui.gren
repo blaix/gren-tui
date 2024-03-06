@@ -7,9 +7,11 @@ module Tui exposing
 
 import Bytes exposing (Bytes)
 import Bytes.Decode
+import EscapeSequence as Esc
 import Init
 import Node
 import Stream exposing (Stream)
+import Task
 import Terminal
 
 
@@ -42,6 +44,7 @@ type alias Model appModel =
     , stdout : Stream
     , stderr : Stream
     , appModel : appModel
+    , lineCount : Int
     }
 
 
@@ -53,11 +56,15 @@ init appConfig env =
     Init.await (appConfig.init env) <| \app ->
         Init.await Terminal.initialize <| \termConfig ->
             let
+                appView =
+                    appConfig.view app.model
+
                 model =
                     { stdin = env.stdin
                     , stdout = env.stdout
                     , stderr = env.stderr
                     , appModel = app.model
+                    , lineCount = 0
                     }
             in
             Node.startProgram
@@ -65,7 +72,7 @@ init appConfig env =
                 , command =
                     Cmd.batch
                         [ Cmd.map AppMsg app.command
-                        , view model (appConfig.view app.model)
+                        , view model appView
                         , case termConfig of
                             Just config ->
                                 Terminal.setStdInRawMode config.permission True
@@ -82,6 +89,7 @@ init appConfig env =
 type Msg appMsg
     = GotStdin Bytes
     | AppMsg appMsg
+    | LineCountUpdated Int
 
 
 update : 
@@ -110,17 +118,27 @@ update appConfig msg model =
             , command = Cmd.map AppMsg appResult.command
             }
 
+        LineCountUpdated n ->
+            { model = { model | lineCount = n }
+            , command = Cmd.none
+            }
+
         AppMsg appMsg ->
             let
-                appResult =
+                appUpdate =
                     appConfig.update appMsg model.appModel
+
+                appView =
+                    appConfig.view appUpdate.model
+
+                newModel =
+                    { model | appModel = appUpdate.model }
             in
-            { model =
-                { model | appModel = appResult.model }
+            { model = newModel
             , command =
                 Cmd.batch
-                    [ view model (appConfig.view appResult.model)
-                    , Cmd.map AppMsg appResult.command
+                    [ view newModel appView
+                    , Cmd.map AppMsg appUpdate.command
                     ]
             }
 
@@ -141,15 +159,18 @@ view model appViewResult =
     Cmd.batch
         [ resetScreen model
         , Stream.sendLine model.stdout appViewResult
+        , appViewResult
+            |> countLines
+            |> Task.succeed
+            |> Task.perform LineCountUpdated
         ]
 
 
 resetScreen : Model model -> Cmd (Msg msg)
 resetScreen model =
     Cmd.batch
-        -- unicode escape sequences
-        [ Stream.sendString model.stdout "\u{001b}[2J" -- clear
-        , Stream.sendString model.stdout "\u{001b}[H" -- move cursor to home
+        [ Stream.sendString model.stdout <| Esc.moveUpLines model.lineCount
+        , Stream.sendString model.stdout <| Esc.clearScreen Esc.Down
         ]
 
 
@@ -169,3 +190,11 @@ bytesToString bytes =
         |> (\decoder -> Bytes.Decode.decode decoder bytes)
 
 
+-- UTIL
+
+
+countLines : String -> Int
+countLines string =
+    string
+        |> String.lines
+        |> Array.length

@@ -2,6 +2,7 @@ module Main exposing (main)
 
 
 import Init
+import Math
 import Node
 import Stream exposing (Stream)
 import Time
@@ -60,7 +61,13 @@ view : Model -> String
 view model =
     "Seconds since you've started this program: " ++
         String.fromInt model.ticks ++
-        "\nPress q to quit."
+        "\nPress q to quit." ++
+        -- Test changes in number of output lines
+        ( if Math.modBy 2 model.ticks == 0 then
+            "\n🩷🩷🩷"
+          else
+              ""
+        )
 
 
 subscriptions : Model -> Sub Msg

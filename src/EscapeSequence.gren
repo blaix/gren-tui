@@ -1,0 +1,60 @@
+module EscapeSequence exposing
+    ( Direction(..)
+    , clearScreen
+    , clearLine
+    , moveUpLines
+    , moveDownLines
+    )
+
+
+-- https://en.wikipedia.org/wiki/ANSI_escape_code
+
+
+prefix : String
+prefix =
+    "\u{001b}["
+
+
+clearScreen : Direction -> String
+clearScreen direction =
+    prefix ++ (directionString direction) ++ "J"
+
+
+clearLine : Direction -> String
+clearLine direction =
+    prefix ++ (directionString direction) ++ "K"
+
+
+moveUpLines : Int -> String
+moveUpLines n =
+    if n < 1 then
+        ""
+    else
+        prefix ++ (String.fromInt n) ++ "F"
+
+
+moveDownLines : Int -> String
+moveDownLines n =
+    if n < 1 then
+        ""
+    else
+        prefix ++ (String.fromInt n) ++ "E"
+
+
+type Direction
+    = Up
+    | Down
+    | Full
+
+
+directionString : Direction -> String
+directionString direction =
+    case direction of
+        Down ->
+            "0"
+
+        Up ->
+            "1"
+
+        Full ->
+            "2"
