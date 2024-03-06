@@ -1,0 +1,14 @@
+{
+    "type": "package",
+    "platform": "node",
+    "name": "author/project",
+    "summary": "helpful summary of your project, less than 80 characters",
+    "license": "BSD-3-Clause",
+    "version": "1.0.0",
+    "exposed-modules": [],
+    "gren-version": "0.3.0 <= v < 0.4.0",
+    "dependencies": {
+        "gren-lang/core": "4.0.1 <= v < 5.0.0",
+        "gren-lang/node": "3.1.0 <= v < 4.0.0"
+    }
+}
