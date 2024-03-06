@@ -13,6 +13,7 @@ main =
         , update = update
         , view = view
         , subscriptions = subscriptions
+        , onInput = GotInput
         }
 
 
@@ -31,6 +32,7 @@ init env =
 
 type Msg
     = Tick Time.Posix
+    | GotInput Tui.Input
 
 
 update : Msg -> Model -> { model : Model, command : Cmd Msg }
@@ -41,12 +43,24 @@ update msg model =
             , command = Cmd.none
             }
 
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Time.every 1000 Tick
+        GotInput input ->
+            { model = model
+            , command = 
+                case input of
+                    Tui.KeyChar "q" ->
+                        Node.exit
+                    _ ->
+                        Cmd.none
+            }
 
 
 view : Model -> String
 view model =
-    String.fromInt model.ticks
+    "Seconds since you've started this program: " ++
+        String.fromInt model.ticks ++
+        "\nPress q to quit."
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Time.every 1000 Tick
