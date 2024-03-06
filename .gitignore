@@ -1,3 +1,4 @@
 .envrc
 .gren
+examples/*/app
 node_modules

@@ -1,0 +1,121 @@
+module Tui exposing
+    ( defineProgram
+    )
+
+
+import Bytes exposing (Bytes)
+import Bytes.Decode
+import Init
+import Node
+import Stream exposing (Stream)
+import Terminal
+
+
+defineProgram : 
+    { init : Node.Environment -> Init.Task { model : model, command : Cmd msg }
+    , update : msg -> model -> { model : model, command : Cmd msg }
+    , subscriptions : model -> Sub msg
+    , view : model -> String
+    }
+    -> Node.Program (Model model) (Msg msg)
+defineProgram app =
+    Node.defineProgram
+        { init = init app.init app.view
+        , update = update app.update app.view
+        , subscriptions = subscriptions app.subscriptions
+        }
+
+
+type alias Model appModel =
+    { stdin : Stream
+    , stdout : Stream
+    , stderr : Stream
+    , appModel : appModel
+    }
+
+
+init : 
+    (Node.Environment -> Init.Task { model : model, command : Cmd msg })
+    -> (model -> String)
+    -> Node.Environment 
+    -> Init.Task { model : Model model, command : Cmd (Msg msg) }
+init appInit appView env =
+    Init.await (appInit env) <| \app ->
+        Init.await Terminal.initialize <| \termConfig ->
+            Node.startProgram
+                { model =
+                    { stdin = env.stdin
+                    , stdout = env.stdout
+                    , stderr = env.stderr
+                    , appModel = app.model
+                    }
+                , command =
+                    Cmd.batch
+                        [ Cmd.map AppMsg app.command
+                        , Stream.sendLine env.stdout (appView app.model)
+                        , case termConfig of
+                            Just config ->
+                                Terminal.setStdInRawMode config.permission True
+                            Nothing ->
+                                -- TODO: proper error handling for not being in interactive term
+                                Stream.sendLine env.stderr "Not running in interactive terminal."
+                        ]
+                }
+
+
+type Msg appMsg
+    = GotStdin Bytes
+    | AppMsg appMsg
+
+
+update : 
+    (msg -> model -> { model : model, command : Cmd msg })
+    -> (model -> String)
+    -> Msg msg 
+    -> Model model 
+    -> { model : Model model, command : Cmd (Msg msg) }
+update appUpdate appView msg model =
+    case msg of
+        GotStdin bytes ->
+            { model = model
+            , command =
+                bytes
+                    |> bytesToString
+                    |> Maybe.withDefault "Failed to decode bytes"
+                    |> String.append "\r"
+                    |> Stream.sendString model.stdout
+            }
+
+        AppMsg appMsg ->
+            let
+                appResult =
+                    appUpdate appMsg model.appModel
+            in
+            { model =
+                { model | appModel = appResult.model }
+            , command =
+                Cmd.batch
+                    [ Stream.sendLine model.stdout (appView appResult.model)
+                    , Cmd.map AppMsg appResult.command
+                    ]
+            }
+
+
+bytesToString : Bytes -> Maybe String
+bytesToString bytes =
+    bytes
+        |> Bytes.width
+        |> Bytes.Decode.string
+        |> (\decoder -> Bytes.Decode.decode decoder bytes)
+
+
+subscriptions : 
+    (model -> Sub msg)
+    -> Model model 
+    -> Sub (Msg msg)
+subscriptions appSubs model =
+    Sub.batch
+        [ Sub.map AppMsg (appSubs model.appModel)
+        , Stream.listen model.stdin GotStdin
+        ]
+

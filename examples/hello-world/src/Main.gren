@@ -1,0 +1,57 @@
+module Main exposing (main)
+
+
+import Init
+import Node
+import Stream exposing (Stream)
+import Tui
+
+main =
+    Tui.defineProgram
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        }
+
+
+type alias Model =
+    { stdin : Stream
+    , stdout : Stream
+    , stderr : Stream
+    }
+
+
+init : Node.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Node.startProgram
+        { model =
+            { stdin = env.stdin
+            , stdout = env.stdout
+            , stderr = env.stderr
+            }
+        , command = Cmd.none
+        }
+
+
+type Msg
+    = NoOp
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        NoOp ->
+            { model = model
+            , command = Cmd.none
+            }
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
+
+
+view : Model -> String
+view model =
+    "Here's my view"
