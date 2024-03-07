@@ -4,10 +4,13 @@ module EscapeSequence exposing
     , clearLine
     , moveUpLines
     , moveDownLines
+    , showCursor
+    , hideCursor
     )
 
 
 -- https://en.wikipedia.org/wiki/ANSI_escape_code
+-- https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 
 
 prefix : String
@@ -39,6 +42,16 @@ moveDownLines n =
         ""
     else
         prefix ++ (String.fromInt n) ++ "E"
+
+
+hideCursor : String
+hideCursor =
+    prefix ++ "?25l"
+
+
+showCursor : String
+showCursor =
+    prefix ++ "?25h"
 
 
 type Direction

@@ -3,6 +3,9 @@
 * [X] Clear and redraw screen on update
 * [X] onKeyPress event
 * [X] Only clear printed lines by default
+* [o] How to show/hide cursor automatically?:
+  * [X] Add escape sequences
+  * [ ] How to send the "show" sequence on exit?
 * [ ] `Tui.UI.fullscreen`
 * [ ] Exit on ctrl-c
 * [ ] Background on ctrl-z
