@@ -6,6 +6,7 @@
     "license": "BSD-3-Clause",
     "version": "1.0.0",
     "exposed-modules": [
+        "EscapeSequence",
         "Tui"
     ],
     "gren-version": "0.3.0 <= v < 0.4.0",

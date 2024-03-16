@@ -1,6 +1,7 @@
 module Main exposing (main)
 
 
+import EscapeSequence as Esc
 import Init
 import Math
 import Node
@@ -59,15 +60,21 @@ update msg model =
 
 view : Model -> String
 view model =
-    "Seconds since you've started this program: " ++
-        String.fromInt model.ticks ++
-        "\nPress q to quit." ++
-        -- Test changes in number of output lines
-        ( if Math.modBy 2 model.ticks == 0 then
-            "\n🩷🩷🩷"
-          else
-              ""
-        )
+    let
+        blink = 
+            -- Test changes in number of output lines
+            ( if Math.modBy 2 model.ticks == 0 then
+                "\n🩷🩷🩷"
+              else
+                  ""
+            )
+    in
+    String.join ""
+        [ "Seconds since you've started this program: "
+        , String.fromInt model.ticks
+        , Esc.wrapColor Esc.Yellow "\nPress q to quit."
+        , blink
+        ]
 
 
 subscriptions : Model -> Sub Msg

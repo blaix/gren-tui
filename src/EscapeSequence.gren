@@ -1,7 +1,15 @@
 module EscapeSequence exposing
+    -- Screen
     ( Direction(..)
     , clearScreen
     , clearLine
+
+    -- Color
+    , Color(..)
+    , wrapColor
+    , changeColor
+
+    -- Cursor
     , moveUpLines
     , moveDownLines
     , showCursor
@@ -18,6 +26,62 @@ prefix =
     "\u{001b}["
 
 
+-- COLOR
+
+
+type Color
+    = None
+    | Black
+    | Red
+    | Green
+    | Yellow
+    | Blue
+    | Magenta
+    | Cyan
+    | White
+
+
+wrapColor: Color -> String -> String
+wrapColor color string =
+    String.join ""
+        [ changeColor color
+        , string
+        , changeColor None
+        ]
+
+
+changeColor : Color -> String
+changeColor color =
+    String.join ""
+        [ prefix
+        , colorCode color
+        , "m"
+        ]
+
+
+colorCode : Color -> String
+colorCode color_ =
+    case color_ of
+        None -> "0"
+        Black -> "30"
+        Red -> "31"
+        Green -> "32"
+        Yellow -> "33"
+        Blue -> "34"
+        Magenta -> "35"
+        Cyan -> "36"
+        White -> "37"
+
+
+-- SCREEN
+
+
+type Direction
+    = Up
+    | Down
+    | Full
+
+
 clearScreen : Direction -> String
 clearScreen direction =
     prefix ++ (directionString direction) ++ "J"
@@ -26,6 +90,22 @@ clearScreen direction =
 clearLine : Direction -> String
 clearLine direction =
     prefix ++ (directionString direction) ++ "K"
+
+
+directionString : Direction -> String
+directionString direction =
+    case direction of
+        Down ->
+            "0"
+
+        Up ->
+            "1"
+
+        Full ->
+            "2"
+
+
+-- CURSOR
 
 
 moveUpLines : Int -> String
@@ -52,22 +132,3 @@ hideCursor =
 showCursor : String
 showCursor =
     prefix ++ "?25h"
-
-
-type Direction
-    = Up
-    | Down
-    | Full
-
-
-directionString : Direction -> String
-directionString direction =
-    case direction of
-        Down ->
-            "0"
-
-        Up ->
-            "1"
-
-        Full ->
-            "2"
