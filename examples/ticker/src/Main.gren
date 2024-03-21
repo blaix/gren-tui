@@ -5,7 +5,6 @@ import EscapeSequence as Esc
 import Init
 import Math
 import Node
-import Stream exposing (Stream)
 import Time
 import Tui
 

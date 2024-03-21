@@ -3,10 +3,12 @@
 * [X] Clear and redraw screen on update
 * [X] onKeyPress event
 * [X] Only clear printed lines by default
-* [o] How to show/hide cursor automatically?:
-  * [X] Add escape sequences
-  * [ ] How to send the "show" sequence on exit?
+* [o] More robust inputs (arrow keys, etc)
+* [ ] Other Inputs?
+* [ ] == release 1.0 ==
+* [ ] How to show/hide cursor automatically?:
 * [ ] `Tui.UI.fullscreen`
+* [ ] Fonts, Bold, etc.
 * [ ] Exit on ctrl-c
 * [ ] Background on ctrl-z
 * [ ] Other signals to handle automatically?
@@ -20,12 +22,3 @@
 
 [1]: https://github.com/charmbracelet/bubbles
 [2]: https://docs.asciinema.org/getting-started/
-
-# Escape Codes
- 
-* `"\u{001b}[F"`  -– move cursor to the beginning of the previous line
-* `"\u{001b}[A"`  -– move cursor up one line
-* `"\u{001b}[H"`  -- move cursor to home
-* `"\u{001b}[2J"` -- clear screen
-
-https://en.wikipedia.org/wiki/ANSI_escape_code
