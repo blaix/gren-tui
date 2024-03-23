@@ -14,16 +14,53 @@ module EscapeSequence exposing
     , moveDownLines
     , showCursor
     , hideCursor
+
+    -- Keys
+    , arrowUp
+    , arrowDown
+    , arrowLeft
+    , arrowRight
     )
 
 
--- https://en.wikipedia.org/wiki/ANSI_escape_code
--- https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
+-- See for reference: https://github.com/wolfadex/elm-ansi
 
 
 prefix : String
 prefix =
     "\u{001b}["
+
+
+-- SCREEN
+
+
+type Direction
+    = Up
+    | Down
+    | Full
+
+
+clearScreen : Direction -> String
+clearScreen direction =
+    prefix ++ (directionString direction) ++ "J"
+
+
+clearLine : Direction -> String
+clearLine direction =
+    prefix ++ (directionString direction) ++ "K"
+
+
+directionString : Direction -> String
+directionString direction =
+    case direction of
+        Down ->
+            "0"
+
+        Up ->
+            "1"
+
+        Full ->
+            "2"
 
 
 -- COLOR
@@ -73,38 +110,6 @@ colorCode color_ =
         White -> "37"
 
 
--- SCREEN
-
-
-type Direction
-    = Up
-    | Down
-    | Full
-
-
-clearScreen : Direction -> String
-clearScreen direction =
-    prefix ++ (directionString direction) ++ "J"
-
-
-clearLine : Direction -> String
-clearLine direction =
-    prefix ++ (directionString direction) ++ "K"
-
-
-directionString : Direction -> String
-directionString direction =
-    case direction of
-        Down ->
-            "0"
-
-        Up ->
-            "1"
-
-        Full ->
-            "2"
-
-
 -- CURSOR
 
 
@@ -132,3 +137,23 @@ hideCursor =
 showCursor : String
 showCursor =
     prefix ++ "?25h"
+
+
+-- KEYS
+
+
+arrowUp : String
+arrowUp =
+    prefix ++ "A"
+
+arrowDown : String
+arrowDown =
+    prefix ++ "B"
+
+arrowRight : String
+arrowRight =
+    prefix ++ "C"
+
+arrowLeft : String
+arrowLeft =
+    prefix ++ "D"

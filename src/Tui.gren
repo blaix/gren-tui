@@ -5,8 +5,13 @@ module Tui exposing
     )
 
 
+{-| Model/View/Update on the command line.
+-}
+
+
 import Bytes exposing (Bytes)
 import Bytes.Decode
+import Bytes.Encode
 import EscapeSequence as Esc
 import Init
 import Node
@@ -18,10 +23,26 @@ import Terminal
 -- PROGRAM INIT
 
 
+{-| Type alias for Tui programs.
+-}
 type alias Program model msg =
     Node.Program (Model model) (Msg msg)
 
 
+{-| Record alias for all the functions you need to run a Tui program.
+
+Very similar to a normal Node.Program, except for two special functions:
+
+`view`: Return a string for the current model. gren-tui will print this, and
+keep track of how many lines are output so it will only clear those lines when
+the output changes. This lets you do things like render progress bars, move
+characters around the screen, etc.
+
+`onInput`: Whenever a key is pressed, a message will be sent to your app with a
+[`Input`](#Input) value representing the key that was pressed. This lets you
+capture input, trigger events on certain key presses, etc.
+
+-}
 type alias AppConfig model msg =
     { init : Node.Environment -> Init.Task { model : model, command : Cmd msg }
     , update : msg -> model -> { model : model, command : Cmd msg }
@@ -30,6 +51,9 @@ type alias AppConfig model msg =
     , onInput : (Input -> msg)
     }
 
+
+{-| Define your Tui program.
+-}
 defineProgram : AppConfig model msg -> Program model msg
 defineProgram appConfig =
     Node.defineProgram
@@ -93,30 +117,17 @@ type Msg appMsg
 
 
 update : 
-    AppConfig model msg 
-    -> Msg msg
-    -> Model model
-    -> { model : Model model, command : Cmd (Msg msg) }
+    AppConfig appModel appMsg 
+    -> Msg appMsg
+    -> Model appModel
+    -> { model : Model appModel, command : Cmd (Msg appMsg) }
 update appConfig msg model =
     case msg of
         GotStdin bytes ->
-            let
-                input =
-                    bytes
-                        |> bytesToString
-                        -- TODO: use Char instead of String for KeyChar value
-                        -- and verify it's actually a character and not a ctrl-character or something
-                        |> Maybe.map KeyChar
-                        |> Maybe.withDefault UnknownInput
-
-                appResult =
-                    appConfig.update
-                        (appConfig.onInput input)
-                        model.appModel
-            in
-            { model = { model | appModel = appResult.model }
-            , command = Cmd.map AppMsg appResult.command
-            }
+            appUpdate
+                appConfig 
+                (appConfig.onInput <| bytesToInput bytes)
+                model
 
         LineCountUpdated n ->
             { model = { model | lineCount = n }
@@ -124,23 +135,32 @@ update appConfig msg model =
             }
 
         AppMsg appMsg ->
-            let
-                appUpdate =
-                    appConfig.update appMsg model.appModel
+            appUpdate appConfig appMsg model
 
-                appView =
-                    appConfig.view appUpdate.model
 
-                newModel =
-                    { model | appModel = appUpdate.model }
-            in
-            { model = newModel
-            , command =
-                Cmd.batch
-                    [ view newModel appView
-                    , Cmd.map AppMsg appUpdate.command
-                    ]
-            }
+appUpdate :
+    AppConfig appModel appMsg 
+    -> appMsg
+    -> Model appModel
+    -> { model : Model appModel, command : Cmd (Msg appMsg) }
+appUpdate appConfig appMsg model =
+    let
+        appUpdateResult =
+            appConfig.update appMsg model.appModel
+
+        appView =
+            appConfig.view appUpdateResult.model
+
+        newModel =
+            { model | appModel = appUpdateResult.model }
+    in
+    { model = newModel
+    , command =
+        Cmd.batch
+            [ view newModel appView
+            , Cmd.map AppMsg appUpdateResult.command
+            ]
+    }
 
 
 subscriptions : (model -> Sub msg) -> Model model -> Sub (Msg msg)
@@ -179,15 +199,44 @@ resetScreen model =
 
 type Input
     = KeyChar String
+    | Tab
+    | Space
+    | Return
+    | ArrowUp
+    | ArrowDown
+    | ArrowLeft
+    | ArrowRight
     | UnknownInput
 
 
-bytesToString : Bytes -> Maybe String
-bytesToString bytes =
+bytesToInput : Bytes -> Input
+bytesToInput bytes =
     bytes
         |> Bytes.width
         |> Bytes.Decode.string
         |> (\decoder -> Bytes.Decode.decode decoder bytes)
+        |> Maybe.map stringToInput
+        |> Maybe.withDefault UnknownInput
+
+
+stringToInput : String -> Input
+stringToInput string =
+    if string == Esc.arrowUp then
+        ArrowUp
+    else if string == Esc.arrowDown then
+        ArrowDown
+    else if string == Esc.arrowRight then
+        ArrowRight
+    else if string == Esc.arrowLeft then
+        ArrowLeft
+    else if string == "\t" then
+        Tab
+    else if string == "\r" then
+        Return
+    else if string == " " then
+        Space
+    else
+        KeyChar string
 
 
 -- UTIL

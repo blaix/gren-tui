@@ -3,8 +3,9 @@
 * [X] Clear and redraw screen on update
 * [X] onKeyPress event
 * [X] Only clear printed lines by default
-* [o] More robust inputs (arrow keys, etc)
-* [ ] Other Inputs?
+* [X] More robust inputs (arrow keys, etc)
+* [ ] Look at elm-ansi API for other things to add
+* [ ] Docs!
 * [ ] == release 1.0 ==
 * [ ] How to show/hide cursor automatically?:
 * [ ] `Tui.UI.fullscreen`

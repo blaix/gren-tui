@@ -3,9 +3,7 @@ module Main exposing (main)
 
 import EscapeSequence as Esc
 import Init
-import Math
 import Node
-import Time
 import Tui
 
 
@@ -21,34 +19,27 @@ main =
 
 
 type alias Model =
-    { ticks : Int
+    { keypress : Tui.Input
     }
 
 
 init : Node.Environment -> Init.Task { model : Model, command : Cmd Msg }
 init env =
     Node.startProgram
-        { model = { ticks = 0 }
+        { model = { keypress = Tui.UnknownInput }
         , command = Cmd.none
         }
 
 
 type Msg
-    = Tick Time.Posix
-    | GotInput Tui.Input
+    = GotInput Tui.Input
 
 
 update : Msg -> Model -> { model : Model, command : Cmd Msg }
 update msg model =
     case msg of
-        Tick _ ->
-            -- { model = { model | ticks = model.ticks + 1 }
-            { model = model
-            , command = Cmd.none
-            }
-
         GotInput input ->
-            { model = model
+            { model = { keypress = input }
             , command = 
                 case input of
                     Tui.KeyChar "q" ->
@@ -60,23 +51,12 @@ update msg model =
 
 view : Model -> String
 view model =
-    let
-        blink = 
-            -- Test changes in number of output lines
-            ( if Math.modBy 2 model.ticks == 0 then
-                "\n🩷🩷🩷"
-              else
-                  ""
-            )
-    in
     String.join ""
-        [ "Seconds since you've started this program: "
-        , String.fromInt model.ticks
+        [ "You pressed: " ++ (Debug.toString model.keypress)
         , Esc.wrapColor Esc.Yellow "\nPress q to quit."
-        , blink
         ]
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Time.every 1000 Tick
+    Sub.none
