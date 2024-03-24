@@ -5,7 +5,21 @@ module Tui exposing
     )
 
 
-{-| Model/View/Update on the command line.
+{-| Model/View/Update for the command line.
+
+Use this module to define a command-line program that uses [the elm architecture](https://guide.elm-lang.org/architecture/).
+See [`defineProgram`](#defineProgram) for details, or one of the [examples](https://github.com/blaix/gren-tui/tree/main/examples).
+
+If you want total control of your program and only need ANSI escape sequences, see [`Ansi`](Ansi).
+
+## Defining your program
+
+@docs defineProgram, Program
+
+## User Input
+
+@docs Input
+
 -}
 
 
@@ -31,17 +45,6 @@ type alias Program model msg =
 
 {-| Record alias for all the functions you need to run a Tui program.
 
-Very similar to a normal Node.Program, except for two special functions:
-
-`view`: Return a string for the current model. gren-tui will print this, and
-keep track of how many lines are output so it will only clear those lines when
-the output changes. This lets you do things like render progress bars, move
-characters around the screen, etc.
-
-`onInput`: Whenever a key is pressed, a message will be sent to your app with a
-[`Input`](#Input) value representing the key that was pressed. This lets you
-capture input, trigger events on certain key presses, etc.
-
 -}
 type alias AppConfig model msg =
     { init : Node.Environment -> Init.Task { model : model, command : Cmd msg }
@@ -53,8 +56,25 @@ type alias AppConfig model msg =
 
 
 {-| Define your Tui program.
+
+Very similar to a normal Node.defineProgram, except for two special functions:
+
+`view`: Return a string for the current model. gren-tui will print this, and
+keep track of how many lines are output so it will only clear those lines when
+the output changes. This lets you do things like render progress bars, move
+characters around the screen, etc.
+
+`onInput`: Whenever a key is pressed, a message will be sent to your app with a
+[`Input`](#Input) value representing the key that was pressed. This lets you
+capture input, trigger events on certain key presses, etc.
 -}
-defineProgram : AppConfig model msg -> Program model msg
+defineProgram :
+    { init : Node.Environment -> Init.Task { model : model, command : Cmd msg }
+    , update : msg -> model -> { model : model, command : Cmd msg }
+    , subscriptions : model -> Sub msg
+    , view : model -> String
+    , onInput : (Input -> msg)
+    } -> Program model msg
 defineProgram appConfig =
     Node.defineProgram
         { init = init appConfig

@@ -4,8 +4,8 @@
 * [X] onKeyPress event
 * [X] Only clear printed lines by default
 * [X] More robust inputs (arrow keys, etc)
-* [ ] Look at elm-ansi API for other things to add
-* [ ] Docs!
+* [o] Docs!
+* [ ] Pass-through ctrl-c and ctrl-z inputs
 * [ ] == release 1.0 ==
 * [ ] How to show/hide cursor automatically?:
 * [ ] `Tui.UI.fullscreen`
