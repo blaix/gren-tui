@@ -1,7 +1,7 @@
 module Main exposing (main)
 
 
-import EscapeSequence as Esc
+import Ansi
 import Init
 import Node
 import Tui
@@ -53,7 +53,7 @@ view : Model -> String
 view model =
     String.join ""
         [ "You pressed: " ++ (Debug.toString model.keypress)
-        , Esc.wrapColor Esc.Yellow "\nPress q to quit."
+        , Ansi.wrapColor Ansi.Yellow "\nPress q to quit."
         ]
 
 

@@ -1,4 +1,5 @@
-module EscapeSequence exposing
+module Ansi exposing
+
     -- Screen
     ( Direction(..)
     , clearScreen

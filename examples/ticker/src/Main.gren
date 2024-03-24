@@ -1,7 +1,7 @@
 module Main exposing (main)
 
 
-import EscapeSequence as Esc
+import Ansi
 import Init
 import Math
 import Node
@@ -36,7 +36,7 @@ init env =
             , stdout = env.stdout
             }
         , command =
-            Stream.sendString env.stdout Esc.hideCursor 
+            Stream.sendString env.stdout Ansi.hideCursor 
         }
 
 
@@ -60,7 +60,7 @@ update msg model =
                 case input of
                     Tui.KeyChar "q" ->
                         Cmd.batch
-                            [ Stream.sendString model.stdout Esc.showCursor
+                            [ Stream.sendString model.stdout Ansi.showCursor
                             , Task.perform (\_ -> ReadyToExit) (Task.succeed {})
                             ]
                     _ ->
@@ -91,7 +91,7 @@ view model =
     String.join ""
         [ "How high can I count? Let's see: "
         , String.fromInt model.ticks
-        , Esc.wrapColor Esc.Yellow "\nPress q to quit."
+        , Ansi.wrapColor Ansi.Yellow "\nPress q to quit."
         , heartsString
         ]
 

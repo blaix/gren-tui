@@ -9,10 +9,10 @@ module Tui exposing
 -}
 
 
+import Ansi
 import Bytes exposing (Bytes)
 import Bytes.Decode
 import Bytes.Encode
-import EscapeSequence as Esc
 import Init
 import Node
 import Stream exposing (Stream)
@@ -189,8 +189,8 @@ view model appViewResult =
 resetScreen : Model model -> Cmd (Msg msg)
 resetScreen model =
     Cmd.batch
-        [ Stream.sendString model.stdout <| Esc.moveUpLines model.lineCount
-        , Stream.sendString model.stdout <| Esc.clearScreen Esc.Down
+        [ Stream.sendString model.stdout <| Ansi.moveUpLines model.lineCount
+        , Stream.sendString model.stdout <| Ansi.clearScreen Ansi.Down
         ]
 
 
@@ -221,13 +221,13 @@ bytesToInput bytes =
 
 stringToInput : String -> Input
 stringToInput string =
-    if string == Esc.arrowUp then
+    if string == Ansi.arrowUp then
         ArrowUp
-    else if string == Esc.arrowDown then
+    else if string == Ansi.arrowDown then
         ArrowDown
-    else if string == Esc.arrowRight then
+    else if string == Ansi.arrowRight then
         ArrowRight
-    else if string == Esc.arrowLeft then
+    else if string == Ansi.arrowLeft then
         ArrowLeft
     else if string == "\t" then
         Tab
