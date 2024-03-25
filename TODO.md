@@ -5,16 +5,13 @@
 * [X] Only clear printed lines by default
 * [X] More robust inputs (arrow keys, etc)
 * [X] Exit on Ctrl-C
-* [o] Docs!
-* [ ] == release 1.0 ==
-* [ ] How to show/hide cursor automatically?:
+* [X] Docs!
+* [X] Fonts, Bold, etc.
+* [X] Exit on ctrl-c
+* [X] Handle TODO comments in codebase
+* [X] == release 1.0 ==
 * [ ] `Tui.UI.fullscreen`
-* [ ] Fonts, Bold, etc.
-* [ ] Exit on ctrl-c
-* [ ] Background on ctrl-z
-* [ ] Other signals to handle automatically?
 * [ ] Cross platform considerations? (e.g. is `clearScreen` ok on win?)
-* [ ] Handle TODO comments in codebase
 * [ ] Built-in UI components (see [Bubbles][1] source code for reference):
     * [ ] Prompt
     * [ ] Choice
