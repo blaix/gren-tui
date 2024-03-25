@@ -175,7 +175,7 @@ type FontWeight
     | Faint
 
 
-{-| Display string with the given font weight.
+{-| Display string with the given [font weight](#FontWeight).
 -}
 wrapFontWeight : FontWeight -> String -> String
 wrapFontWeight weight string =
@@ -186,7 +186,7 @@ wrapFontWeight weight string =
         ]
 
 
-{-| Change all terminal output from this point to the given font weight (even after program exit).
+{-| Change all terminal output from this point to the given [font weight](#FontWeight) (even after program exit).
 -}
 setFontWeight : FontWeight -> String
 setFontWeight weight =

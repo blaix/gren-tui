@@ -2,7 +2,7 @@
 
 Build terminal user interfaces with a Model/View/Update architecture and helpers to control the screen, cursor, and text.
 
-Track state in your model, listen for user input to update that state, and render your UI as a string.
+Track state in your model, listen for user input to update that state, and render your UI as a string representation of the current state.
 gren-tui will handle re-drawing only the lines you've output when your model changes.
 
 Uses the purely functional, very pleasant [gren](https://gren-lang.org/) programming language.
