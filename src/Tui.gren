@@ -44,7 +44,6 @@ type alias Program model msg =
 
 
 {-| Record alias for all the functions you need to run a Tui program.
-
 -}
 type alias AppConfig model msg =
     { init : Node.Environment -> Init.Task { model : model, command : Cmd msg }
@@ -60,13 +59,13 @@ type alias AppConfig model msg =
 Very similar to a normal Node.defineProgram, except for two special functions:
 
 `view`: Return a string for the current model. gren-tui will print this, and
-keep track of how many lines are output so it will only clear those lines when
-the output changes. This lets you do things like render progress bars, move
-characters around the screen, etc.
+keep track of how many lines are output so it can clear only those lines and
+print again when the output changes. This lets you do things like render
+progress bars, move characters around the screen, offer menu selections, etc.
 
-`onInput`: Whenever a key is pressed, a message will be sent to your app with a
-[`Input`](#Input) value representing the key that was pressed. This lets you
-capture input, trigger events on certain key presses, etc.
+`onInput`: Whenever your program receives input (a key is pressed, etc), a
+message is sent to your app with a [`Input`](#Input) value representing the
+input. This lets you capture text, trigger events on certain key presses, etc.
 -}
 defineProgram :
     { init : Node.Environment -> Init.Task { model : model, command : Cmd msg }
@@ -121,8 +120,11 @@ init appConfig env =
                             Just config ->
                                 Terminal.setStdInRawMode config.permission True
                             Nothing ->
-                                -- TODO: proper error handling for not being in interactive term
-                                Stream.sendLine env.stderr "Not running in interactive terminal."
+                                Cmd.batch
+                                    [ Stream.sendLine env.stderr "Can't start program. Not running in interactive terminal?"
+                                    , Node.setExitCode 1
+                                    , Task.perform (\_ -> ReadyToExit) (Task.succeed {})
+                                    ]
                         ]
                 }
 
@@ -239,6 +241,18 @@ resetScreen model =
 -- INPUT
 
 
+{-| Value sent to your `onInput` message when the program receives input
+(a key is pressed, a signal is received, etc.)
+
+Note: Your program will receive keyboard input as the keys are pressed, as
+opposed to getting a bunch of characters after Enter is pressed (under the hood
+your terminal program is running in "raw mode"). For example, if someone types
+"hi" after starting your program, it will receive a message with `KeyChar "h"`
+and then another message with `KeyChar "i"`.
+
+Also note: gren-tui will exit the program when it gets CtrlC as input.
+For now you can't depend on receiving this in your app.
+-}
 type Input
     = KeyChar String
     | Tab
