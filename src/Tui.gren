@@ -134,6 +134,7 @@ type Msg appMsg
     = GotStdin Bytes
     | AppMsg appMsg
     | LineCountUpdated Int
+    | ReadyToExit
 
 
 update : 
@@ -144,10 +145,31 @@ update :
 update appConfig msg model =
     case msg of
         GotStdin bytes ->
-            appUpdate
-                appConfig 
-                (appConfig.onInput <| bytesToInput bytes)
-                model
+            let
+                input =
+                    bytesToInput bytes
+            in
+            case input of
+                CtrlC ->
+                    { model = model
+                    , command = 
+                        Cmd.batch
+                            -- Just in case the app hid the cursor...
+                            [ Stream.sendString model.stdout Ansi.showCursor
+                            , Task.perform (\_ -> ReadyToExit) (Task.succeed {})
+                            ]
+                    }
+
+                _ ->
+                    appUpdate
+                        appConfig 
+                        (appConfig.onInput <| bytesToInput bytes)
+                        model
+
+        ReadyToExit ->
+            { model = model
+            , command = Node.exit
+            }
 
         LineCountUpdated n ->
             { model = { model | lineCount = n }
@@ -226,17 +248,25 @@ type Input
     | ArrowDown
     | ArrowLeft
     | ArrowRight
+    | CtrlC
     | UnknownInput
 
 
 bytesToInput : Bytes -> Input
 bytesToInput bytes =
-    bytes
-        |> Bytes.width
-        |> Bytes.Decode.string
-        |> (\decoder -> Bytes.Decode.decode decoder bytes)
-        |> Maybe.map stringToInput
-        |> Maybe.withDefault UnknownInput
+    let
+        ctrlC =
+            Bytes.Encode.encode (Bytes.Encode.unsignedInt8 3)
+    in
+    if bytes == ctrlC then
+        CtrlC
+    else
+        bytes
+            |> Bytes.width
+            |> Bytes.Decode.string
+            |> (\decoder -> Bytes.Decode.decode decoder bytes)
+            |> Maybe.map stringToInput
+            |> Maybe.withDefault UnknownInput
 
 
 stringToInput : String -> Input
