@@ -8,7 +8,7 @@ module Ansi exposing
     -- Color
     , Color(..)
     , wrapColor
-    , changeColor
+    , setColor
 
     -- Cursor
     , moveUpLines
@@ -21,10 +21,45 @@ module Ansi exposing
     , arrowDown
     , arrowLeft
     , arrowRight
+
+    -- Font styling
+    , FontWeight(..)
+    , wrapFontWeight
+    , setFontWeight
+    , wrapItalic
+    , wrapUnderline
+    , wrapStrikeThrough
+    , setItalic
+    , unsetItalic
+    , setUnderline
+    , unsetUnderline
+    , setStrikeThrough
+    , unsetStrikeThrough
     )
 
 
--- See for reference: https://github.com/wolfadex/elm-ansi
+{-| ANSI escape sequences.
+
+Functions and strings to control the screen, cursor, and text formatting in
+the terminal.
+
+## Color
+
+@docs wrapColor, setColor, Color
+
+## Screen
+
+@docs clearScreen, clearLine, Direction
+
+## Cursor
+
+@docs moveUpLines, modeDownLines, showCursor, hideCursor
+
+## Keys
+
+@docs arrowUp, arrowDown, arrowLeft, arrowRight
+
+-}
 
 
 prefix : String
@@ -68,7 +103,7 @@ directionString direction =
 
 
 type Color
-    = None
+    = NoColor
     | Black
     | Red
     | Green
@@ -82,14 +117,14 @@ type Color
 wrapColor: Color -> String -> String
 wrapColor color string =
     String.join ""
-        [ changeColor color
+        [ setColor color
         , string
-        , changeColor None
+        , setColor NoColor
         ]
 
 
-changeColor : Color -> String
-changeColor color =
+setColor : Color -> String
+setColor color =
     String.join ""
         [ prefix
         , colorCode color
@@ -100,7 +135,7 @@ changeColor color =
 colorCode : Color -> String
 colorCode color_ =
     case color_ of
-        None -> "0"
+        NoColor -> "0"
         Black -> "30"
         Red -> "31"
         Green -> "32"
@@ -109,6 +144,98 @@ colorCode color_ =
         Magenta -> "35"
         Cyan -> "36"
         White -> "37"
+
+
+-- FONT STYLING
+
+
+type FontWeight
+    = NormalWeight
+    | Bold
+    | Faint
+
+
+wrapFontWeight : FontWeight -> String -> String
+wrapFontWeight weight string =
+    String.join ""
+        [ setFontWeight weight
+        , string
+        , setFontWeight NormalWeight
+        ]
+
+
+setFontWeight : FontWeight -> String
+setFontWeight weight =
+    String.join ""
+        [ prefix
+        , fontWeightCode weight
+        , "m"
+        ]
+
+
+fontWeightCode : FontWeight -> String
+fontWeightCode weight =
+    case weight of
+        NormalWeight -> "22"
+        Bold -> "1"
+        Faint -> "2"
+
+
+wrapItalic : String -> String
+wrapItalic string =
+    String.join ""
+        [ setItalic
+        , string
+        , unsetItalic
+        ]
+
+
+wrapUnderline : String -> String
+wrapUnderline string =
+    String.join ""
+        [ setUnderline
+        , string
+        , unsetUnderline
+        ]
+
+
+wrapStrikeThrough : String -> String
+wrapStrikeThrough string =
+    String.join ""
+        [ setStrikeThrough
+        , string
+        , unsetStrikeThrough
+        ]
+
+
+setItalic : String
+setItalic =
+    prefix ++ "3m"
+
+
+unsetItalic : String
+unsetItalic =
+    prefix ++ "23m"
+
+
+setUnderline : String
+setUnderline =
+    prefix ++ "4m"
+
+
+unsetUnderline : String
+unsetUnderline =
+    prefix ++ "24m"
+
+
+setStrikeThrough : String
+setStrikeThrough =
+    prefix ++ "9m"
+
+
+unsetStrikeThrough : String
+unsetStrikeThrough =
+    prefix ++ "29m"
 
 
 -- CURSOR
