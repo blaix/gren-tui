@@ -2,7 +2,7 @@
     "type": "package",
     "platform": "node",
     "name": "blaix/gren-tui",
-    "summary": "Build purely functional terminal apps with the elm architecture.",
+    "summary": "Terminal UIs with Model/View/Update & helpers for the screen, cursor, and text.",
     "license": "BSD-3-Clause",
     "version": "1.0.0",
     "exposed-modules": [

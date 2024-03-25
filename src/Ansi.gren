@@ -47,15 +47,19 @@ the terminal.
 
 @docs wrapColor, setColor, Color
 
+## Font Styling
+
+@docs wrapFontWeight, setFontWeight, wrapItalic, wrapUnderline, wrapStrikeThrough, setItalic, unsetItalic, setUnderline, unsetUnderline, setStrikeThrough, unsetStrikeThrough, FontWeight
+
 ## Screen
 
 @docs clearScreen, clearLine, Direction
 
 ## Cursor
 
-@docs moveUpLines, modeDownLines, showCursor, hideCursor
+@docs moveUpLines, moveDownLines, showCursor, hideCursor
 
-## Keys
+## Arrow Keys
 
 @docs arrowUp, arrowDown, arrowLeft, arrowRight
 
@@ -70,17 +74,27 @@ prefix =
 -- SCREEN
 
 
+{-| Direction for clear functions.
+
+* Down: Clear things after the cursor.
+* Up: Clear things before the cursor.
+* Full: Clear both directions.
+-}
 type Direction
     = Up
     | Down
     | Full
 
 
+{-| Clear screen in the given [Direction](#Direction).
+-}
 clearScreen : Direction -> String
 clearScreen direction =
     prefix ++ (directionString direction) ++ "J"
 
 
+{-| Clear the current line in the given [direction](#Direction).
+-}
 clearLine : Direction -> String
 clearLine direction =
     prefix ++ (directionString direction) ++ "K"
@@ -102,6 +116,7 @@ directionString direction =
 -- COLOR
 
 
+{-| -}
 type Color
     = NoColor
     | Black
@@ -114,6 +129,8 @@ type Color
     | White
 
 
+{-| Display the given text in the given [color](#Color).
+-}
 wrapColor: Color -> String -> String
 wrapColor color string =
     String.join ""
@@ -123,6 +140,8 @@ wrapColor color string =
         ]
 
 
+{-| Change all subsequent terminal output to the given color (even after program exit).
+-}
 setColor : Color -> String
 setColor color =
     String.join ""
@@ -149,12 +168,15 @@ colorCode color_ =
 -- FONT STYLING
 
 
+{-| -}
 type FontWeight
     = NormalWeight
     | Bold
     | Faint
 
 
+{-| Display string with the given font weight.
+-}
 wrapFontWeight : FontWeight -> String -> String
 wrapFontWeight weight string =
     String.join ""
@@ -164,6 +186,8 @@ wrapFontWeight weight string =
         ]
 
 
+{-| Change all terminal output from this point to the given font weight (even after program exit).
+-}
 setFontWeight : FontWeight -> String
 setFontWeight weight =
     String.join ""
@@ -181,6 +205,8 @@ fontWeightCode weight =
         Faint -> "2"
 
 
+{-| Display the given string as italic.
+-}
 wrapItalic : String -> String
 wrapItalic string =
     String.join ""
@@ -190,6 +216,8 @@ wrapItalic string =
         ]
 
 
+{-| Display the given string as underline.
+-}
 wrapUnderline : String -> String
 wrapUnderline string =
     String.join ""
@@ -199,6 +227,8 @@ wrapUnderline string =
         ]
 
 
+{-| Display the given string with a strikethrough.
+-}
 wrapStrikeThrough : String -> String
 wrapStrikeThrough string =
     String.join ""
@@ -208,31 +238,43 @@ wrapStrikeThrough string =
         ]
 
 
+{-| Change all terminal output from this point to italic (even after program exit).
+-}
 setItalic : String
 setItalic =
     prefix ++ "3m"
 
 
+{-| Stop displaying terminal output as italic.
+-}
 unsetItalic : String
 unsetItalic =
     prefix ++ "23m"
 
 
+{-| Change all terminal output from this point to underline (even after program exit).
+-}
 setUnderline : String
 setUnderline =
     prefix ++ "4m"
 
 
+{-| Stop displaying terminal output as underline.
+-}
 unsetUnderline : String
 unsetUnderline =
     prefix ++ "24m"
 
 
+{-| Change all terminal output from this point with a strikethrough (even after program exit).
+-}
 setStrikeThrough : String
 setStrikeThrough =
     prefix ++ "9m"
 
 
+{-| Stop displaying terminal output with a strikethrough.
+-}
 unsetStrikeThrough : String
 unsetStrikeThrough =
     prefix ++ "29m"
@@ -241,6 +283,8 @@ unsetStrikeThrough =
 -- CURSOR
 
 
+{-| Move the cursor up the given number of lines.
+-}
 moveUpLines : Int -> String
 moveUpLines n =
     if n < 1 then
@@ -249,6 +293,8 @@ moveUpLines n =
         prefix ++ (String.fromInt n) ++ "F"
 
 
+{-| Move the cursor down the given number of lines.
+-}
 moveDownLines : Int -> String
 moveDownLines n =
     if n < 1 then
@@ -257,11 +303,19 @@ moveDownLines n =
         prefix ++ (String.fromInt n) ++ "E"
 
 
+{-| Hide the cursor.
+
+You should call [`showCursor`](#showCursor) before exiting your program, or the
+cursor will still be gone after exiting (gren-tui will handle this
+automatically if someone ctrl-c's out of your program).
+-}
 hideCursor : String
 hideCursor =
     prefix ++ "?25l"
 
 
+{-| Show the cursor.
+-}
 showCursor : String
 showCursor =
     prefix ++ "?25h"
@@ -270,18 +324,29 @@ showCursor =
 -- KEYS
 
 
+{-| ANSI escape sequence for the up arrow key.
+-}
 arrowUp : String
 arrowUp =
     prefix ++ "A"
 
+
+{-| ANSI escape sequence for the down arrow key.
+-}
 arrowDown : String
 arrowDown =
     prefix ++ "B"
 
+
+{-| ANSI escape sequence for the right arrow key.
+-}
 arrowRight : String
 arrowRight =
     prefix ++ "C"
 
+
+{-| ANSI escape sequence for the left arrow key.
+-}
 arrowLeft : String
 arrowLeft =
     prefix ++ "D"
