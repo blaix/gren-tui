@@ -1,6 +1,6 @@
 # Gren TUI
 
-Build terminal user interfaces with a Model/View/Update architecture and helpers to control the screen, cursor, and text.
+Build terminal user interfaces using [The Elm Architecture](https://guide.elm-lang.org/architecture/) (Model/View/Update) and helpers to control the screen, cursor, and text.
 
 Track state in your model, listen for user input to update that state, and render your UI as a string representation of the current state.
 gren-tui will handle re-drawing only the lines you've output when your model changes.
@@ -82,6 +82,12 @@ cd myapp
 gren init --platform=node
 ```
 
+Install the `gren-tui` package:
+
+```
+gren package install blaix/gren-tui
+```
+
 Then create a `src/Main.gren` file like the one above, or
 see the [examples/](https://github.com/blaix/gren-tui/tree/main/examples) and [api docs](https://packages.gren-lang.org/package/blaix/gren-tui) for help creating your own.
 Then compile and run with:
@@ -90,4 +96,3 @@ Then compile and run with:
 gren make src/Main.gren
 node app
 ```
-
