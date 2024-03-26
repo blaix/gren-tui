@@ -1,7 +1,9 @@
 module Ansi exposing
+    ( escape
+    , prefix
 
     -- Screen
-    ( Direction(..)
+    , Direction(..)
     , clearScreen
     , clearLine
 
@@ -13,8 +15,10 @@ module Ansi exposing
     -- Cursor
     , moveUpLines
     , moveDownLines
+    , moveTo
     , showCursor
     , hideCursor
+    , getCursorReport
 
     -- Keys
     , arrowUp
@@ -57,18 +61,33 @@ the terminal.
 
 ## Cursor
 
-@docs moveUpLines, moveDownLines, showCursor, hideCursor
+@docs moveUpLines, moveDownLines, moveTo, showCursor, hideCursor, getCursorReport
 
 ## Arrow Keys
 
 @docs arrowUp, arrowDown, arrowLeft, arrowRight
 
+## "Escape" hatch
+
+You won't need these normally, but can use them if you need an escape
+sequence that isn't covered by another function in this module.
+
+@docs escape, prefix
+
 -}
 
+{-| Unicode character for Escape (Esc).
+-}
+escape: String
+escape =
+    "\u{001b}"
 
+
+{-| The beginning of most ANSI escape sequences (The "\e[" part).
+-}
 prefix : String
 prefix =
-    "\u{001b}["
+    escape ++ "["
 
 
 -- SCREEN
@@ -303,6 +322,19 @@ moveDownLines n =
         prefix ++ (String.fromInt n) ++ "E"
 
 
+{-| Move cursor to the given row and column number of the visible terminal.
+-}
+moveTo : Int -> Int -> String
+moveTo row col =
+    String.join ""
+        [ prefix
+        , String.fromInt row
+        , ";"
+        , String.fromInt col
+        , "H"
+        ]
+
+
 {-| Hide the cursor.
 
 You should call [`showCursor`](#showCursor) before exiting your program, or the
@@ -319,6 +351,18 @@ hideCursor =
 showCursor : String
 showCursor =
     prefix ++ "?25h"
+
+
+{-| Get the cursor position.
+
+If you include this in your view (or send it directly to an output stream), you
+will trigger an update with your [`onInput`](Tui.defineProgram) message holding
+an [`Input`](Tui.Input) value of `CursorReport row column` representing the
+cursor's current position in the terminal.
+-}
+getCursorReport : String
+getCursorReport =
+    prefix ++ "6n"
 
 
 -- KEYS

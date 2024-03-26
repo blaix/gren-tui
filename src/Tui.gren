@@ -87,9 +87,9 @@ type alias Model appModel =
     , stdout : Stream
     , stderr : Stream
     , appModel : appModel
-    , lineCount : Int
+    , terminalRows : Int
+    , firstRow : Int
     }
-
 
 init : 
     AppConfig model msg 
@@ -99,34 +99,32 @@ init appConfig env =
     Init.await (appConfig.init env) <| \app ->
         Init.await Terminal.initialize <| \termConfig ->
             let
-                appView =
-                    appConfig.view app.model
-
                 model =
                     { stdin = env.stdin
                     , stdout = env.stdout
                     , stderr = env.stderr
                     , appModel = app.model
-                    , lineCount = 0
+                    , terminalRows = 0
+                    , firstRow = 0
                     }
             in
-            Node.startProgram
-                { model = model
-                , command =
-                    Cmd.batch
-                        [ Cmd.map AppMsg app.command
-                        , view model appView
-                        , case termConfig of
-                            Just config ->
-                                Terminal.setStdInRawMode config.permission True
-                            Nothing ->
-                                Cmd.batch
-                                    [ Stream.sendLine env.stderr "Can't start program. Not running in interactive terminal?"
-                                    , Node.setExitCode 1
-                                    , Task.perform (\_ -> ReadyToExit) (Task.succeed {})
-                                    ]
-                        ]
-                }
+            Node.startProgram <|
+                case termConfig of
+                    Just config ->
+                        { model = { model | terminalRows = config.rows }
+                        , command =
+                            Cmd.batch
+                                 [ Terminal.setStdInRawMode config.permission True
+                                 , Stream.sendString env.stdout Ansi.getCursorReport
+                                 , Cmd.map AppMsg app.command
+                                 ]
+                        }
+
+                    Nothing ->
+                        -- Not in an interactive terminal
+                        { model = model
+                        , command = Node.exitWithCode 1
+                        }
 
 
 -- UPDATE
@@ -135,7 +133,6 @@ init appConfig env =
 type Msg appMsg
     = GotStdin Bytes
     | AppMsg appMsg
-    | LineCountUpdated Int
     | ReadyToExit
 
 
@@ -156,26 +153,37 @@ update appConfig msg model =
                     { model = model
                     , command = 
                         Cmd.batch
-                            -- Just in case the app hid the cursor...
                             [ Stream.sendString model.stdout Ansi.showCursor
                             , Task.perform (\_ -> ReadyToExit) (Task.succeed {})
                             ]
                     }
 
+                CursorReport row col ->
+                    -- The first report is gren-tui getting initial cursor
+                    -- position. Subsequent reports were requested by the app
+                    -- and should trigger a normal app update.
+                    if model.firstRow == 0 then
+                        let
+                            newModel =
+                                { model | firstRow = row }
+                        in
+                        view newModel (appConfig.view model.appModel)
+
+                    else
+                        appUpdate
+                            appConfig 
+                            (appConfig.onInput input)
+                            model
+
                 _ ->
                     appUpdate
                         appConfig 
-                        (appConfig.onInput <| bytesToInput bytes)
+                        (appConfig.onInput input)
                         model
 
         ReadyToExit ->
             { model = model
             , command = Node.exit
-            }
-
-        LineCountUpdated n ->
-            { model = { model | lineCount = n }
-            , command = Cmd.none
             }
 
         AppMsg appMsg ->
@@ -192,16 +200,16 @@ appUpdate appConfig appMsg model =
         appUpdateResult =
             appConfig.update appMsg model.appModel
 
-        appView =
-            appConfig.view appUpdateResult.model
+        viewResult =
+            view model (appConfig.view appUpdateResult.model)
 
         newModel =
-            { model | appModel = appUpdateResult.model }
+            { viewResult.model | appModel = appUpdateResult.model }
     in
     { model = newModel
     , command =
         Cmd.batch
-            [ view newModel appView
+            [ viewResult.command
             , Cmd.map AppMsg appUpdateResult.command
             ]
     }
@@ -218,24 +226,42 @@ subscriptions appSubs model =
 -- VIEW
 
 
-view : Model model -> String -> Cmd (Msg msg)
+view : Model model -> String -> { model : Model model, command : Cmd (Msg msg) }
 view model appViewResult =
-    Cmd.batch
-        [ resetScreen model
-        , Stream.sendLine model.stdout appViewResult
-        , appViewResult
-            |> countLines
-            |> Task.succeed
-            |> Task.perform LineCountUpdated
-        ]
+    let
+        outputLines =
+            countLines appViewResult
+
+        scrolledRows =
+            model.firstRow + outputLines - 1 - model.terminalRows
+
+        firstRowAdjusted =
+            if scrolledRows > 0 then
+                model.firstRow - scrolledRows
+            else
+                model.firstRow
+
+        newFirstRow =
+            if firstRowAdjusted < 1 then
+                1
+            else
+                firstRowAdjusted
+    in
+    { model = { model | firstRow = newFirstRow }
+    , command = 
+        Cmd.batch
+            [ resetScreen model -- reset using the old model's firstRow!
+            , Stream.sendString model.stdout appViewResult
+            ]
+    }
 
 
 resetScreen : Model model -> Cmd (Msg msg)
 resetScreen model =
-    Cmd.batch
-        [ Stream.sendString model.stdout <| Ansi.moveUpLines model.lineCount
-        , Stream.sendString model.stdout <| Ansi.clearScreen Ansi.Down
-        ]
+        Cmd.batch
+            [ Stream.sendString model.stdout <| Ansi.moveTo model.firstRow 1
+            , Stream.sendString model.stdout <| Ansi.clearScreen Ansi.Down
+            ]
 
 
 -- INPUT
@@ -244,14 +270,19 @@ resetScreen model =
 {-| Value sent to your `onInput` message when the program receives input
 (a key is pressed, a signal is received, etc.)
 
-Note: Your program will receive keyboard input as the keys are pressed, as
+Your program will receive keyboard input as the keys are pressed, as
 opposed to getting a bunch of characters after Enter is pressed (under the hood
 your terminal program is running in "raw mode"). For example, if someone types
 "hi" after starting your program, it will receive a message with `KeyChar "h"`
 and then another message with `KeyChar "i"`.
 
-Also note: gren-tui will exit the program when it gets CtrlC as input.
-For now you can't depend on receiving this in your app.
+`CursorReport` is a special input type you will receive if you include
+[`Ansi.getCursorReport`](Ansi.getCursorReport) in your output. Use this to get
+the current row and column position of the cursor in the terminal (where the
+upper-left corner of the window is row 1 column 1).
+
+`CtrlC` is the "abort" signal and gets intercepted by gren-tui to exit your
+program. For now you can't depend on receiving this in your app.
 -}
 type Input
     = KeyChar String
@@ -262,6 +293,7 @@ type Input
     | ArrowDown
     | ArrowLeft
     | ArrowRight
+    | CursorReport Int Int
     | CtrlC
     | UnknownInput
 
@@ -285,22 +317,57 @@ bytesToInput bytes =
 
 stringToInput : String -> Input
 stringToInput string =
-    if string == Ansi.arrowUp then
-        ArrowUp
-    else if string == Ansi.arrowDown then
-        ArrowDown
-    else if string == Ansi.arrowRight then
-        ArrowRight
-    else if string == Ansi.arrowLeft then
-        ArrowLeft
-    else if string == "\t" then
-        Tab
-    else if string == "\r" then
-        Return
-    else if string == " " then
-        Space
-    else
-        KeyChar string
+    case checkCursorReport string of
+        Just cursorReport ->
+            cursorReport
+        Nothing ->
+            if string == Ansi.arrowUp then
+                ArrowUp
+            else if string == Ansi.arrowDown then
+                ArrowDown
+            else if string == Ansi.arrowRight then
+                ArrowRight
+            else if string == Ansi.arrowLeft then
+                ArrowLeft
+            else if string == "\t" then
+                Tab
+            else if string == "\r" then
+                Return
+            else if string == " " then
+                Space
+            else
+                KeyChar string
+
+
+checkCursorReport : String -> Maybe Input
+checkCursorReport string =
+    -- If we send Ansi.getCursorReport, we get back the cursor position (CPR)
+    -- in the form ESC[n;mR, where n is the row and m is the column. 
+    -- Using this to know where to move when clearing the screen on update.
+    let
+        parts =
+            string
+                |> String.split "["
+                |> Array.map (String.split ";")
+                |> Array.flatten
+                |> Array.map (String.split "R")
+                |> Array.flatten
+    in
+    case parts of
+        ["\u{001b}", row, col, ""] ->
+            let
+                parsed =
+                    { row = String.toInt row
+                    , col = String.toInt col
+                    }
+            in
+            case parsed of
+                { row = Just r, col = Just c } ->
+                    Just (CursorReport r c)
+                _ ->
+                    Nothing
+        _ ->
+            Nothing
 
 
 -- UTIL

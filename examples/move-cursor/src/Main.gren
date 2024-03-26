@@ -1,0 +1,62 @@
+module Main exposing (main)
+
+
+import Ansi
+import Init
+import Node
+import Tui
+
+
+main : Tui.Program Model Msg
+main =
+    Tui.defineProgram
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        , onInput = GotInput
+        }
+
+
+type alias Model =
+    {}
+
+
+init : Node.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Node.startProgram
+        { model = {}
+        , command = Cmd.none
+        }
+
+
+type Msg
+    = GotInput Tui.Input
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        GotInput input ->
+            { model = {}
+            , command = 
+                case input of
+                    Tui.KeyChar "q" ->
+                        Node.exit
+                    _ ->
+                        Cmd.none
+            }
+
+
+view : Model -> String
+view model =
+    String.join ""
+        [ "Line 1\n"
+        , "Line 2"
+        , Ansi.moveUpLines 1
+        ]
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
