@@ -10,6 +10,7 @@
 * [X] Exit on ctrl-c
 * [X] Handle TODO comments in codebase
 * [X] == release 1.0 ==
+* [ ] Fix bugs in the 1.0 release: https://github.com/blaix/gren-tui/issues?q=is%3Aissue+is%3Aopen+label%3Abug
 * [ ] `Tui.UI.fullscreen`
 * [ ] Cross platform considerations? (e.g. is `clearScreen` ok on win?)
 * [ ] Built-in UI components (see [Bubbles][1] source code for reference):
