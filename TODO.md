@@ -12,6 +12,8 @@
 * [X] == release 1.0 ==
 * [X] Fix bugs in the 1.0 release: https://github.com/blaix/gren-tui/issues?q=is%3Aissue+is%3Aopen+label%3Abug
 * [ ] Use new task-based Stream, etc. to add guarantees (start with Cmd.batch usage where order is important)
+* [ ] Change onInput to a Maybe. Let's apps exit if they aren't listening for anything.
+* [ ] How to make log messages visible (Debug.log won't work with gren-tui views)? add file logging?
 * [ ] `Tui.UI.fullscreen`
 * [ ] Cross platform considerations? (e.g. is `clearScreen` ok on win?)
 * [ ] Built-in UI components (see [Bubbles][1] source code for reference):
