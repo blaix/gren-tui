@@ -23,7 +23,8 @@
     * [ ] Prompt
     * [ ] Choice
     * [ ] LoadingSpinner
-* [ ] [asciinema][2] demos
+* [ ] Demos with [asciinema][2] or [freeze][3]
 
 [1]: https://github.com/charmbracelet/bubbles
 [2]: https://docs.asciinema.org/getting-started/
+[3]: https://github.com/charmbracelet/freeze
