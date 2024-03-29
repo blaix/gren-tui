@@ -30,7 +30,7 @@ import Bytes.Encode
 import Init
 import Node
 import Stream exposing (Stream)
-import Task
+import Task exposing (Task)
 import Terminal
 
 
@@ -115,7 +115,7 @@ init appConfig env =
                         , command =
                             Cmd.batch
                                  [ Terminal.setStdInRawMode config.permission True
-                                 , Stream.sendString env.stdout Ansi.getCursorReport
+                                 , print env.stdout Ansi.getCursorReport |> Task.execute
                                  , Cmd.map AppMsg app.command
                                  ]
                         }
@@ -123,7 +123,7 @@ init appConfig env =
                     Nothing ->
                         -- Not in an interactive terminal
                         { model = model
-                        , command = Node.exitWithCode 1
+                        , command = Task.execute <| Node.exitWithCode 1
                         }
 
 
@@ -133,7 +133,6 @@ init appConfig env =
 type Msg appMsg
     = GotStdin Bytes
     | AppMsg appMsg
-    | ReadyToExit
 
 
 update : 
@@ -152,10 +151,9 @@ update appConfig msg model =
                 CtrlC ->
                     { model = model
                     , command = 
-                        Cmd.batch
-                            [ Stream.sendString model.stdout Ansi.showCursor
-                            , Task.perform (\_ -> ReadyToExit) (Task.succeed {})
-                            ]
+                        print model.stdout Ansi.showCursor
+                            |> Task.andThen (\_ -> Node.exit)
+                            |> Task.execute
                     }
 
                 CursorReport row col ->
@@ -181,11 +179,6 @@ update appConfig msg model =
                         (appConfig.onInput input)
                         model
 
-        ReadyToExit ->
-            { model = model
-            , command = Node.exit
-            }
-
         AppMsg appMsg ->
             appUpdate appConfig appMsg model
 
@@ -201,16 +194,15 @@ appUpdate appConfig appMsg model =
             appConfig.update appMsg model.appModel
 
         viewResult =
-            view model (appConfig.view appUpdateResult.model)
-
-        newModel =
-            { viewResult.model | appModel = appUpdateResult.model }
+            view 
+                { model | appModel = appUpdateResult.model }
+                (appConfig.view appUpdateResult.model)
     in
-    { model = newModel
+    { model = viewResult.model
     , command =
         Cmd.batch
-            [ viewResult.command
-            , Cmd.map AppMsg appUpdateResult.command
+            [ viewResult.command -- this is the command to print the view
+            , Cmd.map AppMsg appUpdateResult.command -- this is the command from the app
             ]
     }
 
@@ -246,22 +238,22 @@ view model appViewResult =
                 1
             else
                 firstRowAdjusted
+
+        renderAppView =
+            print model.stdout appViewResult
     in
     { model = { model | firstRow = newFirstRow }
     , command = 
-        Cmd.batch
-            [ resetScreen model -- reset using the old model's firstRow!
-            , Stream.sendString model.stdout appViewResult
-            ]
+        resetScreen model
+            |> Task.andThen (\_ -> renderAppView)
+            |> Task.execute
     }
 
 
-resetScreen : Model model -> Cmd (Msg msg)
+resetScreen : Model model -> Task Never {}
 resetScreen model =
-        Cmd.batch
-            [ Stream.sendString model.stdout <| Ansi.moveTo model.firstRow 1
-            , Stream.sendString model.stdout <| Ansi.clearScreen Ansi.Down
-            ]
+    print model.stdout (Ansi.moveTo model.firstRow 1)
+        |> Task.andThen (\_ -> print model.stdout (Ansi.clearScreen Ansi.Down))
 
 
 -- INPUT
@@ -378,3 +370,13 @@ countLines string =
     string
         |> String.lines
         |> Array.length
+
+
+{-| Send string to stream and ignore error.
+
+Mimics the old Cmd behavior of Stream.sendString
+-}
+print : Stream -> String -> Task Never {}
+print stream string =
+    Stream.sendString stream string
+        |> Task.onError (\_ -> Task.succeed {})

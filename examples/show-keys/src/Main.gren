@@ -4,6 +4,7 @@ module Main exposing (main)
 import Ansi
 import Init
 import Node
+import Task
 import Tui
 
 
@@ -43,7 +44,7 @@ update msg model =
             , command = 
                 case input of
                     Tui.KeyChar "q" ->
-                        Node.exit
+                        Task.execute Node.exit
                     _ ->
                         Cmd.none
             }

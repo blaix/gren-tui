@@ -7,8 +7,8 @@
     "gren-version": "0.3.0",
     "dependencies": {
         "direct": {
-            "gren-lang/core": "4.0.2",
-            "gren-lang/node": "3.1.0",
+            "gren-lang/core": "local:../../core",
+            "gren-lang/node": "local:../../node",
             "blaix/gren-tui": "local:../.."
         },
         "indirect": {

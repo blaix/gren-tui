@@ -37,13 +37,13 @@ init env =
             }
         , command =
             Stream.sendString env.stdout Ansi.hideCursor 
+                |> Task.execute
         }
 
 
 type Msg
     = Tick Time.Posix
     | GotInput Tui.Input
-    | ReadyToExit
 
 
 update : Msg -> Model -> { model : Model, command : Cmd Msg }
@@ -59,17 +59,12 @@ update msg model =
             , command = 
                 case input of
                     Tui.KeyChar "q" ->
-                        Cmd.batch
-                            [ Stream.sendString model.stdout Ansi.showCursor
-                            , Task.perform (\_ -> ReadyToExit) (Task.succeed {})
-                            ]
+                        Stream.sendString model.stdout Ansi.showCursor
+                            |> Task.andThen (\_ -> Node.exit)
+                            |> Task.execute
+
                     _ ->
                         Cmd.none
-            }
-
-        ReadyToExit ->
-            { model = model
-            , command = Node.exit
             }
 
 
