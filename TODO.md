@@ -12,8 +12,6 @@
 * [X] == release 1.0 ==
 * [X] Fix bugs in the 1.0 release: https://github.com/blaix/gren-tui/issues?q=is%3Aissue+is%3Aopen+label%3Abug
 * [X] Use new task-based Stream, etc. to add guarantees (start with Cmd.batch usage where order is important)
-* [ ] Change onInput to a Maybe. Let's apps exit if they aren't listening for anything.
- * [ ] What does this mean for raw mode...?
 * [ ] How to make log messages visible (Debug.log won't work with gren-tui views)? add file logging?
 * [ ] Merge `next` branch after core and node package releases in June
 * [ ] == release 2.0 ==
