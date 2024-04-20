@@ -40,7 +40,7 @@ import Terminal
 {-| Type alias for Tui programs.
 -}
 type alias Program model msg =
-    Node.Program (Model model) (Msg msg)
+    Node.Program (Model model msg) (Msg msg)
 
 
 {-| Record alias for all the functions you need to run a Tui program.
@@ -82,11 +82,13 @@ defineProgram appConfig =
         }
 
 
-type alias Model appModel =
+type alias Model appModel appMsg =
     { stdin : Stream
     , stdout : Stream
     , stderr : Stream
     , appModel : appModel
+    , appReady : Bool
+    , cmdQueue : Array (Cmd (Msg appMsg))
     , terminalRows : Int
     , firstRow : Int
     }
@@ -94,7 +96,7 @@ type alias Model appModel =
 init : 
     AppConfig model msg 
     -> Node.Environment
-    -> Init.Task { model : Model model, command : Cmd (Msg msg) }
+    -> Init.Task { model : Model model msg, command : Cmd (Msg msg) }
 init appConfig env =
     Init.await (appConfig.init env) <| \app ->
         Init.await Terminal.initialize <| \termConfig ->
@@ -104,6 +106,8 @@ init appConfig env =
                     , stdout = env.stdout
                     , stderr = env.stderr
                     , appModel = app.model
+                    , appReady = False
+                    , cmdQueue = [ Cmd.map AppMsg app.command ]
                     , terminalRows = 0
                     , firstRow = 0
                     }
@@ -116,7 +120,6 @@ init appConfig env =
                             Cmd.batch
                                  [ Terminal.setStdInRawMode config.permission True
                                  , print env.stdout Ansi.getCursorReport |> Task.execute
-                                 , Cmd.map AppMsg app.command
                                  ]
                         }
 
@@ -138,8 +141,8 @@ type Msg appMsg
 update : 
     AppConfig appModel appMsg 
     -> Msg appMsg
-    -> Model appModel
-    -> { model : Model appModel, command : Cmd (Msg appMsg) }
+    -> Model appModel appMsg
+    -> { model : Model appModel appMsg, command : Cmd (Msg appMsg) }
 update appConfig msg model =
     case msg of
         GotStdin bytes ->
@@ -160,12 +163,24 @@ update appConfig msg model =
                     -- The first report is gren-tui getting initial cursor
                     -- position. Subsequent reports were requested by the app
                     -- and should trigger a normal app update.
-                    if model.firstRow == 0 then
+                    if not model.appReady then
                         let
                             newModel =
-                                { model | firstRow = row }
+                                { model 
+                                    | firstRow = row
+                                    , appReady = True
+                                    , cmdQueue = []
+                                }
+
+                            viewResult =
+                                view newModel (appConfig.view model.appModel)
                         in
-                        view newModel (appConfig.view model.appModel)
+                        { model = viewResult.model
+                        , command =
+                            model.cmdQueue
+                                |> Array.pushLast viewResult.command
+                                |> Cmd.batch
+                        }
 
                     else
                         appUpdate
@@ -186,8 +201,10 @@ update appConfig msg model =
 appUpdate :
     AppConfig appModel appMsg 
     -> appMsg
-    -> Model appModel
-    -> { model : Model appModel, command : Cmd (Msg appMsg) }
+    -> Model appModel appMsg
+    -> { model : Model appModel appMsg
+       , command : Cmd (Msg appMsg)
+       }
 appUpdate appConfig appMsg model =
     let
         appUpdateResult =
@@ -197,17 +214,27 @@ appUpdate appConfig appMsg model =
             view 
                 { model | appModel = appUpdateResult.model }
                 (appConfig.view appUpdateResult.model)
-    in
-    { model = viewResult.model
-    , command =
-        Cmd.batch
-            [ viewResult.command -- this is the command to print the view
-            , Cmd.map AppMsg appUpdateResult.command -- this is the command from the app
+
+        cmds =
+            [ viewResult.command
+            , Cmd.map AppMsg appUpdateResult.command
             ]
-    }
+    in
+    if model.appReady then
+        { model = viewResult.model
+        , command = Cmd.batch cmds
+        }
+    else
+        { model =
+            { viewResult.model
+                | cmdQueue = model.cmdQueue ++ cmds
+            }
+        , command =
+            Cmd.none
+        }
 
 
-subscriptions : (model -> Sub msg) -> Model model -> Sub (Msg msg)
+subscriptions : (model -> Sub msg) -> Model model msg -> Sub (Msg msg)
 subscriptions appSubs model =
     Sub.batch
         [ Sub.map AppMsg (appSubs model.appModel)
@@ -218,7 +245,7 @@ subscriptions appSubs model =
 -- VIEW
 
 
-view : Model model -> String -> { model : Model model, command : Cmd (Msg msg) }
+view : Model model msg -> String -> { model : Model model msg, command : Cmd (Msg msg) }
 view model appViewResult =
     let
         outputLines =
@@ -250,7 +277,7 @@ view model appViewResult =
     }
 
 
-resetScreen : Model model -> Task Never {}
+resetScreen : Model model msg -> Task Never {}
 resetScreen model =
     print model.stdout (Ansi.moveTo model.firstRow 1)
         |> Task.andThen (\_ -> print model.stdout (Ansi.clearScreen Ansi.Down))
