@@ -88,6 +88,7 @@ view model =
         , String.fromInt model.ticks
         , Ansi.wrapColor Ansi.Yellow "\nPress q to quit."
         , heartsString
+        , Ansi.hideCursor
         ]
 
 
