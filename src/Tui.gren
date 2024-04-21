@@ -32,15 +32,21 @@ import Node
 import Stream exposing (Stream)
 import Task exposing (Task)
 import Terminal
+import Time
 
 
 -- PROGRAM INIT
 
 
+framesPerSecond : Float
+framesPerSecond =
+    60.0
+
+
 {-| Type alias for Tui programs.
 -}
 type alias Program model msg =
-    Node.Program (Model model msg) (Msg msg)
+    Node.Program (Model model) (Msg msg)
 
 
 {-| Record alias for all the functions you need to run a Tui program.
@@ -76,29 +82,29 @@ defineProgram :
     } -> Program model msg
 defineProgram appConfig =
     Node.defineProgram
-        { init = init appConfig
+        { init = init appConfig.init
         , update = update appConfig
         , subscriptions = subscriptions appConfig.subscriptions
         }
 
 
-type alias Model appModel appMsg =
+type alias Model appModel =
     { stdin : Stream
     , stdout : Stream
     , stderr : Stream
     , appModel : appModel
     , appReady : Bool
-    , cmdQueue : Array (Cmd (Msg appMsg))
     , terminalRows : Int
     , firstRow : Int
     }
 
+
 init : 
-    AppConfig model msg 
+    (Node.Environment -> Init.Task { model : appModel, command : Cmd appMsg })
     -> Node.Environment
-    -> Init.Task { model : Model model msg, command : Cmd (Msg msg) }
-init appConfig env =
-    Init.await (appConfig.init env) <| \app ->
+    -> Init.Task { model : Model appModel, command : Cmd (Msg appMsg) }
+init appInit env =
+    Init.await (appInit env) <| \app ->
         Init.await Terminal.initialize <| \termConfig ->
             let
                 model =
@@ -107,7 +113,6 @@ init appConfig env =
                     , stderr = env.stderr
                     , appModel = app.model
                     , appReady = False
-                    , cmdQueue = [ Cmd.map AppMsg app.command ]
                     , terminalRows = 0
                     , firstRow = 0
                     }
@@ -136,19 +141,26 @@ init appConfig env =
 type Msg appMsg
     = GotStdin Bytes
     | AppMsg appMsg
+    | Tick Time.Posix
 
 
 update : 
     AppConfig appModel appMsg 
     -> Msg appMsg
-    -> Model appModel appMsg
-    -> { model : Model appModel appMsg, command : Cmd (Msg appMsg) }
+    -> Model appModel
+    -> { model : Model appModel, command : Cmd (Msg appMsg) }
 update appConfig msg model =
     case msg of
         GotStdin bytes ->
             let
                 input =
                     bytesToInput bytes
+
+                doAppUpdate =
+                    appUpdate
+                        appConfig.update
+                        (appConfig.onInput input)
+                        model
             in
             case input of
                 CtrlC ->
@@ -161,93 +173,73 @@ update appConfig msg model =
 
                 CursorReport row col ->
                     -- The first report is gren-tui getting initial cursor
-                    -- position. Subsequent reports were requested by the app
-                    -- and should trigger a normal app update.
-                    if not model.appReady then
-                        let
-                            newModel =
-                                { model 
-                                    | firstRow = row
-                                    , appReady = True
-                                    , cmdQueue = []
-                                }
-
-                            viewResult =
-                                view newModel (appConfig.view model.appModel)
-                        in
-                        { model = viewResult.model
+                    -- position. Subsequent reports were requested by the app.
+                    if model.appReady then
+                        doAppUpdate
+                    else
+                        { model =
+                            { model
+                                | firstRow = row
+                                , appReady = True
+                            }
                         , command =
-                            model.cmdQueue
-                                |> Array.pushLast viewResult.command
-                                |> Cmd.batch
+                            print model.stdout (Ansi.clearLine Ansi.Up)
+                                |> Task.execute
                         }
 
-                    else
-                        appUpdate
-                            appConfig 
-                            (appConfig.onInput input)
-                            model
-
                 _ ->
-                    appUpdate
-                        appConfig 
-                        (appConfig.onInput input)
-                        model
+                    doAppUpdate
 
         AppMsg appMsg ->
-            appUpdate appConfig appMsg model
+            appUpdate appConfig.update appMsg model
+
+        Tick _ ->
+            view appConfig.view model
 
 
 appUpdate :
-    AppConfig appModel appMsg 
+    (appMsg -> appModel -> { model : appModel, command : Cmd appMsg })
     -> appMsg
-    -> Model appModel appMsg
-    -> { model : Model appModel appMsg
-       , command : Cmd (Msg appMsg)
-       }
-appUpdate appConfig appMsg model =
+    -> Model appModel
+    -> { model : Model appModel, command : Cmd (Msg appMsg) }
+appUpdate appUpdate_ appMsg model =
     let
         appUpdateResult =
-            appConfig.update appMsg model.appModel
+            appUpdate_ appMsg model.appModel
 
-        viewResult =
-            view 
-                { model | appModel = appUpdateResult.model }
-                (appConfig.view appUpdateResult.model)
-
-        cmds =
-            [ viewResult.command
-            , Cmd.map AppMsg appUpdateResult.command
-            ]
+        newModel =
+            { model | appModel = appUpdateResult.model }
     in
-    if model.appReady then
-        { model = viewResult.model
-        , command = Cmd.batch cmds
-        }
-    else
-        { model =
-            { viewResult.model
-                | cmdQueue = model.cmdQueue ++ cmds
-            }
-        , command =
-            Cmd.none
-        }
+    { model = newModel
+    , command = 
+        Cmd.map AppMsg appUpdateResult.command
+    }
 
 
-subscriptions : (model -> Sub msg) -> Model model msg -> Sub (Msg msg)
+subscriptions : (appModel -> Sub appMsg) -> Model appModel -> Sub (Msg appMsg)
 subscriptions appSubs model =
     Sub.batch
-        [ Sub.map AppMsg (appSubs model.appModel)
-        , Stream.listen model.stdin GotStdin
+        [ Stream.listen model.stdin GotStdin
+        , Sub.map AppMsg (appSubs model.appModel)
+        , if model.appReady then
+            Time.every (1000 / framesPerSecond) Tick
+          else
+            Sub.none
         ]
 
 
 -- VIEW
 
 
-view : Model model msg -> String -> { model : Model model msg, command : Cmd (Msg msg) }
-view model appViewResult =
+view : 
+    (appModel -> String)
+    -> Model appModel 
+    -> { model : Model appModel, command : Cmd (Msg appMsg) }
+view appView model =
     let
+        appViewResult =
+            appView model.appModel
+
         outputLines =
             countLines appViewResult
 
@@ -277,7 +269,7 @@ view model appViewResult =
     }
 
 
-resetScreen : Model model msg -> Task Never {}
+resetScreen : Model model -> Task Never {}
 resetScreen model =
     print model.stdout (Ansi.moveTo model.firstRow 1)
         |> Task.andThen (\_ -> print model.stdout (Ansi.clearScreen Ansi.Down))

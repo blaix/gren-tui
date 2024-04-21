@@ -12,6 +12,8 @@
 * [X] == release 1.0 ==
 * [X] Fix bugs in the 1.0 release: https://github.com/blaix/gren-tui/issues?q=is%3Aissue+is%3Aopen+label%3Abug
 * [X] Use new task-based Stream, etc. to add guarantees (start with Cmd.batch usage where order is important)
+* [X] Decouple view from update (just render like a game loop) to reduce complicated sequencing logic and fix rendering bugs
+* [ ] Test an app that has a conditional subscription
 * [ ] How to make log messages visible (Debug.log won't work with gren-tui views)? add file logging?
 * [ ] Animation example?
 * [ ] Merge `next` branch after core and node package releases in June
