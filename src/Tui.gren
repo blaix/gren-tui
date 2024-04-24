@@ -46,7 +46,7 @@ framesPerSecond =
 {-| Type alias for Tui programs.
 -}
 type alias Program model msg =
-    Node.Program (Model model) (Msg msg)
+    Node.Program (Model model msg) (Msg msg)
 
 
 {-| Record alias for all the functions you need to run a Tui program.
@@ -88,11 +88,12 @@ defineProgram appConfig =
         }
 
 
-type alias Model appModel =
+type alias Model appModel appMsg =
     { stdin : Stream
     , stdout : Stream
     , stderr : Stream
     , appModel : appModel
+    , appInitCmd : Maybe (Cmd appMsg)
     , appReady : Bool
     , terminalRows : Int
     , firstRow : Int
@@ -102,7 +103,7 @@ type alias Model appModel =
 init : 
     (Node.Environment -> Init.Task { model : appModel, command : Cmd appMsg })
     -> Node.Environment
-    -> Init.Task { model : Model appModel, command : Cmd (Msg appMsg) }
+    -> Init.Task { model : Model appModel appMsg, command : Cmd (Msg appMsg) }
 init appInit env =
     Init.await (appInit env) <| \app ->
         Init.await Terminal.initialize <| \termConfig ->
@@ -112,6 +113,7 @@ init appInit env =
                     , stdout = env.stdout
                     , stderr = env.stderr
                     , appModel = app.model
+                    , appInitCmd = Just app.command
                     , appReady = False
                     , terminalRows = 0
                     , firstRow = 0
@@ -147,8 +149,8 @@ type Msg appMsg
 update : 
     AppConfig appModel appMsg 
     -> Msg appMsg
-    -> Model appModel
-    -> { model : Model appModel, command : Cmd (Msg appMsg) }
+    -> Model appModel appMsg
+    -> { model : Model appModel appMsg, command : Cmd (Msg appMsg) }
 update appConfig msg model =
     case msg of
         GotStdin bytes ->
@@ -194,14 +196,31 @@ update appConfig msg model =
             appUpdate appConfig.update appMsg model
 
         Tick _ ->
-            view appConfig.view model
+            let
+                viewResult =
+                    view appConfig.view model
+            in
+            -- Don't run the app's init cmd until we're ready
+            case { ready = model.appReady, appInit = model.appInitCmd } of
+                { ready = True, appInit = Just cmd } ->
+                    { model =
+                        { viewResult.model | appInitCmd = Nothing }
+                    , command =
+                        Cmd.batch
+                            [ viewResult.command
+                            , Cmd.map AppMsg cmd
+                            ]
+                    }
+
+                _ ->
+                    viewResult
 
 
 appUpdate :
     (appMsg -> appModel -> { model : appModel, command : Cmd appMsg })
     -> appMsg
-    -> Model appModel
-    -> { model : Model appModel, command : Cmd (Msg appMsg) }
+    -> Model appModel appMsg
+    -> { model : Model appModel appMsg, command : Cmd (Msg appMsg) }
 appUpdate appUpdate_ appMsg model =
     let
         appUpdateResult =
@@ -216,7 +235,7 @@ appUpdate appUpdate_ appMsg model =
     }
 
 
-subscriptions : (appModel -> Sub appMsg) -> Model appModel -> Sub (Msg appMsg)
+subscriptions : (appModel -> Sub appMsg) -> Model appModel appMsg -> Sub (Msg appMsg)
 subscriptions appSubs model =
     Sub.batch
         [ Stream.listen model.stdin GotStdin
@@ -233,8 +252,8 @@ subscriptions appSubs model =
 
 view : 
     (appModel -> String)
-    -> Model appModel 
-    -> { model : Model appModel, command : Cmd (Msg appMsg) }
+    -> Model appModel appMsg
+    -> { model : Model appModel appMsg, command : Cmd (Msg appMsg) }
 view appView model =
     let
         appViewResult =
@@ -269,7 +288,7 @@ view appView model =
     }
 
 
-resetScreen : Model model -> Task Never {}
+resetScreen : Model appModel appMsg -> Task Never {}
 resetScreen model =
     print model.stdout (Ansi.moveTo model.firstRow 1)
         |> Task.andThen (\_ -> print model.stdout (Ansi.clearScreen Ansi.Down))

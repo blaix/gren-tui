@@ -71,27 +71,32 @@ update msg model =
 view : Model -> String
 view model =
     let
-        numHearts =
-            Math.modBy 9 model.ticks
+        barLength =
+            Math.modBy 36 model.ticks
 
-        hearts =
-            Array.repeat numHearts "🩷"
+        bar =
+            String.repeat barLength "█"
 
-        heartsString =
-            case hearts of
-                [] -> "" -- Test changing number of output lines
-                _ -> ["\n"] ++ hearts |> String.join ""
+        count =
+            toFloat model.ticks / 10
+                |> Math.round
+                |> String.fromInt
 
+        -- Test changing number of output lines
+        maybeExtraLine =
+            if Math.modBy 2 model.ticks == 0 then
+                "\n"
+            else
+                ""
     in
-    String.join ""
-        [ "How high can I count? Let's see: "
-        , String.fromInt model.ticks
-        , Ansi.wrapColor Ansi.Yellow "\nPress q to quit."
-        , heartsString
-        , Ansi.hideCursor
+    String.join "\n"
+        [ "\nHow high can I count? Let's see: " ++ count
+        , Ansi.wrapColor Ansi.Magenta bar
+        , Ansi.wrapColor Ansi.Yellow "Press q to quit."
+        , maybeExtraLine
         ]
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Time.every 1000 Tick
+    Time.every 40 Tick
