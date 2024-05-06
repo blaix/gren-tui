@@ -74,6 +74,11 @@ subscriptions model =
 
 ## Usage
 
+**UPDATE**: Version 1 of gren-tui was very buggy.
+So after [the package site was reset](https://gren.zulipchat.com/#narrow/stream/318902-dev-updates/topic/Packages.20site.20has.20been.20reset), I did not re-publish.
+_Right after the next version of core and node [are released in June](https://gren.zulipchat.com/#narrow/stream/318902-dev-updates/topic/May.201st.2C.202024), I will publish a much nicer v2._
+At which point, the instructions below will be valid again:
+
 If you haven't already, [install gren](https://gren-lang.org/install) and create a gren node application:
 
 ```
