@@ -124,10 +124,9 @@ init appInit env =
                     Just config ->
                         { model = { model | terminalRows = config.rows }
                         , command =
-                            Cmd.batch
-                                 [ Terminal.setStdInRawMode config.permission True
-                                 , print env.stdout Ansi.getCursorReport |> Task.execute
-                                 ]
+                            Terminal.setStdInRawMode config.permission True
+                                |> Task.andThen (\_ -> print env.stdout Ansi.getCursorReport)
+                                |> Task.execute
                         }
 
                     Nothing ->
