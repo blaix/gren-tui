@@ -1,5 +1,7 @@
 # Gren TUI
 
+**Will not be available as a gren package until shortly after the next release of the core and node packages (June 2024).**
+
 Build terminal user interfaces using [The Elm Architecture](https://guide.elm-lang.org/architecture/) (Model/View/Update) and helpers to control the screen, cursor, and text.
 
 Track state in your model, listen for user input to update that state, and render your UI as a string representation of the current state.

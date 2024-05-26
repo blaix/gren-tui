@@ -6,12 +6,12 @@
     "license": "BSD-3-Clause",
     "version": "1.0.0",
     "exposed-modules": [
-        "Ansi",
         "Tui"
     ],
     "gren-version": "0.3.0 <= v < 0.4.0",
     "dependencies": {
         "gren-lang/core": "4.0.2 <= v < 5.0.0",
-        "gren-lang/node": "3.1.0 <= v < 4.0.0"
+        "gren-lang/node": "3.1.0 <= v < 4.0.0",
+        "blaix/gren-ansi": "1.0.0 <= v < 2.0.0"
     }
 }

@@ -1,5 +1,8 @@
 {
   "private": true,
+  "scripts": {
+    "doc-preview": "npx gren-doc-preview"
+  },
   "dependencies": {
     "gren-lang": "^0.3.0"
   },

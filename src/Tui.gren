@@ -383,7 +383,7 @@ checkCursorReport string =
                 |> Array.flatten
     in
     case parts of
-        ["\u{001b}", row, col, ""] ->
+        [ "\u{001b}", row, col, "" ] ->
             let
                 parsed =
                     { row = String.toInt row
