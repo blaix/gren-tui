@@ -337,7 +337,7 @@ bytesToInput bytes =
         CtrlC
     else
         bytes
-            |> Bytes.width
+            |> Bytes.length
             |> Bytes.Decode.string
             |> (\decoder -> Bytes.Decode.decode decoder bytes)
             |> Maybe.map stringToInput
