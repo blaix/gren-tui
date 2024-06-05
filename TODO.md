@@ -14,7 +14,8 @@
 * [X] Use new task-based Stream, etc. to add guarantees (start with Cmd.batch usage where order is important)
 * [X] Decouple view from update (just render like a game loop) to reduce complicated sequencing logic and fix rendering bugs
 * [X] Pull ansi into separate package
-* [ ] Split examples into v1 and next
+* [X] Move examples under next/ (not bothering with busted v1)
+* [ ] Add arrow-key-movement example
 * [ ] Test an app that has a conditional subscription
 * [ ] How to make log messages visible (Debug.log won't work with gren-tui views)? add file logging?
 * [ ] Animation example?

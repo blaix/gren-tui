@@ -7,10 +7,10 @@
     "gren-version": "0.3.0",
     "dependencies": {
         "direct": {
-            "gren-lang/core": "local:../../../gren/core",
-            "gren-lang/node": "local:../../../gren/node",
-            "blaix/gren-tui": "local:../..",
-            "blaix/gren-ansi": "local:../../../gren-ansi"
+            "gren-lang/core": "local:../../../../gren/core",
+            "gren-lang/node": "local:../../../../gren/node",
+            "blaix/gren-tui": "local:../../..",
+            "blaix/gren-ansi": "local:../../../../gren-ansi"
         },
         "indirect": {
             "gren-lang/url": "3.0.0"
