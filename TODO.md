@@ -15,7 +15,9 @@
 * [X] Decouple view from update (just render like a game loop) to reduce complicated sequencing logic and fix rendering bugs
 * [X] Pull ansi into separate package
 * [X] Move examples under next/ (not bothering with busted v1)
+* [ ] Publish gren-array2d (API like LesleyLai/elm-grid)
 * [ ] Add arrow-key-movement example
+* [ ] Publish video making a "eat the stars, avoid the snakes" game
 * [ ] Test an app that has a conditional subscription
 * [ ] How to make log messages visible (Debug.log won't work with gren-tui views)? add file logging?
 * [ ] Animation example?
