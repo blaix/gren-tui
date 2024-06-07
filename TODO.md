@@ -15,6 +15,7 @@
 * [X] Decouple view from update (just render like a game loop) to reduce complicated sequencing logic and fix rendering bugs
 * [X] Pull ansi into separate package
 * [X] Move examples under next/ (not bothering with busted v1)
+* [ ] Add hello-world example. Reference in README as starting template?
 * [ ] Publish gren-array2d (API like LesleyLai/elm-grid)
 * [ ] Add arrow-key-movement example
 * [ ] Publish video making a "eat the stars, avoid the snakes" game
