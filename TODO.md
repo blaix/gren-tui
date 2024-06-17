@@ -16,7 +16,9 @@
 * [X] Pull ansi into separate package
 * [X] Move examples under next/ (not bothering with busted v1)
 * [X] Publish gren-array2d
-* [ ] Add arrow-key-movement example
+* [X] Add arrow-key-movement example (game)
+* [ ] Remove Ansi from README example (it's a separate package now)
+* [ ] Replace vendored node/core packages after 6/24 release
 * [ ] == Release 2.0 ==
 * [ ] Publish video making a "eat the stars, avoid the snakes" game
 * [ ] Test an app that has a conditional subscription
