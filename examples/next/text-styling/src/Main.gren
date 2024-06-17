@@ -56,6 +56,9 @@ view model =
         , Ansi.wrapFontWeight Ansi.Faint <| Ansi.wrapColor Ansi.Magenta "Some faint magenta text"
         , Ansi.wrapItalic <| Ansi.wrapUnderline "Some italic underline text"
         , Ansi.wrapStrikeThrough <| Ansi.wrapColor Ansi.Cyan "Some strikethrough cyan text"
+
+        -- Test that rendering still works when cursor isn't in last position
+        , Ansi.moveUpLines 2
         ]
 
 
