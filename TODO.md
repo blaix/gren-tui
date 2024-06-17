@@ -15,14 +15,13 @@
 * [X] Decouple view from update (just render like a game loop) to reduce complicated sequencing logic and fix rendering bugs
 * [X] Pull ansi into separate package
 * [X] Move examples under next/ (not bothering with busted v1)
-* [ ] Publish gren-array2d (API like LesleyLai/elm-grid)
+* [X] Publish gren-array2d
 * [ ] Add arrow-key-movement example
+* [ ] == Release 2.0 ==
 * [ ] Publish video making a "eat the stars, avoid the snakes" game
 * [ ] Test an app that has a conditional subscription
 * [ ] How to make log messages visible (Debug.log won't work with gren-tui views)? add file logging?
 * [ ] Animation example?
-* [ ] Merge `next` branch after core and node package releases in June
-* [ ] == release 2.0 ==
 * [ ] How to have a nice way to read a whole line of input, even in raw mode?
 * [ ] readline support?
 * [ ] `Tui.UI.fullscreen`
