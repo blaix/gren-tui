@@ -7,7 +7,7 @@
     "gren-version": "0.3.0",
     "dependencies": {
         "direct": {
-            "blaix/gren-ansi": "local:../../../../gren-ansi",
+            "blaix/gren-ansi": "1.0.0",
             "blaix/gren-array2d": "2.0.0",
             "blaix/gren-tui": "local:../../..",
             "gren-lang/core": "local:../../../../gren/core",
