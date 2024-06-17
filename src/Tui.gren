@@ -10,8 +10,6 @@ module Tui exposing
 Use this module to define a command-line program that uses [the elm architecture](https://guide.elm-lang.org/architecture/).
 See [`defineProgram`](#defineProgram) for details, or one of the [examples](https://github.com/blaix/gren-tui/tree/main/examples).
 
-If you want total control of your program and only need ANSI escape sequences, see [`Ansi`](Ansi).
-
 ## Defining your program
 
 @docs defineProgram, Program
