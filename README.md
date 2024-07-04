@@ -88,12 +88,6 @@ Install the `gren-tui` package:
 gren package install blaix/gren-tui
 ```
 
-You may also want [gren-ansi](https://packages.gren-lang.org/package/blaix/gren-ansi/version/latest/overview) for controlling the cursor and text-styling:
-
-```
-gren package install blaix/gren-ansi
-```
-
 Then create a `src/Main.gren` file like the one above,
 or see the [examples/](https://github.com/blaix/gren-tui/tree/main/examples)
 and [api docs](https://packages.gren-lang.org/package/blaix/gren-tui) for help creating your own.
@@ -103,3 +97,12 @@ Then compile and run with:
 gren make src/Main.gren
 node app
 ```
+
+## Other helpful packages
+
+These packages are useful in a gren-tui application:
+
+* [gren-ansi](https://packages.gren-lang.org/package/blaix/gren-ansi/version/latest/overview) for controlling the cursor and text-styling
+* [gren-array2d](https://packages.gren-lang.org/package/blaix/gren-array2d/version/latest/overview) to manipulate your view as a 2-D grid.
+
+See [the game example](https://github.com/blaix/gren-tui/tree/main/examples/v2/game) for an app that uses both of these.
