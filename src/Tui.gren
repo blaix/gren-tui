@@ -304,9 +304,9 @@ your terminal program is running in "raw mode"). For example, if someone types
 and then another message with `KeyChar "i"`.
 
 `CursorReport` is a special input type you will receive if you include
-[`Ansi.getCursorReport`](Ansi.getCursorReport) in your output. Use this to get
-the current row and column position of the cursor in the terminal (where the
-upper-left corner of the window is row 1 column 1).
+[`Ansi.getCursorReport`](https://packages.gren-lang.org/package/blaix/gren-ansi/version/2/module/Ansi#getCursorReport)
+in your output. Use this to get the current row and column position of the cursor in the terminal
+(where the upper-left corner of the window is row 1 column 1).
 
 `CtrlC` is the "abort" signal and gets intercepted by gren-tui to exit your
 program. For now you can't depend on receiving this in your app.
