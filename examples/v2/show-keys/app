@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+if (parseInt(process.versions.node.split('.')[0]) < 20) {
+  throw new Error("This program requires Node v20 or later to run")
+}
+
 try {
 (function(scope){
 'use strict';
@@ -2646,8 +2650,10 @@ var $gren_lang$node$Node$defineProgram = function(config) {
 var $gren_lang$node$Internal$Init$Task = function (a) {
 	return { $: 'Task', a: a };
 };
-var $gren_lang$core$Basics$composeL = F3(function(g, f, x) {
-		return g(f(x));
+var $gren_lang$core$Basics$composeL = F2(function(g, f) {
+		return function(x) {
+			return g(f(x));
+		};
 	});
 var $gren_lang$node$Init$unwrap = function(_v0) {
 	var task = _v0.a;
@@ -2978,7 +2984,7 @@ var _Stream_attachListener = F2(function (stream, sendToApp) {
   return _Scheduler_binding(function (_callback) {
     var listener = function (data) {
       _Scheduler_rawSpawn(
-        sendToApp(new DataView(data.buffer, data.byteOffset, data.length))
+        sendToApp(new DataView(data.buffer, data.byteOffset, data.byteLength))
       );
     };
 
@@ -3790,7 +3796,6 @@ var $author$project$Main$update = F2(function(msg, model) {
 		}(), model: { keypress: input } };
 	});
 var $blaix$gren_ansi$Ansi$Yellow = { $: 'Yellow' };
-var $blaix$gren_ansi$Ansi$hideCursor = _Utils_ap($blaix$gren_ansi$Ansi$prefix, '?25l');
 var $gren_lang$core$Debug$toString = _Debug_toString;
 var $blaix$gren_ansi$Ansi$NoColor = { $: 'NoColor' };
 var $blaix$gren_ansi$Ansi$colorCode = function(color_) {
@@ -3822,7 +3827,7 @@ var $blaix$gren_ansi$Ansi$wrapColor = F2(function(color, string) {
 		return A2($gren_lang$core$String$join, '', [ $blaix$gren_ansi$Ansi$setColor(color), string, $blaix$gren_ansi$Ansi$setColor($blaix$gren_ansi$Ansi$NoColor) ]);
 	});
 var $author$project$Main$view = function(model) {
-	return A2($gren_lang$core$String$join, '', [ _Utils_ap('You pressed: ', $gren_lang$core$Debug$toString(model.keypress)), A2($blaix$gren_ansi$Ansi$wrapColor, $blaix$gren_ansi$Ansi$Yellow, '\nPress q to quit.'), $blaix$gren_ansi$Ansi$hideCursor ]);
+	return A2($gren_lang$core$String$join, '', [ _Utils_ap('You pressed: ', $gren_lang$core$Debug$toString(model.keypress)), A2($blaix$gren_ansi$Ansi$wrapColor, $blaix$gren_ansi$Ansi$Yellow, '\nPress q to quit.') ]);
 };
 var $author$project$Main$main = $blaix$gren_tui$Tui$defineProgram({ init: $author$project$Main$init, onInput: $author$project$Main$GotInput, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view });
 _Platform_export({'Main':{'init':$author$project$Main$main($gren_lang$core$Json$Decode$succeed({  }))(0)}});}(this.module ? this.module.exports : this));

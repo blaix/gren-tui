@@ -55,7 +55,6 @@ view model =
     String.join ""
         [ "You pressed: " ++ (Debug.toString model.keypress)
         , Ansi.wrapColor Ansi.Yellow "\nPress q to quit."
-        , Ansi.hideCursor
         ]
 
 

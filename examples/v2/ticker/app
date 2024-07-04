@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+if (parseInt(process.versions.node.split('.')[0]) < 20) {
+  throw new Error("This program requires Node v20 or later to run")
+}
+
 try {
 (function(scope){
 'use strict';
@@ -2646,8 +2650,10 @@ var $gren_lang$core$Basics$identity = function(x) {
 var $gren_lang$node$Internal$Init$Task = function (a) {
 	return { $: 'Task', a: a };
 };
-var $gren_lang$core$Basics$composeL = F3(function(g, f, x) {
-		return g(f(x));
+var $gren_lang$core$Basics$composeL = F2(function(g, f) {
+		return function(x) {
+			return g(f(x));
+		};
 	});
 var $gren_lang$node$Init$unwrap = function(_v0) {
 	var task = _v0.a;
@@ -2978,7 +2984,7 @@ var _Stream_attachListener = F2(function (stream, sendToApp) {
   return _Scheduler_binding(function (_callback) {
     var listener = function (data) {
       _Scheduler_rawSpawn(
-        sendToApp(new DataView(data.buffer, data.byteOffset, data.length))
+        sendToApp(new DataView(data.buffer, data.byteOffset, data.byteLength))
       );
     };
 

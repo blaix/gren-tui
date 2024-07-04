@@ -3,10 +3,10 @@ nc := '\033[0m' # No Color
 
 example NAME:
   @just header "RUNNING EXAMPLE: {{NAME}}"
-  cd examples/next/{{NAME}} && gren make src/Main.gren && node app
+  cd examples/v2/{{NAME}} && gren make src/Main.gren && node app
 
 examples:
-  for example in `ls examples/next`; do just example $example; done
+  for example in `ls examples/v2`; do just example $example; done
 
 header MSG:
   @echo -e "\n{{green}}{{MSG}}{{nc}}"

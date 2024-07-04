@@ -2,16 +2,16 @@
     "type": "package",
     "platform": "node",
     "name": "blaix/gren-tui",
-    "summary": "Terminal UIs with Model/View/Update & helpers for the screen, cursor, and text.",
+    "summary": "Terminal UIs and Games with The Elm Architecture (Model/View/Update)",
     "license": "BSD-3-Clause",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "exposed-modules": [
         "Tui"
     ],
-    "gren-version": "0.3.0 <= v < 0.4.0",
+    "gren-version": "0.4.4 <= v < 0.5.0",
     "dependencies": {
-        "gren-lang/core": "4.0.2 <= v < 5.0.0",
-        "gren-lang/node": "3.1.0 <= v < 4.0.0",
-        "blaix/gren-ansi": "1.0.0 <= v < 2.0.0"
+        "gren-lang/core": "5.0.1 <= v < 6.0.0",
+        "gren-lang/node": "4.0.0 <= v < 5.0.0",
+        "blaix/gren-ansi": "2.0.0 <= v < 3.0.0"
     }
 }
