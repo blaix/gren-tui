@@ -74,7 +74,10 @@ subscriptions model =
 
 ## Usage
 
-If you haven't already, [install gren](https://gren-lang.org/install) and create a gren node application:
+If you haven't already, [install gren](https://gren-lang.org/install)
+and take a look at [the book](https://gren-lang.org/book/) if you want to get up to speed with the language.
+
+Then create a gren node application:
 
 ```
 mkdir myapp
@@ -88,9 +91,14 @@ Install the `gren-tui` package:
 gren package install blaix/gren-tui
 ```
 
-Then create a `src/Main.gren` file like the one above,
-or see the [examples/](https://github.com/blaix/gren-tui/tree/main/examples)
-and [api docs](https://packages.gren-lang.org/package/blaix/gren-tui) for help creating your own.
+(see next section for other packages you may want to install)
+
+Then create a `src/Main.gren` file. For a starting point, see:
+
+* The example above.
+* The [examples/](https://github.com/blaix/gren-tui/tree/main/examples) directory.
+* The [API docs](https://packages.gren-lang.org/package/blaix/gren-tui).
+
 Then compile and run with:
 
 ```
@@ -106,3 +114,11 @@ These packages are useful in a gren-tui application:
 * [gren-array2d](https://packages.gren-lang.org/package/blaix/gren-array2d/version/latest/overview) to manipulate your view as a 2-D grid.
 
 See [the game example](https://github.com/blaix/gren-tui/tree/main/examples/v2/game) for an app that uses both of these.
+
+## Getting Help or Updates
+
+If you have questions, suggestions, find a bug, or want to follow updates to the package, you can:
+
+* Follow me on mastodon at [@blaix@hachyderm.io](https://hachyderm.io/@blaix).
+* Join the [`#gren-tui`](https://discord.com/channels/1250584603085766677/1250587348429832264) channel on the gren discord.
+* File an [issue](https://github.com/blaix/gren-tui/issues) on github.
