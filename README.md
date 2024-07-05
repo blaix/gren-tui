@@ -120,5 +120,5 @@ See [the game example](https://github.com/blaix/gren-tui/tree/main/examples/v2/g
 If you have questions, suggestions, find a bug, or want to follow updates to the package, you can:
 
 * Follow me on mastodon at [@blaix@hachyderm.io](https://hachyderm.io/@blaix).
-* Join the [`#gren-tui`](https://discord.com/channels/1250584603085766677/1250587348429832264) channel on the gren discord.
+* Join the [`#gren-tui`](https://discord.gg/etMAVy2YKf) channel on the gren discord.
 * File an [issue](https://github.com/blaix/gren-tui/issues) on github.
