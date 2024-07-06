@@ -19,8 +19,13 @@
 * [X] Add arrow-key-movement example (game)
 * [X] Remove Ansi from README example (it's a separate package now)
 * [X] Replace vendored node/core packages after 6/24 release
-* [ ] == Release 2.0 ==
-* [ ] Publish video making a "eat the stars, avoid the snakes" game
+* [X] == Release 2.0 ==
+* [X] Add `Escape` variant to `Input`
+* [ ] Add a `UI` helper: init with `env` and save in your model. `UI.toString` in your view
+* [ ] `UI.fullscreen`
+* [ ] `UI.alignX` and `UI.alignY`
+* [ ] == Release 3.0 ==
+* [ ] Publish post or video making a dungeon crawler
 * [ ] Test an app that has a conditional subscription
 * [ ] How to make log messages visible (Debug.log won't work with gren-tui views)? add file logging?
 * [ ] Animation example?
