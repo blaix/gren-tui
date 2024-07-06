@@ -24,20 +24,20 @@
 * [ ] Add a `UI` helper: init with `env` and save in your model. `UI.toString` in your view
 * [ ] `UI.fullscreen`
 * [ ] `UI.alignX` and `UI.alignY`
+* [ ] `UI.center`
+* [ ] animation example: rotating ascii art in center of screen
+* [ ] Demos with [asciinema][2] or [freeze][3]
 * [ ] == Release 3.0 ==
 * [ ] Publish post or video making a dungeon crawler
 * [ ] Test an app that has a conditional subscription
 * [ ] How to make log messages visible (Debug.log won't work with gren-tui views)? add file logging?
-* [ ] Animation example?
 * [ ] How to have a nice way to read a whole line of input, even in raw mode?
 * [ ] readline support?
-* [ ] `Tui.UI.fullscreen`
 * [ ] Cross platform considerations? (e.g. is `clearScreen` ok on win?)
 * [ ] Built-in UI components (see [Bubbles][1] source code for reference):
     * [ ] Prompt
     * [ ] Choice
     * [ ] LoadingSpinner
-* [ ] Demos with [asciinema][2] or [freeze][3]
 
 [1]: https://github.com/charmbracelet/bubbles
 [2]: https://docs.asciinema.org/getting-started/
