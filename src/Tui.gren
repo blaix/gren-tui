@@ -316,6 +316,7 @@ type Input
     | Tab
     | Space
     | Return
+    | Escape
     | ArrowUp
     | ArrowDown
     | ArrowLeft
@@ -356,6 +357,8 @@ stringToInput string =
                 ArrowRight
             else if string == Ansi.arrowLeft then
                 ArrowLeft
+            else if string == Ansi.escape then
+                Escape
             else if string == "\t" then
                 Tab
             else if string == "\r" then

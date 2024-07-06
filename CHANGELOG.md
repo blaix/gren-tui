@@ -1,3 +1,7 @@
+## Next
+
+* Add `Escape` variant to `Tui.Input`
+
 ## 2.0.1 (2024-07-04)
 
 * Doc fixes
