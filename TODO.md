@@ -28,7 +28,7 @@
 * [ ] animation example: rotating ascii art in center of screen
 * [ ] Demos with [asciinema][2] or [freeze][3]
 * [ ] == Release 3.0 ==
-* [ ] Publish post or video making a dungeon crawler
+* [ ] Publish post or video making a dungeon crawler. Look at the UI of Robin's elm-warrior :)
 * [ ] Test an app that has a conditional subscription
 * [ ] How to make log messages visible (Debug.log won't work with gren-tui views)? add file logging?
 * [ ] How to have a nice way to read a whole line of input, even in raw mode?
