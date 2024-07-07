@@ -23,7 +23,7 @@
 * [X] Add `Escape` variant to `Input`
 * [ ] Add a `UI` helper: init with `env` and save in your model. `UI.toString` in your view
     * [ ] Work like elm-ui with row, col functions, attributes like backgroundColor, etc?
-    * [ ] Look at bubbles and lipgloss from charm.sh
+    * [ ] Look at charm.sh libraries (esp. bubbles & lipgloss): https://github.com/charmbracelet/bubbletea?tab=readme-ov-file#libraries-we-use-with-bubble-tea
     * [ ] Look at the font stuff in this SO answer: https://stackoverflow.com/a/33206814
 * [ ] animation example: rotating ascii art in center of screen
 * [ ] Demos with [asciinema][2] or [freeze][3]
