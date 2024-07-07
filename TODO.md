@@ -22,9 +22,9 @@
 * [X] == Release 2.0 ==
 * [X] Add `Escape` variant to `Input`
 * [ ] Add a `UI` helper: init with `env` and save in your model. `UI.toString` in your view
-* [ ] `UI.fullscreen`
-* [ ] `UI.alignX` and `UI.alignY`
-* [ ] `UI.center`
+    * [ ] Work like elm-ui with row, col functions, attributes like backgroundColor, etc?
+    * [ ] Look at bubbles and lipgloss from charm.sh
+    * [ ] Look at the font stuff in this SO answer: https://stackoverflow.com/a/33206814
 * [ ] animation example: rotating ascii art in center of screen
 * [ ] Demos with [asciinema][2] or [freeze][3]
 * [ ] == Release 3.0 ==
