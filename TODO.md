@@ -22,13 +22,16 @@
 * [X] == Release 2.0 ==
 * [X] Add `Escape` variant to `Input`
 * [ ] Add a `UI` helper: init with `env` and save in your model. `UI.toString` in your view
-    * [ ] Work like elm-ui with row, col functions, attributes like backgroundColor, etc?
+    * [ ] Work like elm-ui with row, col functions, attributes like backgroundColor, etc
     * [ ] Look at charm.sh libraries (esp. bubbles & lipgloss): https://github.com/charmbracelet/bubbletea?tab=readme-ov-file#libraries-we-use-with-bubble-tea
     * [ ] Look at the font stuff in this SO answer: https://stackoverflow.com/a/33206814
+    * [ ] Look at wolfadex/elm-ansi for string terminal width
+    * [ ] Decide on module vs separate package (will escape codes mess up output in browser...?)
 * [ ] animation example: rotating ascii art in center of screen
 * [ ] Demos with [asciinema][2] or [freeze][3]
 * [ ] == Release 3.0 ==
 * [ ] Publish post or video making a dungeon crawler. Look at the UI of Robin's elm-warrior :)
+* [ ] Try gren-tui for prettynice cli again (with load spinner widgets...?)
 * [ ] Test an app that has a conditional subscription
 * [ ] How to make log messages visible (Debug.log won't work with gren-tui views)? add file logging?
 * [ ] How to have a nice way to read a whole line of input, even in raw mode?
