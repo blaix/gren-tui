@@ -1,0 +1,102 @@
+module Main exposing (main)
+
+
+import Ansi
+import Init
+import Math
+import Node
+import Time
+import Stream exposing (Stream)
+import Task
+import Tui
+
+
+main : Tui.Program Model Msg
+main =
+    Tui.defineProgram
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        , onInput = GotInput
+        }
+
+
+type alias Model =
+    { ticks : Int
+    , stdout : Stream
+    }
+
+
+init : Node.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Node.startProgram
+        { model = 
+            { ticks = 1
+            , stdout = env.stdout
+            }
+        , command =
+            Stream.sendString env.stdout Ansi.hideCursor 
+                |> Task.execute
+        }
+
+
+type Msg
+    = Tick Time.Posix
+    | GotInput Tui.Input
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        Tick _ ->
+            { model = { model | ticks = model.ticks + 1 }
+            , command = Cmd.none
+            }
+
+        GotInput input ->
+            { model = model
+            , command = 
+                case input of
+                    Tui.KeyChar "q" ->
+                        Stream.sendString model.stdout Ansi.showCursor
+                            |> Task.andThen (\_ -> Node.exit)
+                            |> Task.execute
+
+                    _ ->
+                        Cmd.none
+            }
+
+
+view : Model -> String
+view model =
+    let
+        barLength =
+            Math.modBy 36 model.ticks
+
+        bar =
+            String.repeat barLength "█"
+
+        count =
+            toFloat model.ticks / 10
+                |> Math.round
+                |> String.fromInt
+
+        -- Test changing number of output lines
+        maybeExtraLine =
+            if Math.modBy 2 model.ticks == 0 then
+                "\n"
+            else
+                ""
+    in
+    String.join "\n"
+        [ "\nHow high can I count? Let's see: " ++ count
+        , Ansi.wrapColor Ansi.Magenta bar
+        , Ansi.wrapColor Ansi.Yellow "Press q to quit."
+        , maybeExtraLine
+        ]
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Time.every 40 Tick
