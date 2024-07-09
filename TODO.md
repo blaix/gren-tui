@@ -26,7 +26,8 @@
     * [ ] Look at charm.sh libraries (esp. bubbles & lipgloss): https://github.com/charmbracelet/bubbletea?tab=readme-ov-file#libraries-we-use-with-bubble-tea
     * [ ] Look at the font stuff in this SO answer: https://stackoverflow.com/a/33206814
     * [ ] Look at wolfadex/elm-ansi for string terminal width
-    * [ ] Decide on module vs separate package (will escape codes mess up output in browser...?)
+    * [X] Decide on module vs separate package (leaving in this package for now)
+    * [ ] Update README and examples to use UI
 * [ ] animation example: rotating ascii art in center of screen
 * [ ] Demos with [asciinema][2] or [freeze][3]
 * [ ] == Release 3.0 ==
