@@ -27,6 +27,7 @@
     * [ ] Look at the font stuff in this SO answer: https://stackoverflow.com/a/33206814
     * [ ] Look at wolfadex/elm-ansi for string terminal width
     * [X] Decide on module vs separate package (leaving in this package for now)
+    * [ ] grid function that takes Array2d String and returns rows/cols?
     * [ ] tests
     * [ ] Update README and examples to use UI
 * [ ] animation example: rotating ascii art in center of screen
