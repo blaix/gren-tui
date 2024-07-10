@@ -1,5 +1,6 @@
 ## Next
 
+* Add `UI` module for easier view layout and styling
 * Add `Escape` variant to `Tui.Input`
 
 ## 2.0.1 (2024-07-04)
