@@ -27,8 +27,11 @@
     * [ ] Look at the font stuff in this SO answer: https://stackoverflow.com/a/33206814
     * [X] Look at wolfadex/elm-ansi for string terminal width
     * [X] Decide on module vs separate package (leaving in this package for now)
+    * [ ] Merge ui branch
+    * [ ] Emojis?
     * [ ] grid function that takes Array2d String and returns rows/cols?
     * [ ] tests
+    * [ ] docs
     * [ ] Update README and examples to use UI
 * [ ] Update examples to use Escape instead of q for quit
 * [ ] animation example: rotating ascii art in center of screen
