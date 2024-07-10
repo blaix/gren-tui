@@ -1,0 +1,148 @@
+module UI exposing
+    ( Element
+    , toString
+
+    , row
+    , column
+    , text
+
+    -- TODO: don't expose
+    , maxWidth
+    )
+
+
+import Ansi
+import Array2d exposing (Array2d)
+import UI.Attribute as Attribute exposing (Attribute)
+
+
+type Element
+    = Row { attrs : Array Attribute, children : Array Element }
+    | Col { attrs : Array Attribute, children : Array Element }
+    | Text { attrs : Array Attribute, content : String }
+
+
+row : Array Attribute -> Array Element -> Element
+row attrs children =
+    Row { attrs = attrs, children = children }
+
+
+column : Array Attribute -> Array Element -> Element
+column attrs children =
+    Col { attrs = attrs, children = children }
+
+
+text : Array Attribute -> String -> Element
+text attrs content =
+    Text { attrs = attrs, content = content }
+
+
+toString : Element -> String
+toString =
+    toStringInternal []
+
+toStringInternal : Array Attribute -> Element -> String
+toStringInternal parentAttrs element =
+    case element of
+        Row { attrs, children } ->
+            children
+                |> Array.map (toStringInternal (parentAttrs ++ attrs))
+                |> joinHorizontal (parentAttrs ++ attrs)
+        
+        Col { attrs, children } ->
+            children
+                |> Array.map (toStringInternal (parentAttrs ++ attrs))
+                |> joinVertical (parentAttrs ++ attrs)
+
+        Text { attrs, content } ->
+            Attribute.applyAll attrs content
+
+
+-- TODO: It's working kinda! see other TODOs...
+joinHorizontal : Array Attribute -> Array String -> String
+joinHorizontal attrs columns =
+    let
+        colsOfLines : Array2d String
+        colsOfLines =
+            columns
+                |> Array.map (String.split "\n")
+
+        maxHeight : Int
+        maxHeight =
+            colsOfLines
+                |> Array.map Array.length
+                |> Array.maximum
+                |> Maybe.withDefault 0
+
+        normalizedWidth : Array2d String
+        normalizedWidth =
+            colsOfLines
+                |> Array.map
+                    (\col ->
+                        Array.map 
+                            (String.padRight (maxWidth col) ' ')
+                            col
+                    )
+
+        normalizedHeight : Array2d String
+        normalizedHeight =
+            normalizedWidth
+                |> Array.map
+                    (\col ->
+                        let
+                            diff =
+                                maxHeight - (Array.length col)
+
+                            extraLines =
+                                Array.repeat 
+                                    diff 
+                                    (String.repeat (maxWidth col) " ")
+                        in
+                        Array.append extraLines col
+                    )
+
+        {- Turn the array of columns that look like this:
+
+            [ ["a", "b"] -- column 1
+            , ["1", "2"] -- column 2
+            ]
+
+        Into an array of rows that look like this:
+
+            [ ["a", "1"] -- row 1
+            , ["b", "2"] -- row 2
+            ]
+
+        For easier joining of the final output.
+        -}
+        zipped : Array2d String
+        zipped =
+            Array.initialize maxHeight 0
+                (\x ->
+                    Array.initialize (Array.length normalizedHeight) 0
+                        (\y ->
+                            Array2d.get { x = x, y = y } normalizedHeight
+                                |> Maybe.withDefault ""
+                        )
+                )
+    in
+    zipped
+        |> Array2d.map (Attribute.applyAll attrs)
+        |> Array.map (String.join "") -- TODO: decide on spaces between cols
+        |> String.join "\n"
+
+
+joinVertical : Array Attribute -> Array String -> String
+joinVertical attrs rows =
+    rows
+        |> Array.map (String.padRight (maxWidth rows) ' ')
+        |> Array.map (Attribute.applyAll attrs)
+        |> String.join "\n"
+
+
+maxWidth : Array String -> Int
+maxWidth lines =
+    lines
+        |> Array.map Ansi.width
+        |> Array.maximum
+        |> Maybe.withDefault 0

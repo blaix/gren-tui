@@ -1,0 +1,85 @@
+module Main exposing (main)
+
+
+import Ansi
+import Init
+import Node
+import Stream
+import Task
+import Tui
+import UI
+import UI.Attribute as Attribute
+
+
+main : Tui.Program Model Msg
+main =
+    Tui.defineProgram
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        , onInput = GotInput
+        }
+
+
+type alias Model =
+    {}
+
+
+init : Node.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Node.startProgram
+        { model = {}
+        , command = 
+            Stream.sendString env.stdout Ansi.hideCursor
+                |> Task.execute
+        }
+
+
+type Msg
+    = GotInput Tui.Input
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        GotInput input ->
+            { model = {}
+            , command = 
+                case input of
+                    Tui.KeyChar "q" ->
+                        Task.execute Node.exit
+                    _ ->
+                        Cmd.none
+            }
+
+
+-- TODO: gren make failures return 0. is this the same as gren 3?
+
+
+view : Model -> String
+view model =
+    UI.toString <|
+        UI.row 
+            [ Attribute.color Ansi.Black
+            , Attribute.bgColor Ansi.Magenta
+            ]
+            [ UI.text [] " col 1 "
+            , UI.column 
+                [ Attribute.color Ansi.Red
+                , Attribute.bgColor Ansi.Yellow
+                ]
+                [ UI.text [] " col 2 row 1 "
+                , UI.text [] " col 2 row 2 with extra text "
+                , UI.text [] " col 2 row 3 "
+                ]
+            , UI.row []
+                [ UI.text [ Attribute.bgColor Ansi.Green ] " col 3 "
+                , UI.text [] " col 4 "
+                ]
+            ]
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none

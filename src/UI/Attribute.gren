@@ -1,0 +1,38 @@
+module UI.Attribute exposing
+    ( Attribute
+    , apply
+    , applyAll
+    , color
+    , bgColor
+    )
+
+
+import Ansi
+
+
+type Attribute
+    = Color Ansi.Color
+    | BgColor Ansi.Color
+
+
+apply : Attribute -> String -> String
+apply attr str =
+    case attr of
+        Color c ->
+            Ansi.wrapColor c str
+
+        BgColor c ->
+            Ansi.wrapBgColor c str
+
+
+applyAll : Array Attribute -> String -> String
+applyAll attrs str =
+    Array.foldr apply str attrs 
+
+
+color : Ansi.Color -> Attribute
+color = Color
+
+
+bgColor : Ansi.Color -> Attribute
+bgColor = BgColor
