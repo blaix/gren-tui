@@ -37,7 +37,8 @@
     * [ ] tests
     * [ ] docs
     * [ ] Update README and examples to use UI
-* [ ] Update examples to use Escape instead of q for quit
+* [ ] Add Tui.exit that returns a task that undoes formatting and shows the cursor
+* [ ] Update examples to use Escape key to trigger Tui.exit
 * [ ] animation example: rotating ascii art in center of screen
 * [ ] Demos with [asciinema][2] or [freeze][3]
 * [ ] == Release 3.0 ==
