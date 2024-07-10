@@ -30,6 +30,7 @@
     * [ ] grid function that takes Array2d String and returns rows/cols?
     * [ ] tests
     * [ ] Update README and examples to use UI
+* [ ] Update examples to use Escape instead of q for quit
 * [ ] animation example: rotating ascii art in center of screen
 * [ ] Demos with [asciinema][2] or [freeze][3]
 * [ ] == Release 3.0 ==
