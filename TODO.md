@@ -40,6 +40,7 @@
 * [ ] Add Tui.exit that returns a task that undoes formatting and shows the cursor
 * [ ] Update examples to use Escape key to trigger Tui.exit
 * [ ] animation example: rotating ascii art in center of screen
+* [ ] Test in different terminals and on windows and linux
 * [ ] Demos with [asciinema][2] or [freeze][3]
 * [ ] == Release 3.0 ==
 * [ ] Publish post or video making a dungeon crawler. Look at the UI of Robin's elm-warrior :)
