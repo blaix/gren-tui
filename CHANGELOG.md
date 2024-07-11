@@ -1,7 +1,8 @@
 ## Next
 
-* Add `UI` module for easier view layout and styling
+* Add `UI` and `UI.Attribute` modules for easier view layout and styling
 * Add `Escape` variant to `Tui.Input`
+* Add `Tui.exit`, `Tui.exitWithCode`, and `Tui.hideCursor`
 
 ## 2.0.1 (2024-07-04)
 
