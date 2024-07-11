@@ -269,7 +269,7 @@ exitWithCode stream code =
 
 cleanup : Stream -> Task Never {}
 cleanup stream =
-    Ansi.showCursor
+    Ansi.reset ++ Ansi.showCursor
         |> Stream.sendString stream
 
 
