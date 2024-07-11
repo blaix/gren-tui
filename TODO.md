@@ -27,11 +27,11 @@
     * [X] Look at wolfadex/elm-ansi for string terminal width
     * [X] Decide on module vs separate package (leaving in this package for now)
     * [X] Merge ui branch
+    * [X] Release updates to gren-ansi
     * [ ] Emojis?
     * [ ] Add more Attribute functions 
       * [ ] look at Ansi for options
       * [ ] Look at the font stuff in this SO answer: https://stackoverflow.com/a/33206814
-    * [ ] Release updates to gren-ansi
     * [ ] Point ui example at latest published gren-ansi
     * [ ] grid function that takes Array2d String and returns rows/cols?
     * [ ] tests
