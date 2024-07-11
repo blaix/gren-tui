@@ -4,6 +4,10 @@ module UI.Attribute exposing
     , applyAll
     , color
     , bgColor
+    , fontWeight
+    , italic
+    , underline
+    , strikeThrough
     )
 
 
@@ -13,16 +17,32 @@ import Ansi
 type Attribute
     = Color Ansi.Color
     | BgColor Ansi.Color
+    | FontWeight Ansi.FontWeight
+    | Italic
+    | Underline
+    | StrikeThrough
 
 
 apply : Attribute -> String -> String
-apply attr str =
+apply attr =
     case attr of
         Color c ->
-            Ansi.wrapColor c str
+            Ansi.wrapColor c
 
         BgColor c ->
-            Ansi.wrapBgColor c str
+            Ansi.wrapBgColor c
+
+        FontWeight w ->
+            Ansi.wrapFontWeight w
+
+        Italic ->
+            Ansi.wrapItalic
+
+        Underline ->
+            Ansi.wrapUnderline
+
+        StrikeThrough ->
+            Ansi.wrapStrikeThrough
 
 
 applyAll : Array Attribute -> String -> String
@@ -36,3 +56,15 @@ color = Color
 
 bgColor : Ansi.Color -> Attribute
 bgColor = BgColor
+
+fontWeight : Ansi.FontWeight -> Attribute
+fontWeight = FontWeight
+
+italic : Attribute
+italic = Italic
+
+underline : Attribute
+underline = Underline
+
+strikeThrough : Attribute
+strikeThrough = StrikeThrough

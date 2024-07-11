@@ -21,18 +21,16 @@
 * [X] Replace vendored node/core packages after 6/24 release
 * [X] == Release 2.0 ==
 * [X] Add `Escape` variant to `Input`
-* [o] Add a `UI` helper: init with `env` and save in your model. `UI.toString` in your view
+* [O] Add a `UI` helper: init with `env` and save in your model. `UI.toString` in your view
     * [X] Work like elm-ui with row, col functions, attributes like backgroundColor, etc
     * [X] Look at charm.sh libraries (esp. bubbles & lipgloss): https://github.com/charmbracelet/bubbletea?tab=readme-ov-file#libraries-we-use-with-bubble-tea
     * [X] Look at wolfadex/elm-ansi for string terminal width
     * [X] Decide on module vs separate package (leaving in this package for now)
     * [X] Merge ui branch
     * [X] Release updates to gren-ansi
-    * [ ] Emojis?
-    * [ ] Add more Attribute functions 
-      * [ ] look at Ansi for options
-      * [ ] Look at the font stuff in this SO answer: https://stackoverflow.com/a/33206814
-    * [ ] Point ui example at latest published gren-ansi
+    * [X] Emojis?
+    * [X] Point ui example at latest published gren-ansi
+    * [X] Add more Attribute functions 
     * [ ] grid function that takes Array2d String and returns rows/cols?
     * [ ] tests
     * [ ] docs

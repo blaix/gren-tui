@@ -30,9 +30,7 @@ init : Node.Environment -> Init.Task { model : Model, command : Cmd Msg }
 init env =
     Node.startProgram
         { model = {}
-        , command = 
-            Stream.sendString env.stdout Ansi.hideCursor
-                |> Task.execute
+        , command = Cmd.none
         }
 
 
@@ -54,15 +52,13 @@ update msg model =
             }
 
 
--- TODO: gren make failures return 0. is this the same as gren 3?
-
-
 view : Model -> String
 view model =
     UI.toString <|
         UI.row 
             [ Attribute.color Ansi.Black
             , Attribute.bgColor Ansi.Magenta
+            , Attribute.fontWeight Ansi.Bold
             ]
             [ UI.text [] " col 1 "
             , UI.column 
@@ -70,12 +66,17 @@ view model =
                 , Attribute.bgColor Ansi.Yellow
                 ]
                 [ UI.text [] " col 2 row 1 "
-                , UI.text [] " col 2 row 2 with extra text "
+                , UI.row [ Attribute.italic ]
+                    [ UI.text [] " col 2 row 2 "
+                    , UI.text 
+                        [ Attribute.underline ] 
+                        "with emoji 🌈 in it "
+                    ]
                 , UI.text [] " col 2 row 3 "
                 ]
             , UI.row []
-                [ UI.text [ Attribute.bgColor Ansi.Green ] " col 3 "
-                , UI.text [] " col 4 "
+                [ UI.text [ Attribute.bgColor Ansi.Green ] " col 3 ⛄ "
+                , UI.text [ Attribute.strikeThrough ] " col 4 "
                 ]
             ]
 
