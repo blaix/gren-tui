@@ -2,6 +2,9 @@ module Tui exposing
     ( defineProgram
     , Input(..)
     , Program
+    , exit
+    , exitWithCode
+    , hideCursor
     )
 
 
@@ -165,8 +168,7 @@ update appConfig msg model =
                 CtrlC ->
                     { model = model
                     , command = 
-                        Stream.sendString model.stdout Ansi.showCursor
-                            |> Task.andThen (\_ -> Node.exit)
+                        exit model.stdout
                             |> Task.execute
                     }
 
@@ -242,6 +244,33 @@ subscriptions appSubs model =
           else
             Sub.none
         ]
+
+
+-- Tasks
+
+
+hideCursor : Stream -> Task Never {}
+hideCursor stdout =
+    Ansi.hideCursor
+        |> Stream.sendString stdout
+
+
+exit : Stream -> Task Never {}
+exit stdout =
+    cleanup stdout
+        |> Task.andThen (\_ -> Node.exit)
+
+
+exitWithCode : Stream -> Int -> Task Never {}
+exitWithCode stream code =
+    cleanup stream
+        |> Task.andThen (\_ -> Node.exitWithCode code)
+
+
+cleanup : Stream -> Task Never {}
+cleanup stream =
+    Ansi.showCursor
+        |> Stream.sendString stream
 
 
 -- VIEW
