@@ -123,7 +123,7 @@ init appInit env =
                         { model = { model | terminalRows = config.rows }
                         , command =
                             Terminal.setStdInRawMode config.permission True
-                                |> Task.andThen (\_ -> print env.stdout Ansi.getCursorReport)
+                                |> Task.andThen (\_ -> Stream.sendString env.stdout Ansi.getCursorReport)
                                 |> Task.execute
                         }
 
@@ -165,7 +165,7 @@ update appConfig msg model =
                 CtrlC ->
                     { model = model
                     , command = 
-                        print model.stdout Ansi.showCursor
+                        Stream.sendString model.stdout Ansi.showCursor
                             |> Task.andThen (\_ -> Node.exit)
                             |> Task.execute
                     }
@@ -182,7 +182,7 @@ update appConfig msg model =
                                 , appReady = True
                             }
                         , command =
-                            print model.stdout (Ansi.clearLine Ansi.Up)
+                            Stream.sendString model.stdout (Ansi.clearLine Ansi.Up)
                                 |> Task.execute
                         }
 
@@ -275,7 +275,7 @@ view appView model =
                 firstRowAdjusted
 
         renderAppView =
-            print model.stdout appViewResult
+            Stream.sendString model.stdout appViewResult
     in
     { model = { model | firstRow = newFirstRow }
     , command = 
@@ -287,8 +287,8 @@ view appView model =
 
 resetScreen : Model appModel appMsg -> Task Never {}
 resetScreen model =
-    print model.stdout (Ansi.moveTo model.firstRow 1)
-        |> Task.andThen (\_ -> print model.stdout (Ansi.clearScreen Ansi.Down))
+    Stream.sendString model.stdout (Ansi.moveTo model.firstRow 1)
+        |> Task.andThen (\_ -> Stream.sendString model.stdout (Ansi.clearScreen Ansi.Down))
 
 
 -- INPUT
@@ -408,13 +408,3 @@ countLines string =
     string
         |> String.lines
         |> Array.length
-
-
-{-| Send string to stream and ignore error.
-
-Mimics the old Cmd behavior of Stream.sendString
--}
-print : Stream -> String -> Task Never {}
-print stream string =
-    Stream.sendString stream string
-        |> Task.onError (\_ -> Task.succeed {})
