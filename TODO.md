@@ -21,6 +21,7 @@
 * [X] Replace vendored node/core packages after 6/24 release
 * [X] == Release 2.0 ==
 * [X] Add `Escape` variant to `Input`
+* [X] Add Tui.exit that returns a task that undoes formatting and shows the cursor
 * [O] Add a `UI` helper: init with `env` and save in your model. `UI.toString` in your view
     * [X] Work like elm-ui with row, col functions, attributes like backgroundColor, etc
     * [X] Look at charm.sh libraries (esp. bubbles & lipgloss): https://github.com/charmbracelet/bubbletea?tab=readme-ov-file#libraries-we-use-with-bubble-tea
@@ -35,8 +36,6 @@
     * [ ] tests
     * [ ] docs
     * [ ] Update README and examples to use UI
-* [ ] Add Tui.exit that returns a task that undoes formatting and shows the cursor
-* [ ] Update examples to use Escape key to trigger Tui.exit
 * [ ] animation example: rotating ascii art in center of screen
 * [ ] Test in different terminals and on windows and linux
 * [ ] Demos with [asciinema][2] or [freeze][3]
