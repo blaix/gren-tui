@@ -55,8 +55,10 @@
     * [ ] doubled
     * [ ] dotted
     * [ ] dashed
+    * [ ] ascii (`+--+`)
     * [ ] custom borders
     * [ ] grid/table with cell borders
+* [ ] borderLeft, Top, etc? (for dungeon walls?)
 * [ ] More colors. 256 support?
 * [ ] Built-in UI components (will require update calls, see [Bubbles][1] source code for reference):
     * [ ] Tabs (see lipgloss)
