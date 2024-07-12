@@ -70,11 +70,10 @@ view model =
                 , Attribute.bgColor Ansi.Yellow
                 ]
                 [ UI.text [] " col 2 row 1 "
-                , UI.row [ Attribute.italic ]
+                , UI.row []
                     [ UI.text [ Attribute.bgColor Ansi.Blue ] " check out \n these newlines \n "
-                    , UI.row 
-                        [ Attribute.underline ] 
-                        [ UI.text [] " underlines and "
+                    , UI.row [] 
+                        [ UI.text [] " omg "
                         , UI.column [] 
                             [ UI.text [] "emojis 🌈 in\nit with "
                             , UI.text [] "nested columns oh my! "
@@ -84,8 +83,12 @@ view model =
                 , UI.text [] " col 2 row 3 "
                 ]
             , UI.row []
-                [ UI.text [ Attribute.bgColor Ansi.Green ] " col 3 ⛄ "
-                , UI.text [ Attribute.strikeThrough ] " col 4 "
+                [ UI.text 
+                    [ Attribute.bgColor Ansi.Green
+                    , Attribute.fontWeight Ansi.NormalWeight
+                    ] 
+                    " col 3 ⛄ "
+                , UI.text [] " col 4 "
                 ]
             ]
 
