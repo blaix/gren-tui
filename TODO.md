@@ -32,7 +32,8 @@
     * [X] Emojis?
     * [X] Point ui example at latest published gren-ansi
     * [X] Add more Attribute functions 
-    * [ ] Fix: newlines in strings between columns breaks layout
+    * [X] Fix: newlines in strings between columns breaks layout
+    * [ ] Fix: strip leading/trailing underlined whitespace on each line (or remove underline attribute)
     * [ ] TODO comments
     * [ ] UI.box, see: https://en.wikipedia.org/wiki/Box-drawing_characters#Box_Drawing
     * [ ] tests
