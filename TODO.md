@@ -51,10 +51,12 @@
     * [ ] margin
     * [ ] centered, centerX, centerY
     * [ ] alignRight, alignLeft, alignTop, alignBottom
-* [ ] More borders
-    * [ ] doubled (see lipgloss)
+* [ ] More borders (see lipgloss and https://en.wikipedia.org/wiki/Box-drawing_characters#Box_Drawing)
+    * [ ] doubled
+    * [ ] dotted
+    * [ ] dashed
     * [ ] custom borders
-    * [ ] grid/table with cell borders (see lipgloss and https://en.wikipedia.org/wiki/Box-drawing_characters#Box_Drawing)
+    * [ ] grid/table with cell borders
 * [ ] More colors. 256 support?
 * [ ] Built-in UI components (will require update calls, see [Bubbles][1] source code for reference):
     * [ ] Tabs (see lipgloss)
