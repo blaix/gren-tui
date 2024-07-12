@@ -12,6 +12,7 @@ module UI.Attribute exposing
 
 
 import Ansi
+import Internal
 
 
 type Attribute
@@ -24,25 +25,51 @@ type Attribute
 
 
 apply : Attribute -> String -> String
-apply attr =
-    case attr of
-        Color c ->
-            Ansi.wrapColor c
+apply attr string =
+    let
+        
+        parts =
+            Internal.bgHelper string
 
-        BgColor c ->
-            Ansi.wrapBgColor c
+        styled =
+            case attr of
+                Color c ->
+                    { string = Ansi.wrapColor c parts.string
+                    , suffix = parts.suffix
+                    }
 
-        FontWeight w ->
-            Ansi.wrapFontWeight w
+                BgColor c ->
+                    -- Use set instead of wrap so we don't double up on
+                    -- unsetBgColor or it will screw up our ability to push it
+                    -- over when padding columns with spaces
+                    { string = Ansi.setBgColor c ++ parts.string
+                    , suffix = 
+                        parts.suffix
+                            |> String.replace Ansi.unsetBgColor ""
+                            |> String.append Ansi.unsetBgColor
+                    }
 
-        Italic ->
-            Ansi.wrapItalic
+                FontWeight w ->
+                    { string = Ansi.wrapFontWeight w parts.string
+                    , suffix = parts.suffix
+                    }
 
-        Underline ->
-            Ansi.wrapUnderline
+                Italic ->
+                    { string = Ansi.wrapItalic parts.string
+                    , suffix = parts.suffix
+                    }
 
-        StrikeThrough ->
-            Ansi.wrapStrikeThrough
+                Underline ->
+                    { string = Ansi.wrapUnderline parts.string
+                    , suffix = parts.suffix
+                    }
+
+                StrikeThrough ->
+                    { string = Ansi.wrapStrikeThrough parts.string
+                    , suffix = parts.suffix
+                    }
+    in
+    styled.string ++ styled.suffix
 
 
 applyAll : Array Attribute -> String -> String

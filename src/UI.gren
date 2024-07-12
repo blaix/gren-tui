@@ -5,21 +5,19 @@ module UI exposing
     , row
     , column
     , text
-
-    -- TODO: don't expose
-    , maxWidth
     )
 
 
 import Ansi
 import Array2d exposing (Array2d)
+import Internal
 import UI.Attribute as Attribute exposing (Attribute)
 
 
 type Element
     = Row { attrs : Array Attribute, children : Array Element }
     | Col { attrs : Array Attribute, children : Array Element }
-    | Text { attrs : Array Attribute, content : String }
+    | Text String
 
 
 row : Array Attribute -> Array Element -> Element
@@ -34,31 +32,59 @@ column attrs children =
 
 text : Array Attribute -> String -> Element
 text attrs content =
-    Text { attrs = attrs, content = content }
+    content
+        |> String.split "\n"
+        |> Array.map Text
+        |> column attrs
+
+
+mergeAttributes : Array Attribute -> Element -> Element
+mergeAttributes parentAttrs element =
+    case element of
+        Row { attrs, children } ->
+            Row 
+                { attrs = parentAttrs ++ attrs
+                , children =
+                    children
+                        |> Array.map (mergeAttributes (parentAttrs ++ attrs))
+                }
+
+        Col { attrs, children } ->
+            Col 
+                { attrs = parentAttrs ++ attrs
+                , children =
+                    children
+                        |> Array.map (mergeAttributes (parentAttrs ++ attrs))
+                }
+
+        Text content ->
+            Text content
 
 
 toString : Element -> String
-toString =
-    toStringInternal []
+toString element =
+    element
+        |> mergeAttributes []
+        |> toStringInternal
 
-toStringInternal : Array Attribute -> Element -> String
-toStringInternal parentAttrs element =
+
+toStringInternal : Element -> String
+toStringInternal element =
     case element of
         Row { attrs, children } ->
             children
-                |> Array.map (toStringInternal (parentAttrs ++ attrs))
-                |> joinHorizontal (parentAttrs ++ attrs)
+                |> Array.map toStringInternal
+                |> joinHorizontal attrs
         
         Col { attrs, children } ->
             children
-                |> Array.map (toStringInternal (parentAttrs ++ attrs))
-                |> joinVertical (parentAttrs ++ attrs)
+                |> Array.map toStringInternal
+                |> joinVertical attrs
 
-        Text { attrs, content } ->
-            Attribute.applyAll attrs content
+        Text content ->
+            content
 
 
--- TODO: It's working kinda! see other TODOs...
 joinHorizontal : Array Attribute -> Array String -> String
 joinHorizontal attrs columns =
     let
@@ -66,40 +92,20 @@ joinHorizontal attrs columns =
         colsOfLines =
             columns
                 |> Array.map (String.split "\n")
+                -- TODO: is this needed? (making sure attrs applied to each line even after they're zipped
+                |> Array2d.map (Attribute.applyAll attrs)
 
-        maxHeight : Int
-        maxHeight =
+        maxLines : Int
+        maxLines =
             colsOfLines
                 |> Array.map Array.length
                 |> Array.maximum
                 |> Maybe.withDefault 0
 
-        normalizedWidth : Array2d String
-        normalizedWidth =
+        normalized : Array2d String
+        normalized =
             colsOfLines
-                |> Array.map
-                    (\col ->
-                        Array.map 
-                            (String.padRight (maxWidth col) ' ')
-                            col
-                    )
-
-        normalizedHeight : Array2d String
-        normalizedHeight =
-            normalizedWidth
-                |> Array.map
-                    (\col ->
-                        let
-                            diff =
-                                maxHeight - (Array.length col)
-
-                            extraLines =
-                                Array.repeat 
-                                    diff 
-                                    (String.repeat (maxWidth col) " ")
-                        in
-                        Array.append extraLines col
-                    )
+                |> Array.map (padLines maxLines)
 
         {- Turn the array of columns that look like this:
 
@@ -117,25 +123,24 @@ joinHorizontal attrs columns =
         -}
         zipped : Array2d String
         zipped =
-            Array.initialize maxHeight 0
+            Array.initialize maxLines 0
                 (\x ->
-                    Array.initialize (Array.length normalizedHeight) 0
+                    Array.initialize (Array.length normalized) 0
                         (\y ->
-                            Array2d.get { x = x, y = y } normalizedHeight
+                            Array2d.get { x = x, y = y } normalized
                                 |> Maybe.withDefault ""
                         )
                 )
     in
     zipped
         |> Array2d.map (Attribute.applyAll attrs)
-        |> Array.map (String.join "") -- TODO: decide on spaces between cols
+        |> Array.map (String.join "")
         |> String.join "\n"
-
 
 joinVertical : Array Attribute -> Array String -> String
 joinVertical attrs rows =
     rows
-        |> Array.map (String.padRight (maxWidth rows) ' ')
+        |> Array.map (padRight (maxWidth rows))
         |> Array.map (Attribute.applyAll attrs)
         |> String.join "\n"
 
@@ -143,6 +148,44 @@ joinVertical attrs rows =
 maxWidth : Array String -> Int
 maxWidth lines =
     lines
+        |> Array.map (String.split "\n")
+        |> Array.flatten
         |> Array.map Ansi.width
         |> Array.maximum
         |> Maybe.withDefault 0
+
+
+{-| Given an array of lines, return an array with at least `height` number of
+lines, each having the same number of characters, using spaces for padding.
+-}
+padLines : Int -> Array String -> Array String
+padLines height lines =
+    let
+        heightDiff =
+            height - (Array.length lines)
+
+        extraLines =
+            Array.repeat heightDiff ""
+    in
+    lines
+        |> Array.append extraLines
+        |> Array.map (padRight (maxWidth lines))
+
+
+{-| Padd a string with spaces until it is the given length.
+Accounts for ansi sequences and ensures bg extends over the added spaces.
+-}
+padRight : Int -> String -> String
+padRight width string =
+    let
+        diff =
+            width - Ansi.width string
+
+        parts =
+            Internal.bgHelper string
+    in
+    if diff > 0 then
+        parts.string ++ (String.repeat diff " ") ++ parts.suffix
+    else
+        string
+

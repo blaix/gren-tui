@@ -64,17 +64,22 @@ view model =
             , Attribute.bgColor Ansi.Magenta
             , Attribute.fontWeight Ansi.Bold
             ]
-            [ UI.text [] " col 1 "
+            [ UI.text [] " col 1\n with a newline in it! "
             , UI.column 
                 [ Attribute.color Ansi.Red
                 , Attribute.bgColor Ansi.Yellow
                 ]
                 [ UI.text [] " col 2 row 1 "
                 , UI.row [ Attribute.italic ]
-                    [ UI.text [] " col 2 row 2 "
-                    , UI.text 
+                    [ UI.text [ Attribute.bgColor Ansi.Blue ] " check out \n these newlines \n "
+                    , UI.row 
                         [ Attribute.underline ] 
-                        "with emoji 🌈 in it "
+                        [ UI.text [] " underlines and "
+                        , UI.column [] 
+                            [ UI.text [] "emojis 🌈 in\nit with "
+                            , UI.text [] "nested columns oh my! "
+                            ]
+                        ]
                     ]
                 , UI.text [] " col 2 row 3 "
                 ]
