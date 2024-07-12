@@ -45,16 +45,23 @@
 * [ ] Starter repo
 * [ ] Demos with [asciinema][2] or [freeze][3]
 * [ ] Publish post or video making a dungeon crawler. Look at the UI of Robin's elm-warrior :)
+* [ ] More Attributes:
+    * [ ] centered, centerX, centerY
+    * [ ] padding
+    * [ ] margin
+* [ ] More colors. 256 support?
+* [ ] Built-in UI components (will require update calls, see [Bubbles][1] source code for reference):
+    * [ ] Tabs (see lipgloss)
+    * [ ] Prompt
+    * [ ] Choice
+    * [ ] LoadingSpinner
+    * [ ] Animation
+* [ ] Custom borders
 * [ ] Try gren-tui for prettynice cli again (with load spinner widgets...?)
 * [ ] Test an app that has a conditional subscription
 * [ ] How to make log messages visible (Debug.log won't work with gren-tui views)? add file logging?
 * [ ] How to have a nice way to read a whole line of input, even in raw mode?
-* [ ] readline support?
-* [ ] Cross platform considerations? (e.g. is `clearScreen` ok on win?)
-* [ ] Built-in UI components (see [Bubbles][1] source code for reference):
-    * [ ] Prompt
-    * [ ] Choice
-    * [ ] LoadingSpinner
+    * [ ] readline support?
 
 [1]: https://github.com/charmbracelet/bubbles
 [2]: https://docs.asciinema.org/getting-started/
