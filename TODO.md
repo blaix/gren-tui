@@ -33,16 +33,17 @@
     * [X] Point ui example at latest published gren-ansi
     * [X] Add more Attribute functions 
     * [X] Fix: newlines in strings between columns breaks layout
-    * [ ] Fix: strip leading/trailing underlined whitespace on each line (or remove underline attribute)
+    * [X] Fix: underlines and strikethrough weirdness (removed for now)
     * [ ] TODO comments
-    * [ ] UI.box, see: https://en.wikipedia.org/wiki/Box-drawing_characters#Box_Drawing
     * [ ] tests
+    * [ ] UI.box? see: https://en.wikipedia.org/wiki/Box-drawing_characters#Box_Drawing
     * [ ] docs
     * [ ] Update README and examples to use UI
 * [ ] animation example: rotating ascii art in center of screen
 * [ ] Test in different terminals and on windows and linux
-* [ ] Demos with [asciinema][2] or [freeze][3]
 * [ ] == Release 3.0 ==
+* [ ] Starter repo
+* [ ] Demos with [asciinema][2] or [freeze][3]
 * [ ] Publish post or video making a dungeon crawler. Look at the UI of Robin's elm-warrior :)
 * [ ] Try gren-tui for prettynice cli again (with load spinner widgets...?)
 * [ ] Test an app that has a conditional subscription
