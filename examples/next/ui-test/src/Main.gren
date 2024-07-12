@@ -71,7 +71,14 @@ view model =
                 ]
                 [ UI.text [] " col 2 row 1 "
                 , UI.row []
-                    [ UI.text [ Attribute.bgColor Ansi.Blue ] " check out \n these newlines \n "
+                    [ UI.borderBlocky <|
+                        UI.row [ Attribute.bgColor Ansi.Blue ]
+                            [ UI.text [] "inner col 1 "
+                            , UI.column []
+                                [ UI.text [] "inner col 2 \nwith newline "
+                                , UI.text [] "inner bottom row "
+                                ]
+                            ]
                     , UI.row [] 
                         [ UI.text [] " omg "
                         , UI.column [] 

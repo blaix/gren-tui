@@ -22,7 +22,7 @@
 * [X] == Release 2.0 ==
 * [X] Add `Escape` variant to `Input`
 * [X] Add Tui.exit that returns a task that undoes formatting and shows the cursor
-* [o] Add a `UI` helper: init with `env` and save in your model. `UI.toString` in your view
+* [O] Add a `UI` helper: init with `env` and save in your model. `UI.toString` in your view
     * [X] Work like elm-ui with row, col functions, attributes like backgroundColor, etc
     * [X] Look at charm.sh libraries (esp. bubbles & lipgloss): https://github.com/charmbracelet/bubbletea?tab=readme-ov-file#libraries-we-use-with-bubble-tea
     * [X] Look at wolfadex/elm-ansi for string terminal width
@@ -34,9 +34,9 @@
     * [X] Add more Attribute functions 
     * [X] Fix: newlines in strings between columns breaks layout
     * [X] Fix: underlines and strikethrough weirdness (removed for now)
+    * [X] bordered boxes
     * [ ] TODO comments
     * [ ] tests
-    * [ ] UI.box? see: https://en.wikipedia.org/wiki/Box-drawing_characters#Box_Drawing
     * [ ] docs
     * [ ] Update README and examples to use UI
 * [ ] animation example: rotating ascii art in center of screen

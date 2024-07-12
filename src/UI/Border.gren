@@ -1,0 +1,88 @@
+module UI.Border exposing
+    ( Border
+    , BorderType(..)
+    , get
+    )
+
+
+type alias Border =
+    { top : String
+    , bottom : String
+    , left : String
+    , right : String
+    , topLeft : String
+    , topRight : String
+    , bottomLeft : String
+    , bottomRight : String
+    }
+
+
+type BorderType
+    = Border
+    | Rounded
+    | Thick
+    | Blocky
+
+
+get : BorderType -> Border
+get borderType =
+    case borderType of
+        Border ->
+            border
+
+        Rounded ->
+            rounded
+
+        Thick ->
+            thick
+
+        Blocky ->
+            blocky
+
+
+border : Border
+border =
+    { top = "─"
+    , bottom = "─"
+    , left = "│"
+    , right = "│"
+    , topLeft = "┌"
+    , topRight = "┐"
+    , bottomLeft = "└"
+    , bottomRight = "┘"
+    }
+
+rounded : Border
+rounded =
+    { border
+        | topLeft = "╭"
+        , topRight = "╮"
+        , bottomLeft = "╰"
+        , bottomRight = "╯"
+    }
+    
+
+thick : Border
+thick =
+    { top = "━"
+    , bottom = "━"
+    , left = "┃"
+    , right = "┃"
+    , topLeft = "┏"
+    , topRight = "┓"
+    , bottomLeft = "┗"
+    , bottomRight = "┛"
+    }
+
+
+blocky : Border
+blocky =
+    { top = "▄"
+    , bottom = "▀"
+    , left = "▐"
+    , right = "▌"
+    , topLeft = "▗"
+    , topRight = "▖"
+    , bottomLeft = "▝"
+    , bottomRight = "▘"
+    }

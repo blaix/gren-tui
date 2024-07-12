@@ -73,7 +73,8 @@ view model =
                 , UI.text [] " col 2 row 2 "
                 , UI.text [] " col 2 row 3 "
                 ]
-            , UI.text [ Attribute.bgColor Ansi.Green ] " col 3 "
+            , UI.borderBlocky <|
+                UI.text [ Attribute.bgColor Ansi.Green ] " col 3 "
             , UI.text [] " col 4 "
             ]
 

@@ -2,9 +2,16 @@ module UI exposing
     ( Element
     , toString
 
+    -- Layout
     , row
     , column
     , text
+
+    -- Borders
+    , bordered
+    , borderRounded
+    , borderThick
+    , borderBlocky
     )
 
 
@@ -12,11 +19,13 @@ import Ansi
 import Array2d exposing (Array2d)
 import Internal
 import UI.Attribute as Attribute exposing (Attribute)
+import UI.Border as Border
 
 
 type Element
     = Row { attrs : Array Attribute, children : Array Element }
     | Col { attrs : Array Attribute, children : Array Element }
+    | Bordered { attrs : Array Attribute, child : Element, borderType : Border.BorderType }
     | Text String
 
 
@@ -38,6 +47,26 @@ text attrs content =
         |> column attrs
 
 
+bordered : Element -> Element
+bordered element = 
+    Bordered { attrs = [], child = element, borderType = Border.Border }
+
+
+borderRounded : Element -> Element
+borderRounded element =
+    Bordered { attrs = [], child = element, borderType = Border.Rounded }
+
+
+borderThick : Element -> Element
+borderThick element =
+    Bordered { attrs = [], child = element, borderType = Border.Thick }
+
+
+borderBlocky : Element -> Element
+borderBlocky element =
+    Bordered { attrs = [], child = element, borderType = Border.Blocky }
+
+
 mergeAttributes : Array Attribute -> Element -> Element
 mergeAttributes parentAttrs element =
     case element of
@@ -57,6 +86,14 @@ mergeAttributes parentAttrs element =
                         |> Array.map (mergeAttributes (parentAttrs ++ attrs))
                 }
 
+        Bordered { attrs, child, borderType } ->
+            Bordered
+                { attrs = parentAttrs ++ attrs
+                , child =
+                    mergeAttributes (parentAttrs ++ attrs) child
+                , borderType = borderType
+                }
+
         Text content ->
             Text content
 
@@ -65,21 +102,59 @@ toString : Element -> String
 toString element =
     element
         |> mergeAttributes []
-        |> toStringInternal
+        |> toStringInternal []
 
 
-toStringInternal : Element -> String
-toStringInternal element =
+toStringInternal : Array Attribute -> Element -> String
+toStringInternal parentAttrs element =
+    -- NOTE: Attributes are already merged with their parents.
+    -- The parentAttrs param only matters if we're adding net new strings
+    -- (e.g. adding borders).
+
     case element of
         Row { attrs, children } ->
             children
-                |> Array.map toStringInternal
+                |> Array.map (toStringInternal attrs)
                 |> joinHorizontal attrs
         
         Col { attrs, children } ->
             children
-                |> Array.map toStringInternal
+                |> Array.map (toStringInternal attrs)
                 |> joinVertical attrs
+
+        Bordered { attrs, child, borderType } ->
+            let
+                contents =
+                    toStringInternal attrs child
+
+                lines =
+                    String.lines contents
+
+                width =
+                    maxWidth lines
+
+                border =
+                    Border.get borderType
+
+                top =
+                    Attribute.applyAll parentAttrs <|
+                        border.topLeft ++ (String.repeat width border.top) ++ border.topRight
+
+                bottom =
+                    Attribute.applyAll parentAttrs <|
+                        border.bottomLeft ++ (String.repeat width border.bottom) ++ border.bottomRight
+
+                left =
+                    Attribute.applyAll parentAttrs border.left
+
+                right =
+                    Attribute.applyAll parentAttrs border.right
+            in
+            lines
+                |> Array.map (\l -> left ++ l ++ right)
+                |> Array.pushFirst top
+                |> Array.pushLast bottom
+                |> String.join "\n"
 
         Text content ->
             content
@@ -188,4 +263,3 @@ padRight width string =
         parts.string ++ (String.repeat diff " ") ++ parts.suffix
     else
         string
-
