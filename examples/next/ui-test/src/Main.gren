@@ -9,6 +9,7 @@ import Task
 import Tui
 import UI
 import UI.Attribute as Attribute
+import UI.Border as Border
 
 
 main : Tui.Program Model Msg
@@ -71,7 +72,7 @@ view model =
                 ]
                 [ UI.text [] " col 2 row 1 "
                 , UI.row []
-                    [ UI.borderBlocky <|
+                    [ UI.bordered Border.thick <|
                         UI.row [ Attribute.bgColor Ansi.Blue ]
                             [ UI.text [] "inner col 1 "
                             , UI.column []

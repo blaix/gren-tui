@@ -8,7 +8,8 @@
     "exposed-modules": [
         "Tui",
         "UI",
-        "UI.Attribute"
+        "UI.Attribute",
+        "UI.Border"
     ],
     "gren-version": "0.4.4 <= v < 0.5.0",
     "dependencies": {

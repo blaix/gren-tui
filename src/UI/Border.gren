@@ -1,7 +1,9 @@
 module UI.Border exposing
     ( Border
-    , BorderType(..)
-    , get
+    , default
+    , rounded
+    , thick
+    , blocky
     )
 
 
@@ -17,31 +19,8 @@ type alias Border =
     }
 
 
-type BorderType
-    = Border
-    | Rounded
-    | Thick
-    | Blocky
-
-
-get : BorderType -> Border
-get borderType =
-    case borderType of
-        Border ->
-            border
-
-        Rounded ->
-            rounded
-
-        Thick ->
-            thick
-
-        Blocky ->
-            blocky
-
-
-border : Border
-border =
+default : Border
+default =
     { top = "─"
     , bottom = "─"
     , left = "│"
@@ -54,7 +33,7 @@ border =
 
 rounded : Border
 rounded =
-    { border
+    { default
         | topLeft = "╭"
         , topRight = "╮"
         , bottomLeft = "╰"

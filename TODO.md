@@ -35,7 +35,6 @@
     * [X] Fix: newlines in strings between columns breaks layout
     * [X] Fix: underlines and strikethrough weirdness (removed for now)
     * [X] bordered boxes
-    * [ ] reconsider border as attribute instead of function (may help with future things like padding/margin/etc)
     * [ ] TODO comments
     * [ ] tests
     * [ ] docs

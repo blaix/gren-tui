@@ -6,12 +6,7 @@ module UI exposing
     , row
     , column
     , text
-
-    -- Borders
     , bordered
-    , borderRounded
-    , borderThick
-    , borderBlocky
     )
 
 
@@ -19,13 +14,13 @@ import Ansi
 import Array2d exposing (Array2d)
 import Internal
 import UI.Attribute as Attribute exposing (Attribute)
-import UI.Border as Border
+import UI.Border exposing (Border)
 
 
 type Element
     = Row { attrs : Array Attribute, children : Array Element }
     | Col { attrs : Array Attribute, children : Array Element }
-    | Bordered { attrs : Array Attribute, child : Element, borderType : Border.BorderType }
+    | Bordered { attrs : Array Attribute, child : Element, border : Border }
     | Text String
 
 
@@ -47,24 +42,9 @@ text attrs content =
         |> column attrs
 
 
-bordered : Element -> Element
-bordered element = 
-    Bordered { attrs = [], child = element, borderType = Border.Border }
-
-
-borderRounded : Element -> Element
-borderRounded element =
-    Bordered { attrs = [], child = element, borderType = Border.Rounded }
-
-
-borderThick : Element -> Element
-borderThick element =
-    Bordered { attrs = [], child = element, borderType = Border.Thick }
-
-
-borderBlocky : Element -> Element
-borderBlocky element =
-    Bordered { attrs = [], child = element, borderType = Border.Blocky }
+bordered : Border -> Element -> Element
+bordered border element = 
+    Bordered { attrs = [], child = element, border = border }
 
 
 mergeAttributes : Array Attribute -> Element -> Element
@@ -86,12 +66,12 @@ mergeAttributes parentAttrs element =
                         |> Array.map (mergeAttributes (parentAttrs ++ attrs))
                 }
 
-        Bordered { attrs, child, borderType } ->
+        Bordered { attrs, child, border } ->
             Bordered
                 { attrs = parentAttrs ++ attrs
                 , child =
                     mergeAttributes (parentAttrs ++ attrs) child
-                , borderType = borderType
+                , border = border
                 }
 
         Text content ->
@@ -122,7 +102,7 @@ toStringInternal parentAttrs element =
                 |> Array.map (toStringInternal attrs)
                 |> joinVertical attrs
 
-        Bordered { attrs, child, borderType } ->
+        Bordered { attrs, child, border } ->
             let
                 contents =
                     toStringInternal attrs child
@@ -132,9 +112,6 @@ toStringInternal parentAttrs element =
 
                 width =
                     maxWidth lines
-
-                border =
-                    Border.get borderType
 
                 top =
                     Attribute.applyAll parentAttrs <|
