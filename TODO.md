@@ -72,6 +72,8 @@
 * [ ] How to make log messages visible (Debug.log won't work with gren-tui views)? add file logging?
 * [ ] How to have a nice way to read a whole line of input, even in raw mode?
     * [ ] readline support?
+* [ ] Can/should I clean up the background color "move over the closing character" logic?
+   * [ ] Maybe use some sentinel characters to stand in for bg color until final rendering? https://www.unicode.org/faq/private_use.html
 
 [1]: https://github.com/charmbracelet/bubbles
 [2]: https://docs.asciinema.org/getting-started/
