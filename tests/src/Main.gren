@@ -1,0 +1,17 @@
+module Main exposing (main)
+
+import Expect
+import Test exposing (describe, test, Test)
+import Test.Runner.Node exposing (Program, run)
+
+
+main : Program
+main =
+    run <| describe "Layout tests" layoutTests
+
+
+layoutTests : Array Test
+layoutTests =
+    [ test "Failing test" <| \_ ->
+        Expect.equal True False
+    ]

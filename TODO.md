@@ -35,7 +35,7 @@
     * [X] Fix: newlines in strings between columns breaks layout
     * [X] Fix: underlines and strikethrough weirdness (removed for now)
     * [X] bordered boxes
-    * [ ] TODO comments
+    * [X] TODO comments
     * [ ] tests
     * [ ] docs
     * [ ] Update README and examples to use UI
