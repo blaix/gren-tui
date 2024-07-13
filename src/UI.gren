@@ -144,8 +144,6 @@ joinHorizontal attrs columns =
         colsOfLines =
             columns
                 |> Array.map (String.split "\n")
-                -- TODO: is this needed? (making sure attrs applied to each line even after they're zipped
-                |> Array2d.map (Attribute.applyAll attrs)
 
         maxLines : Int
         maxLines =
