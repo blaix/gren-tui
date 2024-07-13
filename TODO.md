@@ -38,10 +38,11 @@
     * [X] TODO comments
     * [ ] tests
     * [ ] docs
-    * [ ] Update README and examples to use UI
+    * [ ] easy way for people to try to test/break UI and open issues
 * [ ] animation example: rotating ascii art in center of screen
 * [ ] Test in different terminals and on windows and linux
 * [ ] == Release 3.0 ==
+* [ ] Update README and examples to use UI module
 * [ ] Starter repo
 * [ ] Demos with [asciinema][2] or [freeze][3]
 * [ ] Publish post or video making a dungeon crawler. Look at the UI of Robin's elm-warrior :)
