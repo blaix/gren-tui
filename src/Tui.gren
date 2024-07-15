@@ -31,7 +31,6 @@ import Bytes.Decode
 import Bytes.Encode
 import FileSystem.Path exposing (Path)
 import Init
-import Math
 import Node
 import Stream exposing (Stream)
 import Task exposing (Task)
@@ -44,12 +43,7 @@ import Time
 
 framesPerSecond : Float
 framesPerSecond =
-    60.0
-
-
-framesPerSecondMillis : Int
-framesPerSecondMillis =
-    Math.floor <| 1000 / framesPerSecond
+    45.0
 
 
 {-| Type alias for Tui programs.
@@ -122,8 +116,6 @@ type alias Model appModel appMsg =
     , terminalRows : Int
     , firstRow : Int
     , oldView : String
-    , lastProcessedInput : Int
-    , pauseProcessInput : Bool
     }
 
 
@@ -175,8 +167,6 @@ init appInit env =
                         , terminalRows = 0
                         , firstRow = 0
                         , oldView = ""
-                        , lastProcessedInput = 0
-                        , pauseProcessInput = False
                         }
                 in
                 Node.startProgram <|
@@ -213,76 +203,56 @@ update :
 update appConfig msg model =
     case msg of
         GotStdin bytes ->
-            if model.pauseProcessInput then
-                { model = model
-                , command = Cmd.none
-                }
-            else
-                let
-                    input =
-                        bytesToInput bytes
+            let
+                input =
+                    bytesToInput bytes
 
-                    doAppUpdate =
-                        appUpdate
-                            appConfig.update
-                            (appConfig.onInput input)
-                            model
-                in
-                case input of
-                    CtrlC ->
-                        { model = model
-                        , command = 
-                            exit model.stdout
+                doAppUpdate =
+                    appUpdate
+                        appConfig.update
+                        (appConfig.onInput input)
+                        model
+            in
+            case input of
+                CtrlC ->
+                    { model = model
+                    , command = 
+                        exit model.stdout
+                            |> Task.execute
+                    }
+
+                CursorReport row col ->
+                    -- The first report is gren-tui getting initial cursor
+                    -- position. Subsequent reports were requested by the app.
+                    if model.appReady then
+                        doAppUpdate
+                    else
+                        { model =
+                            { model
+                                | firstRow = row
+                                , appReady = True
+                            }
+                        , command =
+                            Stream.sendString model.stdout (Ansi.clearLine Ansi.Up)
                                 |> Task.execute
                         }
 
-                    CursorReport row col ->
-                        -- The first report is gren-tui getting initial cursor
-                        -- position. Subsequent reports were requested by the app.
-                        if model.appReady then
-                            doAppUpdate
-                        else
-                            { model =
-                                { model
-                                    | firstRow = row
-                                    , appReady = True
-                                }
-                            , command =
-                                Stream.sendString model.stdout (Ansi.clearLine Ansi.Up)
-                                    |> Task.execute
-                            }
-
-                    _ ->
-                        doAppUpdate
+                _ ->
+                    doAppUpdate
 
         AppMsg appMsg ->
             appUpdate appConfig.update appMsg model
 
-        Tick t ->
+        Tick _ ->
             let
                 viewResult =
                     view appConfig.view model
-
-                millis = Time.posixToMillis t
-
-                pauseProcessInput =
-                    millis - model.lastProcessedInput < framesPerSecondMillis
-
-                lastProcessedInput =
-                    if pauseProcessInput then
-                        model.lastProcessedInput
-                    else
-                        millis
             in
             -- Don't run the app's init cmd until we're ready
             case { ready = model.appReady, appInit = model.appInitCmd } of
                 { ready = True, appInit = Just cmd } ->
                     { model =
-                        { viewResult.model 
-                            | appInitCmd = Nothing
-                            , pauseProcessInput = pauseProcessInput
-                            , lastProcessedInput = lastProcessedInput
-                        }
+                        { viewResult.model | appInitCmd = Nothing }
                     , command =
                         Cmd.batch
                             [ viewResult.command
