@@ -35,16 +35,16 @@
     * [X] Fix: newlines in strings between columns breaks layout
     * [X] Fix: underlines and strikethrough weirdness (removed for now)
     * [X] bordered boxes
-    * [ ] Fix: responsiveness of paint example
+    * [X] Fix screen flicker (overwrite, don't clear)
+    * [.] Fix: responsiveness of paint example
+        * [X] only draw if view result diffs
+        * [ ] don't check cursorReport every input?
+        * [ ] look for other places I'm doing heavy string/array interactions
+        * [ ] https://www.textualize.io/blog/7-things-ive-learned-building-a-modern-tui-framework/
     * [ ] test UI.grid nested with rows/cols/bordered
     * [ ] tests
     * [ ] docs
     * [ ] easy way for people to try to test/break UI and open issues
-* [ ] Screen flicker (see paint example)
-  * [ ] Only reset screen after an app update?
-  * [ ] ...and only if view result diffs?
-  * [ ] Do an actual diff and overwrite instead of clear and redraw?
-  * [ ] https://www.textualize.io/blog/7-things-ive-learned-building-a-modern-tui-framework/
 * [ ] Don't expose any custom types (e.g. Input variants). Use functions instead, to avoid breaking changes when adding new ones (like Escape).
     * [ ] Input module with Input.escape, Input.arrowUp, etc...
 * [ ] TODO comments
