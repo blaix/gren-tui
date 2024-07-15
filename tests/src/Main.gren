@@ -1,17 +1,92 @@
 module Main exposing (main)
 
-import Expect
-import Test exposing (describe, test, Test)
+import UI.Border as Border exposing (Border)
+import Expect exposing (Expectation)
+import Fuzz exposing (Fuzzer)
+import Test exposing (describe, test, fuzz, Test)
 import Test.Runner.Node exposing (Program, run)
+import UI exposing (Element)
+import UI.Attribute exposing (Attribute)
 
 
 main : Program
 main =
-    run <| describe "Layout tests" layoutTests
+    run <| describe "UI tests" uiTests
 
 
-layoutTests : Array Test
-layoutTests =
-    [ test "Failing test" <| \_ ->
-        Expect.equal True False
+randomBorder : Fuzzer Border
+randomBorder =
+    Fuzz.oneOfValues
+        [ Border.default
+        , Border.rounded
+        , Border.thick
+        , Border.blocky
+        ]
+
+
+uiTests : Array Test
+uiTests =
+    [ test "empty row" <| \_ ->
+        UI.row [] []
+            |> UI.toString
+            |> Expect.equal ""
+
+    , test "empty column" <| \_ ->
+        UI.column [] []
+            |> UI.toString
+            |> Expect.equal ""
+    
+    , fuzz randomBorder "empty nested rows" <| \border ->
+        UI.row []
+            [ UI.text [] ""
+            , UI.row []
+                [ UI.column [] 
+                    [ UI.column []
+                        [ UI.row [] []
+                        , UI.row [] [ UI.text [] "" ]
+                        , UI.column [] []
+                        , UI.text [] ""
+                        ]
+                    ]
+                ]
+            ]
+            |> UI.toString
+            |> Expect.equal "\n\n\n" -- inner column with 4 rows
+
+    , test "basic rows and columns" <| \_ ->
+        UI.row []
+            [ UI.text [] " col 1 "
+            , UI.column []
+                [ UI.text [] " col 2 row 1 "
+                , UI.text [] " col 2 row 2 "
+                , UI.text [] " col 2 row 3 "
+                ]
+            , UI.bordered Border.blocky <|
+                UI.text [] " col 3 "
+            , UI.text [] " col 4 "
+            ]
+            |> UI.toString
+            |> expectEqual
+                """
+                 col 1  col 2 row 1 ▗▄▄▄▄▄▄▄▖ col 4 
+                        col 2 row 2 ▐ col 3 ▌       
+                        col 2 row 3 ▝▀▀▀▀▀▀▀▘      
+                """
     ]
+
+
+{-| Expectation helper that ignores trailing whitespace
+-}
+expectEqual : String -> String -> Expectation
+expectEqual expected actual =
+    Expect.equal
+        ( trimRight expected )
+        ( trimRight actual )
+
+
+trimRight : String -> String
+trimRight string =
+    string
+        |> String.lines
+        |> Array.map String.trimRight
+        |> String.join "\n"
