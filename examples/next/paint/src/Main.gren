@@ -176,7 +176,7 @@ pushVisited point model =
 view : Model -> String
 view model =
     UI.toString <|
-        UI.column [ Attribute.color Ansi.Black ] <|
+        UI.column [ Attribute.color Ansi.Black, Attribute.fontWeight Ansi.Bold ] <|
             Array.initialize model.height 0 <| \y ->
                 UI.row [] <|
                     Array.initialize model.width 0 <| \x ->

@@ -115,6 +115,7 @@ type alias Model appModel appMsg =
     , appReady : Bool
     , terminalRows : Int
     , firstRow : Int
+    , oldView : String
     }
 
 
@@ -165,6 +166,7 @@ init appInit env =
                         , appReady = False
                         , terminalRows = 0
                         , firstRow = 0
+                        , oldView = ""
                         }
                 in
                 Node.startProgram <|
@@ -352,16 +354,29 @@ view appView model =
 
         renderAppView =
             appViewResult
-                -- IMPORTANT!
-                --   * Re-draw then clear down, don't clear everything, or you'll get screen flicker.
-                --   * Re-draw from the model's OLD first row, or you'll draw over non-tui terminal lines instead of scrolling.
-                |> String.prepend (Ansi.moveTo model.firstRow 0)
-                |> String.prepend (Ansi.clearScreen Ansi.Down)
-                |> Stream.sendString model.stdout
     in
-    { model = { model | firstRow = newFirstRow }
-    , command = Task.execute renderAppView
+    { model = 
+        { model 
+            | firstRow = newFirstRow 
+            , oldView = appViewResult
+        }
+    , command = 
+        if model.oldView /= appViewResult then
+            Task.execute (render model appViewResult)
+        else
+            Cmd.none
     }
+
+
+render : Model appModel appMsg -> String -> Task Never {}
+render model appViewResult =
+    appViewResult
+        -- IMPORTANT!
+        --   * Re-draw then clear down, don't clear everything, or you'll get screen flicker.
+        --   * Re-draw from the model's OLD first row, or you'll draw over non-tui terminal lines instead of scrolling.
+        |> String.prepend (Ansi.moveTo model.firstRow 0)
+        |> String.prepend (Ansi.clearScreen Ansi.Down)
+        |> Stream.sendString model.stdout
 
 
 -- INPUT
