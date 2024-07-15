@@ -38,6 +38,7 @@
     * [X] Fix screen flicker (overwrite, don't clear)
     * [.] Fix: responsiveness of paint example
         * [X] only draw if view result diffs
+        * [ ] try: buffer inputs, on each tick, compress sequentially-repeating inputs, then process
         * [ ] profile with `node --inspect` and open `chrome://inspect`
         * [ ] don't check cursorReport every input?
         * [ ] look for other places I'm doing heavy string/array interactions
