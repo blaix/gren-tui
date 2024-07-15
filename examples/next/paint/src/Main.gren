@@ -176,26 +176,30 @@ pushVisited point model =
 view : Model -> String
 view model =
     UI.toString <|
-        UI.column [ Attribute.color Ansi.Black, Attribute.fontWeight Ansi.Bold ] <|
+        UI.grid <|
             Array.initialize model.height 0 <| \y ->
-                UI.row [] <|
-                    Array.initialize model.width 0 <| \x ->
-                        let
-                            point = { x = x, y = y }
+                Array.initialize model.width 0 <| \x ->
+                    let
+                        point = { x = x, y = y }
 
-                            bgColor =
-                                if Array.member point model.visited then
-                                    Ansi.Yellow
-                                else
-                                    Ansi.NoColor
+                        bgColor =
+                            if Array.member point model.visited then
+                                Ansi.Yellow
+                            else
+                                Ansi.NoColor
 
-                            cursor =
-                                if point == model.position then
-                                    "+"
-                                else
-                                    " "
-                        in
-                        UI.text [ Attribute.bgColor bgColor ] cursor
+                        cursor =
+                            if point == model.position then
+                                '+'
+                            else
+                                ' '
+                    in
+                    UI.cell 
+                        [ Attribute.bgColor bgColor 
+                        , Attribute.color Ansi.Black
+                        , Attribute.fontWeight Ansi.Bold
+                        ] 
+                        cursor
 
 
 subscriptions : Model -> Sub Msg

@@ -35,6 +35,8 @@
     * [X] Fix: newlines in strings between columns breaks layout
     * [X] Fix: underlines and strikethrough weirdness (removed for now)
     * [X] bordered boxes
+    * [ ] Fix: responsiveness of paint example
+    * [ ] test UI.grid nested with rows/cols/bordered
     * [ ] tests
     * [ ] docs
     * [ ] easy way for people to try to test/break UI and open issues

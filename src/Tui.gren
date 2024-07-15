@@ -43,7 +43,7 @@ import Time
 
 framesPerSecond : Float
 framesPerSecond =
-    60.0
+    45.0
 
 
 {-| Type alias for Tui programs.

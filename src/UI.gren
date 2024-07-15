@@ -7,6 +7,8 @@ module UI exposing
     , column
     , text
     , bordered
+    , grid
+    , cell
     )
 
 
@@ -21,7 +23,14 @@ type Element
     = Row { attrs : Array Attribute, children : Array Element }
     | Col { attrs : Array Attribute, children : Array Element }
     | Bordered { attrs : Array Attribute, child : Element, border : Border }
+    | Grid (Array2d Cell)
     | Text String
+
+
+type alias Cell =
+    { attrs : Array Attribute
+    , char : Char
+    }
 
 
 row : Array Attribute -> Array Element -> Element
@@ -32,6 +41,15 @@ row attrs children =
 column : Array Attribute -> Array Element -> Element
 column attrs children =
     Col { attrs = attrs, children = children }
+
+
+grid : Array2d Cell -> Element
+grid = Grid
+
+
+cell : Array Attribute -> Char -> Cell
+cell attrs char =
+    { attrs = attrs, char = char }
 
 
 text : Array Attribute -> String -> Element
@@ -73,6 +91,14 @@ mergeAttributes parentAttrs element =
                     mergeAttributes (parentAttrs ++ attrs) child
                 , border = border
                 }
+
+        Grid g ->
+            g
+                |> Array2d.map
+                    (\c ->
+                        { c | attrs = parentAttrs ++ c.attrs }
+                    )
+                |> Grid
 
         Text content ->
             Text content
@@ -131,6 +157,17 @@ toStringInternal parentAttrs element =
                 |> Array.map (\l -> left ++ l ++ right)
                 |> Array.pushFirst top
                 |> Array.pushLast bottom
+                |> String.join "\n"
+
+        Grid g ->
+            g
+                |> Array2d.map 
+                    (\c ->
+                        c.char
+                            |> String.fromChar
+                            |> Attribute.applyAll c.attrs
+                    )
+                |> Array.map (String.join "")
                 |> String.join "\n"
 
         Text content ->
