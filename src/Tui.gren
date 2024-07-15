@@ -2,6 +2,7 @@ module Tui exposing
     ( defineProgram
     , Input(..)
     , Program
+    , Environment
     , exit
     , exitWithCode
     , hideCursor
@@ -28,6 +29,7 @@ import Ansi
 import Bytes exposing (Bytes)
 import Bytes.Decode
 import Bytes.Encode
+import FileSystem.Path exposing (Path)
 import Init
 import Node
 import Stream exposing (Stream)
@@ -53,11 +55,26 @@ type alias Program model msg =
 {-| Record alias for all the functions you need to run a Tui program.
 -}
 type alias AppConfig model msg =
-    { init : Node.Environment -> Init.Task { model : model, command : Cmd msg }
+    { init : Environment -> Init.Task { model : model, command : Cmd msg }
     , update : msg -> model -> { model : model, command : Cmd msg }
     , subscriptions : model -> Sub msg
     , view : model -> String
     , onInput : (Input -> msg)
+    }
+
+
+type alias Environment =
+    -- Basically merged Node.Environment and Terminal.Configuration
+    { platform : Node.Platform
+    , cpuArchitecture : Node.CpuArchitecture
+    , applicationPath : Path
+    , args : Array String
+    , stdout : Stream
+    , stderr : Stream
+    , stdin : Stream
+    , colorDepth : Int
+    , columns : Int
+    , rows : Int
     }
 
 
@@ -75,7 +92,7 @@ message is sent to your app with a [`Input`](#Input) value representing the
 input. This lets you capture text, trigger events on certain key presses, etc.
 -}
 defineProgram :
-    { init : Node.Environment -> Init.Task { model : model, command : Cmd msg }
+    { init : Environment -> Init.Task { model : model, command : Cmd msg }
     , update : msg -> model -> { model : model, command : Cmd msg }
     , subscriptions : model -> Sub msg
     , view : model -> String
@@ -102,39 +119,69 @@ type alias Model appModel appMsg =
 
 
 init : 
-    (Node.Environment -> Init.Task { model : appModel, command : Cmd appMsg })
+    (Environment -> Init.Task { model : appModel, command : Cmd appMsg })
     -> Node.Environment
     -> Init.Task { model : Model appModel appMsg, command : Cmd (Msg appMsg) }
 init appInit env =
-    Init.await (appInit env) <| \app ->
-        Init.await Terminal.initialize <| \termConfig ->
-            let
-                model =
-                    { stdin = env.stdin
-                    , stdout = env.stdout
-                    , stderr = env.stderr
-                    , appModel = app.model
-                    , appInitCmd = Just app.command
-                    , appReady = False
-                    , terminalRows = 0
-                    , firstRow = 0
-                    }
-            in
-            Node.startProgram <|
+    Init.await Terminal.initialize <| \termConfig ->
+        let
+            termConfigForApp =
                 case termConfig of
-                    Just config ->
-                        { model = { model | terminalRows = config.rows }
-                        , command =
-                            Terminal.setStdInRawMode config.permission True
-                                |> Task.andThen (\_ -> Stream.sendString env.stdout Ansi.getCursorReport)
-                                |> Task.execute
+                    Just tConfig ->
+                        { rows = tConfig.rows
+                        , columns = tConfig.columns
+                        , colorDepth = tConfig.colorDepth
+                        }
+                    
+                    -- We can fake the Nothing values since we won't even run
+                    -- the app if term didn't initialize.
+                    Nothing ->
+                        { rows = 0
+                        , columns = 0
+                        , colorDepth = 0
                         }
 
-                    Nothing ->
-                        -- Not in an interactive terminal
-                        { model = model
-                        , command = Task.execute <| Node.exitWithCode 1
+            tuiEnv =
+                { platform = env.platform
+                , cpuArchitecture = env.cpuArchitecture
+                , applicationPath = env.applicationPath
+                , args = env.args
+                , stdout = env.stdout
+                , stderr = env.stderr
+                , stdin = env.stdin
+                , colorDepth = termConfigForApp.colorDepth
+                , columns = termConfigForApp.columns
+                , rows = termConfigForApp.rows
+                }
+            in
+            Init.await (appInit tuiEnv) <| \app ->
+                let
+                    model =
+                        { stdin = env.stdin
+                        , stdout = env.stdout
+                        , stderr = env.stderr
+                        , appModel = app.model
+                        , appInitCmd = Just app.command
+                        , appReady = False
+                        , terminalRows = 0
+                        , firstRow = 0
                         }
+                in
+                Node.startProgram <|
+                    case termConfig of
+                        Just config ->
+                            { model = { model | terminalRows = config.rows }
+                            , command =
+                                Terminal.setStdInRawMode config.permission True
+                                    |> Task.andThen (\_ -> Stream.sendString env.stdout Ansi.getCursorReport)
+                                    |> Task.execute
+                            }
+
+                        Nothing ->
+                            -- Not in an interactive terminal
+                            { model = model
+                            , command = Task.execute <| Node.exitWithCode 1
+                            }
 
 
 -- UPDATE

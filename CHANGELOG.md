@@ -1,8 +1,9 @@
 ## Next
 
 * Add `UI` and `UI.Attribute` modules for easier view layout and styling
-* Add `Escape` variant to `Tui.Input`
+* Add `Escape` variant to `Tui.Input` (TODO: change to functions)
 * Add `Tui.exit`, `Tui.exitWithCode`, and `Tui.hideCursor`
+* Your `init` now receives `Tui.Environment` which adds terminal column, row, and color support.
 
 ## 2.0.1 (2024-07-04)
 
