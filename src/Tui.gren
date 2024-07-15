@@ -414,12 +414,12 @@ type Input
     | UnknownInput
 
 
+ctrlC =
+    Bytes.Encode.encode (Bytes.Encode.unsignedInt8 3)
+
+
 bytesToInput : Bytes -> Input
 bytesToInput bytes =
-    let
-        ctrlC =
-            Bytes.Encode.encode (Bytes.Encode.unsignedInt8 3)
-    in
     if bytes == ctrlC then
         CtrlC
     else
