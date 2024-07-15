@@ -4,6 +4,7 @@ module Main exposing (main)
 import Ansi
 import Init
 import Node
+import Set exposing (Set)
 import Stream exposing (Stream)
 import Task
 import Terminal
@@ -29,7 +30,7 @@ type alias Model =
     , width : Int
     , height : Int
     , maxHeight : Int
-    , visited : Array Point
+    , visited : Set (Array Int)
     , position : Point
     }
 
@@ -46,7 +47,7 @@ init env =
             , width = env.columns
             , height = 1
             , maxHeight = env.rows
-            , visited = [{ x = 0, y = 0 }]
+            , visited = Set.fromArray [[0, 0]]
             , position = { x = 0, y = 0 }
             }
         , command = 
@@ -165,12 +166,18 @@ update msg model =
                     }
 
 
-pushVisited : Point -> Model -> Array Point
+pushVisited : Point -> Model -> Set (Array Int)
 pushVisited point model =
-    if Array.member point model.visited == False then
-        Array.pushLast point model.visited
-    else
-        model.visited
+    Set.set [point.x, point.y] model.visited
+
+
+visited : Point -> Model -> Bool
+visited point model =
+    let
+        comparablePoint =
+            [point.x, point.y]
+    in
+    Set.member comparablePoint model.visited
 
 
 view : Model -> String
@@ -183,7 +190,7 @@ view model =
                         point = { x = x, y = y }
 
                         bgColor =
-                            if Array.member point model.visited then
+                            if visited point model then
                                 Ansi.Yellow
                             else
                                 Ansi.NoColor
