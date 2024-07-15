@@ -3,7 +3,9 @@ module UI.Border exposing
     , default
     , rounded
     , thick
-    , blocky
+    , veryThick
+    , double
+    , hidden
     )
 
 
@@ -16,6 +18,11 @@ type alias Border =
     , topRight : String
     , bottomLeft : String
     , bottomRight : String
+    , diverLeft : String
+    , dividerRight : String
+    , dividerMiddle : String
+    , dividerTop : String
+    , dividerBottom : String
     }
 
 
@@ -29,6 +36,11 @@ default =
     , topRight = "┐"
     , bottomLeft = "└"
     , bottomRight = "┘"
+    , diverLeft = "├"
+    , dividerRight = "┤"
+    , dividerMiddle = "┼"
+    , dividerTop = "┬"
+    , dividerBottom = "┴"
     }
 
 rounded : Border
@@ -51,17 +63,75 @@ thick =
     , topRight = "┓"
     , bottomLeft = "┗"
     , bottomRight = "┛"
+    , diverLeft = "┣"
+    , dividerRight = "┫"
+    , dividerMiddle = "╋"
+    , dividerTop = "┳"
+    , dividerBottom = "┻"
     }
 
 
-blocky : Border
-blocky =
+veryThick : Border
+veryThick =
     { top = "▄"
     , bottom = "▀"
-    , left = "▐"
-    , right = "▌"
-    , topLeft = "▗"
-    , topRight = "▖"
-    , bottomLeft = "▝"
-    , bottomRight = "▘"
+    , left = "█"
+    , right = "█"
+    , topLeft = "▄"
+    , topRight = "▄"
+    , bottomLeft = "▀"
+    , bottomRight = "▀"
+
+    -- TODO: find better dividers for this border
+    , diverLeft = "█"
+    , dividerRight = "█"
+    , dividerMiddle = "█"
+    , dividerTop = "█"
+    , dividerBottom = "█"
+
+    -- Thinner sides?
+    --, left = "▐"
+    --, right = "▌"
+    --, topLeft = "▗"
+    --, topRight = "▖"
+    --, bottomLeft = "▝"
+    --, bottomRight = "▘"
     }
+
+
+double : Border
+double =
+    { top = "═"
+    , bottom = "═"
+    , left = "║"
+    , right = "║"
+    , topLeft = "╔"
+    , topRight = "╗"
+    , bottomLeft = "╚"
+    , bottomRight = "╝"
+    , diverLeft = "╠"
+    , dividerRight = "╣"
+    , dividerMiddle = "╬"
+    , dividerTop = "╦"
+    , dividerBottom = "╩"
+    }
+
+
+hidden : Border
+hidden =
+    { top = " "
+    , bottom = " "
+    , left = " "
+    , right = " "
+    , topLeft = " "
+    , topRight = " "
+    , bottomLeft = " "
+    , bottomRight = " "
+    , diverLeft = " "
+    , dividerRight = " "
+    , dividerMiddle = " "
+    , dividerTop = " "
+    , dividerBottom = " "
+    }
+
+
