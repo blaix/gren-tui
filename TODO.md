@@ -35,10 +35,17 @@
     * [X] Fix: newlines in strings between columns breaks layout
     * [X] Fix: underlines and strikethrough weirdness (removed for now)
     * [X] bordered boxes
-    * [X] TODO comments
     * [ ] tests
     * [ ] docs
     * [ ] easy way for people to try to test/break UI and open issues
+* [ ] Screen flicker (see paint example)
+  * [ ] Only reset screen after an app update?
+  * [ ] ...and only if view result diffs?
+  * [ ] Do an actual diff and overwrite instead of clear and redraw?
+  * [ ] https://www.textualize.io/blog/7-things-ive-learned-building-a-modern-tui-framework/
+* [ ] Don't expose any custom types (e.g. Input variants). Use functions instead, to avoid breaking changes when adding new ones (like Escape).
+    * [ ] Input module with Input.escape, Input.arrowUp, etc...
+* [ ] TODO comments
 * [ ] animation example: rotating ascii art in center of screen
 * [ ] Test in different terminals and on windows and linux
 * [ ] == Release 3.0 ==
