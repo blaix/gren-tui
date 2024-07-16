@@ -28,7 +28,7 @@ type alias Model =
     }
 
 
-init : Node.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init : Tui.Environment -> Init.Task { model : Model, command : Cmd Msg }
 init env =
     Node.startProgram
         { model = 
@@ -84,8 +84,8 @@ view model =
 
         -- Test changing number of output lines
         maybeExtraLine =
-            if Math.modBy 2 model.ticks == 0 then
-                "\n"
+            if Math.modBy 4 barLength == 0 then
+                "boop\n"
             else
                 ""
     in

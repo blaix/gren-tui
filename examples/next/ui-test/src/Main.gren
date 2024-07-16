@@ -28,7 +28,7 @@ type alias Model =
     }
 
 
-init : Node.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init : Tui.Environment -> Init.Task { model : Model, command : Cmd Msg }
 init env =
     Node.startProgram
         { model = { stdout = env.stdout }

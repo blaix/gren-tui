@@ -25,12 +25,8 @@ main =
 
 type alias Model =
     { stdout : Stream
-    , x : Int
-    , y : Int
-    , width : Int
-    , height : Int
-    , maxHeight : Int
-    , visited : Array Point
+    , selectedRow : Int
+    , selectedColumn : Int
     }
 
 
@@ -38,15 +34,13 @@ type alias Point =
     { x : Int, y : Int }
 
 
-init : Node.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init : Tui.Environment -> Init.Task { model : Model, command : Cmd Msg }
 init env =
     Node.startProgram
         { model = 
             { stdout = env.stdout 
-            , x = 0
-            , y = 0
-            , width = env.
-            , height = 1
+            , selectedRow = 1
+            , selectedColumn = 1
             }
         , command = 
             Tui.hideCursor env.stdout
@@ -71,34 +65,26 @@ update msg model =
                     }
 
                 Tui.ArrowUp ->
-                    let
-                        newY =
-                            if model.y > 1 then
-                                model.y - 1
-                            else
-                                model.y
-                    in
                     { model =
-                        { model | y = newY }
+                        { model
+                            | selectedRow =
+                                if model.selectedRow > 1 then
+                                    model.selectedRow - 1
+                                else
+                                    model.selectedRow
+                        }
                     , command =
                         Cmd.none
                     }
 
                 Tui.ArrowDown ->
-                    let
-                        newY =
-                            model.y + 1
-
-                        newHeight =
-                            if model.height - 1 == model.y then
-                                model.y + 1
-                            else
-                                model.y
-                    in
                     { model =
                         { model
-                            | y = newY
-                            , height = newHeight
+                            | selectedRow =
+                                if model.selectedRow < 3 then
+                                    model.selectedRow + 1
+                                else
+                                    model.selectedRow
                         }
                     , command =
                         Cmd.none
@@ -130,58 +116,6 @@ update msg model =
                         Cmd.none
                     }
 
-                -- Tui.ArrowUp ->
-                --     { model =
-                --         { model
-                --             | selectedRow =
-                --                 if model.selectedRow > 1 then
-                --                     model.selectedRow - 1
-                --                 else
-                --                     model.selectedRow
-                --         }
-                --     , command =
-                --         Cmd.none
-                --     }
-
-                -- Tui.ArrowDown ->
-                --     { model =
-                --         { model
-                --             | selectedRow =
-                --                 if model.selectedRow < 3 then
-                --                     model.selectedRow + 1
-                --                 else
-                --                     model.selectedRow
-                --         }
-                --     , command =
-                --         Cmd.none
-                --     }
-
-                -- Tui.ArrowRight ->
-                --     { model =
-                --         { model
-                --             | selectedColumn =
-                --                 if model.selectedColumn < 2 then
-                --                     model.selectedColumn + 1
-                --                 else
-                --                     model.selectedColumn
-                --         }
-                --     , command =
-                --         Cmd.none
-                --     }
-
-                -- Tui.ArrowLeft ->
-                --     { model =
-                --         { model
-                --             | selectedColumn =
-                --                 if model.selectedColumn > 1 then
-                --                     model.selectedColumn - 1
-                --                 else
-                --                     model.selectedColumn
-                --         }
-                --     , command =
-                --         Cmd.none
-                --     }
-
                 _ ->
                     { model = model
                     , command = Cmd.none
@@ -191,54 +125,35 @@ update msg model =
 view : Model -> String
 view model =
     UI.toString <|
-        -- UI.row  []
-        --     [ UI.bordered Border.rounded <|
-        --         UI.column []
-        --             [ UI.text [] " Column 1 "
-        --             , UI.text [] "──────────"
-        --             , UI.text ( attributes { col = 1, row = 1 } model ) " cool"
-        --             , UI.text ( attributes { col = 1, row = 2 } model ) " rad"
-        --             , UI.text ( attributes { col = 1, row = 3 } model ) " neat"
-        --             ]
-        --     , UI.bordered Border.rounded <|
-        --         UI.column []
-        --             [ UI.text [] " Column 2 "
-        --             , UI.text [] "──────────"
-        --             , UI.text ( attributes { col = 2, row = 1 } model ) " whoa"
-        --             , UI.text ( attributes { col = 2, row = 2 } model ) " hey"
-        --             , UI.text ( attributes { col = 2, row = 3 } model ) " nice"
-        --             ]
-        --     ]
+        UI.row  []
+            [ UI.bordered Border.rounded <|
+                UI.column []
+                    [ UI.text [] " Column 1 "
+                    , UI.text [] "──────────"
+                    , UI.text ( attributes { col = 1, row = 1 } model ) " cool"
+                    , UI.text ( attributes { col = 1, row = 2 } model ) " rad"
+                    , UI.text ( attributes { col = 1, row = 3 } model ) " neat"
+                    ]
+            , UI.bordered Border.rounded <|
+                UI.column []
+                    [ UI.text [] " Column 2 "
+                    , UI.text [] "──────────"
+                    , UI.text ( attributes { col = 2, row = 1 } model ) " whoa"
+                    , UI.text ( attributes { col = 2, row = 2 } model ) " hey"
+                    , UI.text ( attributes { col = 2, row = 3 } model ) " nice"
+                    ]
+            ]
 
 
--- attributes : { col : Int, row : Int } -> Model -> Array Attribute
--- attributes { col, row } model =
-    -- if col == model.selectedColumn && row == model.selectedRow then
-        -- [ Attribute.bgColor Ansi.White
-        -- , Attribute.color Ansi.Black
-        -- ]
+attributes : { col : Int, row : Int } -> Model -> Array Attribute
+attributes { col, row } model =
+    if col == model.selectedColumn && row == model.selectedRow then
+        [ Attribute.bgColor Ansi.White
+        , Attribute.color Ansi.Black
+        ]
 
-    -- else
-        -- []
-    
-
-        --     -- [ Attribute.color Ansi.Black
-        --     -- , Attribute.bgColor Ansi.Magenta
-        --     -- , Attribute.fontWeight Ansi.Bold
-        --     -- ]
-        --     -- [ UI.text [] " col 1 "
-        --     -- , UI.column 
-        --     --     [ Attribute.color Ansi.Red
-        --     --     , Attribute.bgColor Ansi.Yellow
-        --     --     ]
-        --     --     [ UI.text [] " col 2 row 1 "
-        --     --     , UI.text [] " col 2 row 2 "
-        --     --     , UI.text [] " col 2 row 3 "
-        --     --     ]
-        --     -- , UI.bordered Border.veryThick <|
-        --     --     UI.text [ Attribute.bgColor Ansi.Green ] " col 3 "
-        --     -- , UI.text [] " col 4 "
-        --     -- ]
+    else
+        []
 
 
 subscriptions : Model -> Sub Msg
