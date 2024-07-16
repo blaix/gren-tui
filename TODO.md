@@ -37,7 +37,7 @@
     * [X] bordered boxes
     * [X] Fix screen flicker (overwrite, don't clear)
     * [X] Fix: responsiveness of paint example
-    * [ ] test UI.grid nested with rows/cols/bordered
+    * [X] test UI.grid nested with rows/cols/bordered
     * [ ] tests
     * [ ] docs
 * [ ] Disable line wrap: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#set-mode

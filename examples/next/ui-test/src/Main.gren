@@ -2,6 +2,7 @@ module Main exposing (main)
 
 
 import Ansi
+import Array2d
 import Init
 import Node
 import Stream exposing (Stream)
@@ -65,7 +66,17 @@ view model =
             , Attribute.bgColor Ansi.Magenta
             , Attribute.fontWeight Ansi.Bold
             ]
-            [ UI.text [] " col 1\n with a newline in it! "
+            [ UI.column [] 
+                [ UI.text [] " col 1\n with a newline in it! "
+                , UI.bordered Border.rounded <|
+                    UI.grid <|
+                        Array2d.map (UI.cell []) <|
+                            [ [ 'c', ' ', 'c', ' ', 'c', ' ', ' ', ' ' ]
+                            , [ ' ', 'o', ' ', 'o', ' ', 'o', ' ', ' ' ]
+                            , [ ' ', ' ', 'o', ' ', 'o', ' ', 'o', ' ' ]
+                            , [ ' ', ' ', ' ', 'l', ' ', 'l', ' ', 'l' ]
+                            ]
+                ]
             , UI.column 
                 [ Attribute.color Ansi.Red
                 , Attribute.bgColor Ansi.Yellow
