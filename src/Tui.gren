@@ -114,6 +114,7 @@ type alias Model appModel appMsg =
     , appInitCmd : Maybe (Cmd appMsg)
     , appReady : Bool
     , terminalRows : Int
+    , terminalCols : Int
     , firstRow : Int
     , oldView : String
     }
@@ -165,6 +166,7 @@ init appInit env =
                         , appInitCmd = Just app.command
                         , appReady = False
                         , terminalRows = 0
+                        , terminalCols = 0
                         , firstRow = 0
                         , oldView = ""
                         }
@@ -172,7 +174,11 @@ init appInit env =
                 Node.startProgram <|
                     case termConfig of
                         Just config ->
-                            { model = { model | terminalRows = config.rows }
+                            { model = 
+                                { model 
+                                    | terminalRows = config.rows 
+                                    , terminalCols = config.columns
+                                }
                             , command =
                                 Terminal.setStdInRawMode config.permission True
                                     |> Task.andThen (\_ -> Stream.sendString env.stdout Ansi.getCursorReport)
