@@ -36,22 +36,19 @@
     * [X] Fix: underlines and strikethrough weirdness (removed for now)
     * [X] bordered boxes
     * [X] Fix screen flicker (overwrite, don't clear)
-    * [.] Fix: responsiveness of paint example
-        * [X] only draw if view result diffs
-        * [ ] try: buffer inputs, on each tick, compress sequentially-repeating inputs, then process
-        * [ ] profile with `node --inspect` and open `chrome://inspect`
-        * [ ] don't check cursorReport every input?
-        * [ ] look for other places I'm doing heavy string/array interactions
-        * [ ] https://www.textualize.io/blog/7-things-ive-learned-building-a-modern-tui-framework/
+    * [X] Fix: responsiveness of paint example
     * [ ] test UI.grid nested with rows/cols/bordered
     * [ ] tests
     * [ ] docs
-    * [ ] easy way for people to try to test/break UI and open issues
+* [ ] Disable line wrap: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#set-mode
 * [ ] Don't expose any custom types (e.g. Input variants). Use functions instead, to avoid breaking changes when adding new ones (like Escape).
     * [ ] Input module with Input.escape, Input.arrowUp, etc...
+* [ ] Test in different terminals and on windows and linux
+* [ ] easy way for people to try to test/break UI and open issues
 * [ ] TODO comments
 * [ ] animation example: rotating ascii art in center of screen
-* [ ] Test in different terminals and on windows and linux
+* [ ] Should I support moving the cursor with ansi? currently can break things (e.g. see missing bottom lines on text-styling example)
+    * [ ] Either fix text-styling example or modify it and document the issue
 * [ ] == Release 3.0 ==
 * [ ] Update README and examples to use UI module
 * [ ] Starter repo
@@ -85,6 +82,17 @@
     * [ ] readline support?
 * [ ] Can/should I clean up the background color "move over the closing character" logic?
    * [ ] Maybe use some sentinel characters to stand in for bg color until final rendering? https://www.unicode.org/faq/private_use.html
+
+## Performance notes
+
+Profile with: `node --inspect` then open `chrome://inspect`
+
+Things to try:
+
+* [ ] buffer inputs, on each tick, compress sequentially-repeating inputs, then process
+* [ ] don't check cursorReport every input?
+* [ ] look for other places I'm doing heavy string/array interactions
+* [ ] https://www.textualize.io/blog/7-things-ive-learned-building-a-modern-tui-framework/
 
 [1]: https://github.com/charmbracelet/bubbles
 [2]: https://docs.asciinema.org/getting-started/
