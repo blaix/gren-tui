@@ -115,6 +115,7 @@ type alias Model appModel appMsg =
     , appReady : Bool
     , terminalRows : Int
     , terminalCols : Int
+    , terminalPermission : Maybe Terminal.Permission
     , firstRow : Int
     , oldView : String
     }
@@ -167,6 +168,7 @@ init appInit env =
                         , appReady = False
                         , terminalRows = 0
                         , terminalCols = 0
+                        , terminalPermission = Nothing
                         , firstRow = 0
                         , oldView = ""
                         }
@@ -178,6 +180,7 @@ init appInit env =
                                 { model 
                                     | terminalRows = config.rows 
                                     , terminalCols = config.columns
+                                    , terminalPermission = Just config.permission
                                 }
                             , command =
                                 Terminal.setStdInRawMode config.permission True
@@ -197,6 +200,7 @@ init appInit env =
 
 type Msg appMsg
     = GotStdin Bytes
+    | TerminalResized Terminal.Size
     | AppMsg appMsg
     | Tick Time.Posix
 
@@ -245,6 +249,16 @@ update appConfig msg model =
 
                 _ ->
                     doAppUpdate
+
+        TerminalResized { rows, columns } ->
+            { model =
+                { model
+                    | terminalRows = rows
+                    , terminalCols = columns
+                }
+            , command =
+                Cmd.none
+            }
 
         AppMsg appMsg ->
             appUpdate appConfig.update appMsg model
@@ -298,6 +312,11 @@ subscriptions appSubs model =
             Time.every (1000 / framesPerSecond) Tick
           else
             Sub.none
+        , case model.terminalPermission of
+            Just termPermission ->
+                Terminal.onResize termPermission TerminalResized
+            Nothing ->
+                Sub.none
         ]
 
 
@@ -357,9 +376,6 @@ view appView model =
                 1
             else
                 firstRowAdjusted
-
-        renderAppView =
-            appViewResult
     in
     { model = 
         { model 
@@ -503,3 +519,18 @@ countLines string =
     string
         |> String.lines
         |> Array.length
+
+---------------------------------------------------------------------
+-- TODO: Tie UI module into init/update cycle
+--       so I can make sure the view is trimmed to terminal size
+--       before anything is sent to stdout no matter what
+---------------------------------------------------------------------
+
+{-| ANSI-aware version of String.left
+-}
+trim : Int -> String -> String
+trim length string =
+    if Ansi.width string > length then
+        trim length (String.dropRight 1 string)
+    else
+        string
