@@ -38,9 +38,13 @@
     * [X] Fix screen flicker (overwrite, don't clear)
     * [X] Fix: responsiveness of paint example
     * [X] test UI.grid nested with rows/cols/bordered
+    * [X] Clear screen if resized smaller than view width
+    * [ ] ^ Bug: chopping off the "end background color" sequence
+    * [ ] ^ Fix: Refactor to use an ansi parser...
+        * [ ] Port https://github.com/wolfadex/elm-ansi/blob/main/src/Ansi/Parser.elm
+        * [ ] Update my string manipulations to use parser instead
     * [ ] tests
     * [ ] docs
-* [ ] Disable line wrap: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797#set-mode
 * [ ] Don't expose any custom types (e.g. Input variants). Use functions instead, to avoid breaking changes when adding new ones (like Escape).
     * [ ] Input module with Input.escape, Input.arrowUp, etc...
 * [ ] Test in different terminals and on windows and linux
@@ -51,7 +55,7 @@
     * [ ] Either fix text-styling example or modify it and document the issue
 * [ ] == Release 3.0 ==
 * [ ] Update README and examples to use UI module
-* [ ] Starter repo
+* [ ] Starter repo or project initializer (add `gren run` instead of publishing separate npm package?)
 * [ ] Demos with [asciinema][2] or [freeze][3]
 * [ ] Publish post or video making a dungeon crawler. Look at the UI of Robin's elm-warrior :)
 * [ ] More Attributes:

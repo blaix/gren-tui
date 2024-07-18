@@ -251,13 +251,46 @@ update appConfig msg model =
                     doAppUpdate
 
         TerminalResized { rows, columns } ->
+            let
+                numLines =
+                    countLines model.oldView
+
+                wrappedLines =
+                    model.oldView
+                        |> String.lines
+                        |> Array.map Ansi.width
+                        |> Array.any (\w -> w > columns)
+
+                -- It's too complicated to work out how to adjust the firstRow
+                -- calculation if lines wrapped. And depending on the terminal
+                -- they may wrap before we receive this event, and if that
+                -- scrolls the screen, our firstRow will be off, and we'll get
+                -- phantom lines from previous renders. So for now, just clear
+                -- the screen if lines wrapped :(
+
+                newFirstRow =
+                    if wrappedLines then
+                        1
+                    else
+                        model.firstRow
+
+                cmd =
+                    if wrappedLines then
+                        Task.execute <|
+                            Stream.sendString 
+                                model.stdout 
+                                (Ansi.clearScreen Ansi.Full)
+                    else
+                        Cmd.none
+            in
             { model =
                 { model
                     | terminalRows = rows
                     , terminalCols = columns
+                    , firstRow = newFirstRow
+                    , oldView = ""
                 }
-            , command =
-                Cmd.none
+            , command = cmd
             }
 
         AppMsg appMsg ->
@@ -359,23 +392,11 @@ view appView model =
         appViewResult =
             appView model.appModel
 
-        outputLines =
+        numLines =
             countLines appViewResult
 
-        scrolledRows =
-            model.firstRow + outputLines - 1 - model.terminalRows
-
-        firstRowAdjusted =
-            if scrolledRows > 0 then
-                model.firstRow - scrolledRows
-            else
-                model.firstRow
-
         newFirstRow =
-            if firstRowAdjusted < 1 then
-                1
-            else
-                firstRowAdjusted
+            adjustFirstRow model numLines
     in
     { model = 
         { model 
@@ -396,7 +417,10 @@ render model appViewResult =
     --   * Draw over the old view, don't clear then draw, or you'll get screen flicker.
     --   * Draw from the model's OLD first row, or you'll draw over non-tui terminal lines instead of scrolling.
     appViewResult
-        |> String.replace "\n" ((Ansi.clearLine Ansi.Down) ++ "\n")
+        |> String.lines
+        |> Array.map 
+            (\l -> trim model.terminalCols l ++ Ansi.clearLine Ansi.Down)
+        |> String.join "\n"
         |> String.prepend (Ansi.moveTo model.firstRow 0)
         |> String.append (Ansi.clearScreen Ansi.Down)
         |> Stream.sendString model.stdout
@@ -520,17 +544,42 @@ countLines string =
         |> String.lines
         |> Array.length
 
----------------------------------------------------------------------
--- TODO: Tie UI module into init/update cycle
---       so I can make sure the view is trimmed to terminal size
---       before anything is sent to stdout no matter what
----------------------------------------------------------------------
-
 {-| ANSI-aware version of String.left
 -}
 trim : Int -> String -> String
 trim length string =
     if Ansi.width string > length then
+
+        ----------------------------------------------------
+        -- TODO: don't drop if it's an ansi sequence!
+        -- or you'll remove the "end background color"!
+        ----------------------------------------------------
+        --
+        ------------------------------------------------------------------------------------------
+        -- TODO: consider I may need to rework things to use a parser (borrowed from elm-ansi)
+        --       https://github.com/wolfadex/elm-ansi/blob/3.0.0/src/Ansi/Parser.elm
+        ------------------------------------------------------------------------------------------
+
         trim length (String.dropRight 1 string)
     else
         string
+
+
+{-| Adjust first row to account for scrolling.
+-}
+adjustFirstRow : Model appModel appMsg -> Int -> Int
+adjustFirstRow model numLines =
+    let
+        scrolledRows =
+            model.firstRow + numLines - 1 - model.terminalRows
+
+        firstRowAdjusted =
+            if scrolledRows > 0 then
+                model.firstRow - scrolledRows
+            else
+                model.firstRow
+    in
+    if firstRowAdjusted < 1 then
+        1
+    else
+        firstRowAdjusted
