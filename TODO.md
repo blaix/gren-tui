@@ -42,6 +42,7 @@
     * [ ] ^ Bug: chopping off the "end background color" sequence
     * [ ] ^ Fix: Refactor to use an ansi parser...
         * [ ] Port https://github.com/wolfadex/elm-ansi/blob/main/src/Ansi/Parser.elm
+        * [ ] or get some help from claud.ai (other places it can help? like optimizing joinHorizontal?)
         * [ ] Update my string manipulations to use parser instead
     * [ ] tests
     * [ ] docs
