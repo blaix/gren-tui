@@ -62,6 +62,7 @@
 * [ ] animation example: rotating ascii art in center of screen
 * [ ] Should I support moving the cursor with ansi? currently can break things (e.g. see missing bottom lines on text-styling example)
     * [ ] Either fix text-styling example or modify it and document the issue
+* [ ] Look into performance on paint example. Think it's input handling. See [[#performance-notes]]
 * [ ] easy way for people to try to test/break UI and open issues
 * [ ] == Release 3.0 ==
 * [ ] Update README and examples to use UI module

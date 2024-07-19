@@ -71,10 +71,10 @@ view model =
                 , Attribute.bgColor Ansi.Yellow
                 ]
                 [ UI.text [] " col 2 row 1 "
-                , UI.text [] " col 2 row 2 "
+                , UI.text [] " col 2 row 2 with extra text "
                 , UI.text [] " col 2 row 3 "
                 ]
-            , UI.bordered Border.veryThick <|
+            , UI.bordered [] Border.veryThick <|
                 UI.text [ Attribute.bgColor Ansi.Green ] " col 3 "
             , UI.text [] " col 4 "
             ]

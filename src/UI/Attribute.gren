@@ -10,7 +10,6 @@ module UI.Attribute exposing
 
 
 import Ansi
-import Internal
 
 
 type Attribute
@@ -22,40 +21,18 @@ type Attribute
 
 apply : Attribute -> String -> String
 apply attr string =
-    let
-        
-        parts =
-            Internal.bgHelper string
+    case attr of
+        Color c ->
+            Ansi.wrapColor c string
 
-        styled =
-            case attr of
-                Color c ->
-                    { string = Ansi.wrapColor c parts.string
-                    , suffix = parts.suffix
-                    }
+        BgColor c ->
+            Ansi.wrapBgColor c string
 
-                BgColor c ->
-                    -- Use set instead of wrap so we don't double up on
-                    -- unsetBgColor or it will screw up our ability to push it
-                    -- over when padding columns with spaces
-                    { string = Ansi.setBgColor c ++ parts.string
-                    , suffix = 
-                        parts.suffix
-                            |> String.replace Ansi.unsetBgColor ""
-                            |> String.append Ansi.unsetBgColor
-                    }
+        FontWeight w ->
+            Ansi.wrapFontWeight w string
 
-                FontWeight w ->
-                    { string = Ansi.wrapFontWeight w parts.string
-                    , suffix = parts.suffix
-                    }
-
-                Italic ->
-                    { string = Ansi.wrapItalic parts.string
-                    , suffix = parts.suffix
-                    }
-    in
-    styled.string ++ styled.suffix
+        Italic ->
+            Ansi.wrapItalic string
 
 
 applyAll : Array Attribute -> String -> String
@@ -70,8 +47,10 @@ color = Color
 bgColor : Ansi.Color -> Attribute
 bgColor = BgColor
 
+
 fontWeight : Ansi.FontWeight -> Attribute
 fontWeight = FontWeight
+
 
 italic : Attribute
 italic = Italic

@@ -68,14 +68,8 @@ view model =
             ]
             [ UI.column [] 
                 [ UI.text [] " col 1\n with a newline in it! "
-                , UI.bordered Border.rounded <|
-                    UI.grid <|
-                        Array2d.map (UI.cell []) <|
-                            [ [ 'c', ' ', 'c', ' ', 'c', ' ', ' ', ' ' ]
-                            , [ ' ', 'o', ' ', 'o', ' ', 'o', ' ', ' ' ]
-                            , [ ' ', ' ', 'o', ' ', 'o', ' ', 'o', ' ' ]
-                            , [ ' ', ' ', ' ', 'l', ' ', 'l', ' ', 'l' ]
-                            ]
+                , UI.bordered [] Border.rounded <|
+                    UI.text [] " cool "
                 ]
             , UI.column 
                 [ Attribute.color Ansi.Red
@@ -83,7 +77,7 @@ view model =
                 ]
                 [ UI.text [] " col 2 row 1 "
                 , UI.row []
-                    [ UI.bordered Border.thick <|
+                    [ UI.bordered [] Border.thick <|
                         UI.row [ Attribute.bgColor Ansi.Blue ]
                             [ UI.text [] "inner col 1 "
                             , UI.column []

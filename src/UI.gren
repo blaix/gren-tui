@@ -7,14 +7,13 @@ module UI exposing
     , column
     , text
     , bordered
-    , grid
-    , cell
+    , charGrid
     )
 
 
 import Ansi
 import Array2d exposing (Array2d)
-import Internal
+import SingleLine exposing (SingleLine)
 import UI.Attribute as Attribute exposing (Attribute)
 import UI.Border exposing (Border)
 
@@ -22,14 +21,29 @@ import UI.Border exposing (Border)
 type Element
     = Row { attrs : Array Attribute, children : Array Element }
     | Col { attrs : Array Attribute, children : Array Element }
-    | Bordered { attrs : Array Attribute, child : Element, border : Border }
-    | Grid (Array2d Cell)
-    | Text String
+    | Text { attrs : Array Attribute, content : SingleLine }
+
+
+type alias Grid =
+    Array2d Cell
 
 
 type alias Cell =
     { attrs : Array Attribute
+    , content : SingleLine 
+    }
+
+
+type alias GridChar =
+    { attrs : Array Attribute
     , char : Char
+    }
+
+
+emptyCell : Cell
+emptyCell =
+    { attrs = []
+    , content = SingleLine.empty
     }
 
 
@@ -43,26 +57,67 @@ column attrs children =
     Col { attrs = attrs, children = children }
 
 
-grid : Array2d Cell -> Element
-grid = Grid
-
-
-cell : Array Attribute -> Char -> Cell
-cell attrs char =
-    { attrs = attrs, char = char }
-
-
 text : Array Attribute -> String -> Element
 text attrs content =
     content
-        |> String.split "\n"
-        |> Array.map Text
-        |> column attrs
+        |> SingleLine.fromString
+        |> Array.map (\l -> Text { attrs = attrs, content = l })
+        |> column []
 
 
-bordered : Border -> Element -> Element
-bordered border element = 
-    Bordered { attrs = [], child = element, border = border }
+charGrid : Array Attribute -> Array2d GridChar -> Element
+charGrid attrs grid =
+    grid
+        |> Array2d.map
+            (\c -> 
+                c.char
+                    |> String.fromChar
+                    |> Attribute.applyAll (attrs ++ c.attrs)
+            )
+        |> Array.map (String.join "")
+        |> String.join "\n"
+        |> text attrs
+
+
+bordered : Array Attribute -> Border -> Element -> Element
+bordered attrs border element = 
+    let
+        -- Can we avoid the extra conversion here?
+        -- Only using it here to get the width/height...
+        grid =
+            elementToGrid element
+
+        width =
+            gridWidth grid
+            -- |> Debug.log "gridWidth"
+
+        height =
+            Array.length grid
+            -- |> Debug.log "height"
+    in
+    row attrs
+        -- Left side
+        [ column []
+            [ text [] border.topLeft
+            , column [] (Array.repeat height (text [] border.left))
+            , text [] border.bottomLeft
+            ]
+            -- |> Debug.log "left"
+
+        -- Center
+        , column []
+            [ text [] (String.repeat width border.top)
+            , element
+            , text [] (String.repeat width border.bottom)
+            ]
+
+        -- Right side
+        , column []
+            [ text [] border.topRight
+            , column [] (Array.repeat height (text [] border.right))
+            , text [] border.bottomRight
+            ]
+        ]
 
 
 mergeAttributes : Array Attribute -> Element -> Element
@@ -84,194 +139,221 @@ mergeAttributes parentAttrs element =
                         |> Array.map (mergeAttributes (parentAttrs ++ attrs))
                 }
 
-        Bordered { attrs, child, border } ->
-            Bordered
+        Text { attrs, content } ->
+            Text
                 { attrs = parentAttrs ++ attrs
-                , child =
-                    mergeAttributes (parentAttrs ++ attrs) child
-                , border = border
+                , content = content
                 }
 
-        Grid g ->
-            g
-                |> Array2d.map
-                    (\c ->
-                        { c | attrs = parentAttrs ++ c.attrs }
-                    )
-                |> Grid
 
-        Text content ->
-            Text content
-
-
+-- TODO: pass maxWidth to this
 toString : Element -> String
 toString element =
     element
         |> mergeAttributes []
-        |> toStringInternal []
+        |> elementToGrid
+        |> gridToString
 
 
-toStringInternal : Array Attribute -> Element -> String
-toStringInternal parentAttrs element =
-    -- NOTE: Attributes are already merged with their parents.
-    -- The parentAttrs param only matters if we're adding net new strings
-    -- (e.g. adding borders).
-
+elementToGrid : Element -> Grid
+elementToGrid element =
     case element of
         Row { attrs, children } ->
             children
-                |> Array.map (toStringInternal attrs)
+                |> Array.map elementToGrid
                 |> joinHorizontal attrs
         
-        Col { attrs, children } ->
+        Col { children } ->
             children
-                |> Array.map (toStringInternal attrs)
-                |> joinVertical attrs
-
-        Bordered { attrs, child, border } ->
-            let
-                contents =
-                    toStringInternal attrs child
-
-                lines =
-                    String.lines contents
-
-                width =
-                    maxWidth lines
-
-                top =
-                    Attribute.applyAll parentAttrs <|
-                        border.topLeft ++ (String.repeat width border.top) ++ border.topRight
-
-                bottom =
-                    Attribute.applyAll parentAttrs <|
-                        border.bottomLeft ++ (String.repeat width border.bottom) ++ border.bottomRight
-
-                left =
-                    Attribute.applyAll parentAttrs border.left
-
-                right =
-                    Attribute.applyAll parentAttrs border.right
-            in
-            lines
-                |> Array.map (\l -> left ++ l ++ right)
-                |> Array.pushFirst top
-                |> Array.pushLast bottom
-                |> String.join "\n"
-
-        Grid g ->
-            g
-                |> Array2d.map 
-                    (\c ->
-                        c.char
-                            |> String.fromChar
-                            |> Attribute.applyAll c.attrs
-                    )
-                |> Array.map (String.join "")
-                |> String.join "\n"
-
-        Text content ->
-            content
+                |> Array.map elementToGrid
+                |> joinVertical
 
 
-joinHorizontal : Array Attribute -> Array String -> String
-joinHorizontal attrs columns =
+        Text { attrs, content } ->
+            [[{ attrs = attrs, content = content }]]
+
+
+joinHorizontal : Array Attribute -> Array Grid -> Grid
+joinHorizontal parentAttrs grids =
     let
-        colsOfLines : Array2d String
-        colsOfLines =
-            columns
-                |> Array.map (String.split "\n")
+        normalizedGrids =
+            grids
+                |> normalizeHeight parentAttrs
+                |> Array.map normalizeWidth
 
-        maxLines : Int
-        maxLines =
-            colsOfLines
+        numRows =
+            normalizedGrids
+                |> Array.get 0
+                |> Maybe.withDefault [[]]
+                |> Array.length
+    in
+    Array.initialize numRows 0
+        {-
+            Merge an array of grids into a single grid, where each row of the
+            new grid is constructed from the corresponding row of the original
+            grids. So if we start with this:
+
+                [ [ [ 1, 2 ]
+                  , [ 3, 4 ]
+                  ]
+                , [ [ a, b ]
+                  , [ c, d ]
+                  ]
+                ]
+
+            we should end up with this:
+
+                [ [ 1, 2, a, b ]
+                , [ 3, 4, c, d ]
+                ]
+        -}
+        (\rowNum ->
+            normalizedGrids
+                |> Array.map 
+                    (\g -> Array.get rowNum g
+                        |> Maybe.withDefault [] -- how to enforce this should never happen? (since we already normalized height/width)
+                    )
+                |> Array.flatten
+        )
+
+
+normalizeHeight : Array Attribute -> Array Grid -> Array Grid
+normalizeHeight parentAttrs allGrids =
+    let
+        maxRows =
+            allGrids
+                |> Array.map Array.length
+                |> Array.maximum
+                |> Maybe.withDefault 0
+    in
+    allGrids
+        |> Array.map
+            (\g ->
+                let
+                    diff =
+                        maxRows - Array.length g
+
+                    extraRows =
+                        Array.repeat diff
+                            [ { attrs = parentAttrs
+                              , content = SingleLine.empty
+                              }
+                            ]
+                in
+                g ++ extraRows
+            )
+
+
+normalizeWidth : Grid -> Grid
+normalizeWidth grid =
+    let
+        targetWidth =
+            gridWidth grid
+    in
+    grid
+        |> Array.map 
+            (\thisRow ->
+                let
+                    thisRowWidth =
+                        thisRow
+                            |> Array.map .content
+                            |> Array.map SingleLine.width
+                            |> Array.foldl (+) 0
+
+                    diff =
+                        targetWidth - thisRowWidth
+
+                    popped =
+                        Array.popLast thisRow
+                            |> Maybe.withDefault
+                                { last = emptyCell
+                                , initial = []
+                                }
+
+                    lastCellContent =
+                        popped.last.content
+
+                    lastCellTargetWidth =
+                        (SingleLine.width lastCellContent) + diff
+
+                    newLastCellContent =
+                        SingleLine.padRight 
+                            lastCellTargetWidth 
+                            lastCellContent
+    
+                    paddedCell =
+                        { popped.last 
+                            | content = newLastCellContent
+                        }
+                in
+                Array.pushLast paddedCell popped.initial
+            )
+
+
+joinVertical : Array Grid -> Grid
+joinVertical =
+    Array.flatten
+
+
+{- Turn a grid like this:
+
+    [ ["a", "b"]
+    , ["1", "2"]
+    ]
+
+Into a grid like this:
+
+    [ ["a", "1"]
+    , ["b", "2"]
+    ]
+
+For when you have an array of rows and want an array of columns, or vice versa.
+-}
+invert : Grid -> Grid
+invert grid =
+    let
+        maxCols =
+            grid
                 |> Array.map Array.length
                 |> Array.maximum
                 |> Maybe.withDefault 0
 
-        normalized : Array2d String
-        normalized =
-            colsOfLines
-                |> Array.map (padLines maxLines)
-
-        {- Turn the array of columns that look like this:
-
-            [ ["a", "b"] -- column 1
-            , ["1", "2"] -- column 2
-            ]
-
-        Into an array of rows that look like this:
-
-            [ ["a", "1"] -- row 1
-            , ["b", "2"] -- row 2
-            ]
-
-        For easier joining of the final output.
-        -}
-        zipped : Array2d String
-        zipped =
-            Array.initialize maxLines 0
-                (\x ->
-                    Array.initialize (Array.length normalized) 0
-                        (\y ->
-                            Array2d.get { x = x, y = y } normalized
-                                |> Maybe.withDefault ""
-                        )
-                )
+        numRows =
+            Array.length grid
     in
-    zipped
-        |> Array2d.map (Attribute.applyAll attrs)
+    Array.initialize maxCols 0
+        (\x ->
+            Array.initialize numRows 0
+                (\y ->
+                    Array2d.get { x = x, y = y } grid
+                        |> Maybe.withDefault
+                            { attrs = [], content = SingleLine.empty }
+                )
+        )
+
+
+gridToString : Grid -> String
+gridToString grid =
+    grid
+        |> Array.map (Array.map cellToString)
         |> Array.map (String.join "")
         |> String.join "\n"
 
-joinVertical : Array Attribute -> Array String -> String
-joinVertical attrs rows =
-    rows
-        |> Array.map (padRight (maxWidth rows))
-        |> Array.map (Attribute.applyAll attrs)
-        |> String.join "\n"
+
+cellToString : Cell -> String
+cellToString cell =
+    cell.content
+        |> SingleLine.toString
+        |> Attribute.applyAll cell.attrs
 
 
-maxWidth : Array String -> Int
-maxWidth lines =
-    lines
-        |> Array.map (String.split "\n")
-        |> Array.flatten
-        |> Array.map Ansi.width
+gridWidth : Grid -> Int
+gridWidth grid =
+    grid
+        |> Array2d.map .content
+        |> Array2d.map SingleLine.toString
+        |> Array2d.map Ansi.width
+        |> Array.map (Array.foldl (+) 0)
         |> Array.maximum
         |> Maybe.withDefault 0
 
-
-{-| Given an array of lines, return an array with at least `height` number of
-lines, each having the same number of characters, using spaces for padding.
--}
-padLines : Int -> Array String -> Array String
-padLines height lines =
-    let
-        heightDiff =
-            height - (Array.length lines)
-
-        extraLines =
-            Array.repeat heightDiff ""
-    in
-    lines
-        |> Array.append extraLines
-        |> Array.map (padRight (maxWidth lines))
-
-
-{-| Padd a string with spaces until it is the given length.
-Accounts for ansi sequences and ensures bg extends over the added spaces.
--}
-padRight : Int -> String -> String
-padRight width string =
-    let
-        diff =
-            width - Ansi.width string
-
-        parts =
-            Internal.bgHelper string
-    in
-    if diff > 0 then
-        parts.string ++ (String.repeat diff " ") ++ parts.suffix
-    else
-        string

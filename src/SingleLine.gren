@@ -1,0 +1,58 @@
+module SingleLine exposing 
+    ( SingleLine
+    , empty
+    , fromString
+    , fromChar
+    , toString
+    , padRight
+    , width
+    )
+
+{-| For working with strings when you need to be guaranteed there are no newlines.
+-}
+
+
+import Ansi
+import UI.Attribute exposing (Attribute)
+
+
+type SingleLine =
+    SingleLine String
+
+
+empty : SingleLine
+empty =
+    SingleLine ""
+
+
+fromString : String -> Array SingleLine
+fromString string =
+    string
+        |> String.lines
+        |> Array.map SingleLine
+
+
+fromChar : Char -> SingleLine
+fromChar char =
+    if char == '\n' then
+        SingleLine ""
+    else
+        SingleLine (String.fromChar char)
+
+
+toString : SingleLine -> String
+toString (SingleLine string) =
+    string
+
+
+padRight : Int -> SingleLine -> SingleLine
+padRight desiredWidth (SingleLine string) =
+    string
+        |> String.padRight desiredWidth ' '
+        |> SingleLine
+
+
+width : SingleLine -> Int
+width (SingleLine string) =
+    Ansi.width string
+

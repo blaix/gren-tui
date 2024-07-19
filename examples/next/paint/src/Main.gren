@@ -7,7 +7,6 @@ import Node
 import Set exposing (Set)
 import Stream exposing (Stream)
 import Task
-import Terminal
 import Tui
 import UI
 import UI.Attribute as Attribute exposing (Attribute)
@@ -183,30 +182,31 @@ visited point model =
 view : Model -> String
 view model =
     UI.toString <|
-        UI.grid <|
-            Array.initialize model.height 0 <| \y ->
-                Array.initialize model.width 0 <| \x ->
-                    let
-                        point = { x = x, y = y }
+        UI.charGrid 
+            [ Attribute.color Ansi.Black 
+            , Attribute.fontWeight Ansi.Bold
+            ] <|
+                Array.initialize model.height 0 <| \y ->
+                    Array.initialize model.width 0 <| \x ->
+                        let
+                            point = { x = x, y = y }
 
-                        bgColor =
-                            if visited point model then
-                                Ansi.Yellow
-                            else
-                                Ansi.NoColor
+                            bgColor =
+                                if visited point model then
+                                    Ansi.Yellow
+                                else
+                                    Ansi.NoColor
 
-                        cursor =
-                            if point == model.position then
-                                '+'
-                            else
-                                ' '
-                    in
-                    UI.cell 
-                        [ Attribute.bgColor bgColor 
-                        , Attribute.color Ansi.Black
-                        , Attribute.fontWeight Ansi.Bold
-                        ] 
-                        cursor
+                            cursor =
+                                if point == model.position then
+                                    '+'
+                                else
+                                    ' '
+                        in
+                        { char = cursor
+                        , attrs =
+                            [ Attribute.bgColor bgColor ] 
+                        }
 
 
 subscriptions : Model -> Sub Msg
