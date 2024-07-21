@@ -179,34 +179,33 @@ visited point model =
     Set.member comparablePoint model.visited
 
 
-view : Model -> String
+view : Model -> UI.Element
 view model =
-    UI.toString <|
-        UI.charGrid 
-            [ Attribute.color Ansi.Black 
-            , Attribute.fontWeight Ansi.Bold
-            ] <|
-                Array.initialize model.height 0 <| \y ->
-                    Array.initialize model.width 0 <| \x ->
-                        let
-                            point = { x = x, y = y }
+    UI.charGrid 
+        [ Attribute.color Ansi.Black 
+        , Attribute.fontWeight Ansi.Bold
+        ] <|
+            Array.initialize model.height 0 <| \y ->
+                Array.initialize model.width 0 <| \x ->
+                    let
+                        point = { x = x, y = y }
 
-                            bgColor =
-                                if visited point model then
-                                    Ansi.Yellow
-                                else
-                                    Ansi.NoColor
+                        bgColor =
+                            if visited point model then
+                                Ansi.Yellow
+                            else
+                                Ansi.NoColor
 
-                            cursor =
-                                if point == model.position then
-                                    '+'
-                                else
-                                    ' '
-                        in
-                        { char = cursor
-                        , attrs =
-                            [ Attribute.bgColor bgColor ] 
-                        }
+                        cursor =
+                            if point == model.position then
+                                '+'
+                            else
+                                ' '
+                    in
+                    { char = cursor
+                    , attrs =
+                        [ Attribute.bgColor bgColor ] 
+                    }
 
 
 subscriptions : Model -> Sub Msg

@@ -36,6 +36,7 @@ import Stream exposing (Stream)
 import Task exposing (Task)
 import Terminal
 import Time
+import UI
 
 
 -- PROGRAM INIT
@@ -58,7 +59,7 @@ type alias AppConfig model msg =
     { init : Environment -> Init.Task { model : model, command : Cmd msg }
     , update : msg -> model -> { model : model, command : Cmd msg }
     , subscriptions : model -> Sub msg
-    , view : model -> String
+    , view : model -> UI.Element
     , onInput : (Input -> msg)
     }
 
@@ -95,7 +96,7 @@ defineProgram :
     { init : Environment -> Init.Task { model : model, command : Cmd msg }
     , update : msg -> model -> { model : model, command : Cmd msg }
     , subscriptions : model -> Sub msg
-    , view : model -> String
+    , view : model -> UI.Element
     , onInput : (Input -> msg)
     } -> Program model msg
 defineProgram appConfig =
@@ -117,7 +118,7 @@ type alias Model appModel appMsg =
     , terminalCols : Int
     , terminalPermission : Maybe Terminal.Permission
     , firstRow : Int
-    , oldView : String
+    , oldView : UI.Element
     }
 
 
@@ -170,7 +171,7 @@ init appInit env =
                         , terminalCols = 0
                         , terminalPermission = Nothing
                         , firstRow = 0
-                        , oldView = ""
+                        , oldView = UI.text [] ""
                         }
                 in
                 Node.startProgram <|
@@ -252,11 +253,14 @@ update appConfig msg model =
 
         TerminalResized { rows, columns } ->
             let
+                oldViewString =
+                    UI.toString model.oldView
+
                 numLines =
-                    countLines model.oldView
+                    countLines oldViewString
 
                 wrappedLines =
-                    model.oldView
+                    oldViewString
                         |> String.lines
                         |> Array.map Ansi.width
                         |> Array.any (\w -> w > columns)
@@ -288,7 +292,6 @@ update appConfig msg model =
                     | terminalRows = rows
                     , terminalCols = columns
                     , firstRow = newFirstRow
-                    , oldView = ""
                 }
             , command = cmd
             }
@@ -384,39 +387,45 @@ cleanup stream =
 
 
 view : 
-    (appModel -> String)
+    (appModel -> UI.Element)
     -> Model appModel appMsg
     -> { model : Model appModel appMsg, command : Cmd (Msg appMsg) }
 view appView model =
     let
-        appViewResult =
+        element =
             appView model.appModel
-
-        numLines =
-            countLines appViewResult
-
-        newFirstRow =
-            adjustFirstRow model numLines
     in
-    { model = 
-        { model 
-            | firstRow = newFirstRow 
-            , oldView = appViewResult
+    if element == model.oldView then
+        { model = model
+        , command = Cmd.none
         }
-    , command = 
-        if model.oldView /= appViewResult then
-            Task.execute (render model appViewResult)
-        else
-            Cmd.none
-    }
+    else
+        let
+            viewString =
+                UI.toString element
+
+            numLines =
+                countLines viewString
+
+            newFirstRow =
+                adjustFirstRow model numLines
+        in
+        { model = 
+            { model 
+                | firstRow = newFirstRow 
+                , oldView = element
+            }
+        , command = 
+            Task.execute (render model viewString)
+        }
 
 
 render : Model appModel appMsg -> String -> Task Never {}
-render model appViewResult =
+render model viewString =
     -- IMPORTANT!
     --   * Draw over the old view, don't clear then draw, or you'll get screen flicker.
     --   * Draw from the model's OLD first row, or you'll draw over non-tui terminal lines instead of scrolling.
-    appViewResult
+    viewString
         |> String.prepend (Ansi.moveTo model.firstRow 0)
         |> String.append (Ansi.clearScreen Ansi.Down)
         |> Stream.sendString model.stdout
