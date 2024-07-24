@@ -40,28 +40,29 @@
     * [X] test UI.grid nested with rows/cols/bordered
     * [X] Clear screen if resized smaller than view width
     * [X] Bug: chopping off the "end background color" sequence. Fix: return UI.Element from view instead of String.
-    * [ ] e2e tests with https://github.com/microsoft/tui-test
-        * [ ] screenshot tests
-        * [ ] performance benchmarks?
-    * [ ] paragraph element that allows text to wrap
-        * [ ] Need a way to get element width BEFORE turning into a grid?
-        * [ ] ^ If so, refactor other place(s) I'm converting to grid just to get width.
-        * [ ] Test with multiple paragraphs scattered among rows and cols.
-    * [ ] Take another pass at reviewing lipgloss and bubbles
-        * [ ] Replace CharGrid with Table? https://github.com/charmbracelet/lipgloss?tab=readme-ov-file#rendering-tables
-        * [ ] List or similar tracking selected item
-        * [ ] Consider wiring effects/messages into elements (recreate classic counter example in terminal)
-    * [ ] unit tests with gren-test
-    * [ ] expand e2e tests
-    * [ ] docs
+    * [ ] Clean up ui-refactor branch and merge to main
+* [ ] e2e tests with https://github.com/microsoft/tui-test
+    * [ ] screenshot tests
+    * [ ] performance benchmarks?
+    * [ ] test in different terminals and on windows and linux
+* [ ] paragraph element that allows text to wrap
+    * [ ] Need a way to get element width BEFORE turning into a grid?
+    * [ ] ^ If so, refactor other place(s) I'm converting to grid just to get width.
+    * [ ] Test with multiple paragraphs scattered among rows and cols.
+* [ ] Take another pass at reviewing lipgloss and bubbles
+    * [ ] Replace CharGrid with Table? https://github.com/charmbracelet/lipgloss?tab=readme-ov-file#rendering-tables
+    * [ ] List or similar tracking selected item
+    * [ ] Consider wiring effects/messages into elements (recreate classic counter example in terminal)
 * [ ] Don't expose any custom types (e.g. Input variants). Use functions instead, to avoid breaking changes when adding new ones (like Escape).
     * [ ] Input module with Input.escape, Input.arrowUp, etc...
-* [ ] Test in different terminals and on windows and linux
-* [ ] easy way for people to try to test/break UI and open issues
+* [ ] unit tests with gren-test
+* [ ] expand e2e tests
+* [ ] update README and docs for all the new ui stuff
 * [ ] TODO comments
 * [ ] animation example: rotating ascii art in center of screen
 * [ ] Should I support moving the cursor with ansi? currently can break things (e.g. see missing bottom lines on text-styling example)
     * [ ] Either fix text-styling example or modify it and document the issue
+* [ ] easy way for people to try to test/break UI and open issues
 * [ ] == Release 3.0 ==
 * [ ] Update README and examples to use UI module
 * [ ] Starter repo or project initializer (add `gren run` instead of publishing separate npm package?)
