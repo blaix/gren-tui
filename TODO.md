@@ -40,12 +40,19 @@
     * [X] test UI.grid nested with rows/cols/bordered
     * [X] Clear screen if resized smaller than view width
     * [X] Bug: chopping off the "end background color" sequence. Fix: return UI.Element from view instead of String.
+    * [ ] e2e tests with https://github.com/microsoft/tui-test
+        * [ ] screenshot tests
+        * [ ] performance benchmarks?
     * [ ] paragraph element that allows text to wrap
+        * [ ] Need a way to get element width BEFORE turning into a grid?
+        * [ ] ^ If so, refactor other place(s) I'm converting to grid just to get width.
+        * [ ] Test with multiple paragraphs scattered among rows and cols.
     * [ ] Take another pass at reviewing lipgloss and bubbles
         * [ ] Replace CharGrid with Table? https://github.com/charmbracelet/lipgloss?tab=readme-ov-file#rendering-tables
         * [ ] List or similar tracking selected item
         * [ ] Consider wiring effects/messages into elements (recreate classic counter example in terminal)
-    * [ ] tests
+    * [ ] unit tests with gren-test
+    * [ ] expand e2e tests
     * [ ] docs
 * [ ] Don't expose any custom types (e.g. Input variants). Use functions instead, to avoid breaking changes when adding new ones (like Escape).
     * [ ] Input module with Input.escape, Input.arrowUp, etc...
