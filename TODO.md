@@ -39,11 +39,12 @@
     * [X] Fix: responsiveness of paint example
     * [X] test UI.grid nested with rows/cols/bordered
     * [X] Clear screen if resized smaller than view width
-    * [ ] ^ Bug: chopping off the "end background color" sequence
-    * [ ] ^ Fix: Refactor to use an ansi parser...
-        * [ ] Port https://github.com/wolfadex/elm-ansi/blob/main/src/Ansi/Parser.elm
-        * [ ] or get some help from claud.ai (other places it can help? like optimizing joinHorizontal?)
-        * [ ] Update my string manipulations to use parser instead
+    * [X] Bug: chopping off the "end background color" sequence. Fix: return UI.Element from view instead of String.
+    * [ ] paragraph element that allows text to wrap
+    * [ ] Take another pass at reviewing lipgloss and bubbles
+        * [ ] Replace CharGrid with Table? https://github.com/charmbracelet/lipgloss?tab=readme-ov-file#rendering-tables
+        * [ ] List or similar tracking selected item
+    * [ ] ^ Related to above: wire effects/messages into elements (recreate classic counter example in terminal)
     * [ ] tests
     * [ ] docs
 * [ ] Don't expose any custom types (e.g. Input variants). Use functions instead, to avoid breaking changes when adding new ones (like Escape).
