@@ -44,7 +44,7 @@
     * [ ] Take another pass at reviewing lipgloss and bubbles
         * [ ] Replace CharGrid with Table? https://github.com/charmbracelet/lipgloss?tab=readme-ov-file#rendering-tables
         * [ ] List or similar tracking selected item
-    * [ ] ^ Related to above: wire effects/messages into elements (recreate classic counter example in terminal)
+        * [ ] Consider wiring effects/messages into elements (recreate classic counter example in terminal)
     * [ ] tests
     * [ ] docs
 * [ ] Don't expose any custom types (e.g. Input variants). Use functions instead, to avoid breaking changes when adding new ones (like Escape).
