@@ -5,6 +5,7 @@ module SingleLine exposing
     , fromChar
     , toString
     , padRight
+    , dropRight
     , width
     )
 
@@ -56,3 +57,8 @@ width : SingleLine -> Int
 width (SingleLine string) =
     Ansi.width string
 
+
+dropRight : Int -> SingleLine -> SingleLine
+dropRight n (SingleLine string) =
+    -- TODO: decide on inline ansi support...
+    SingleLine (String.dropRight n string)

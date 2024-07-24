@@ -254,10 +254,7 @@ update appConfig msg model =
         TerminalResized { rows, columns } ->
             let
                 oldViewString =
-                    UI.toString model.oldView
-
-                numLines =
-                    countLines oldViewString
+                    UI.toString model.terminalCols model.oldView
 
                 wrappedLines =
                     oldViewString
@@ -292,6 +289,8 @@ update appConfig msg model =
                     | terminalRows = rows
                     , terminalCols = columns
                     , firstRow = newFirstRow
+                    -- force a redraw
+                    , oldView = UI.text [] ""
                 }
             , command = cmd
             }
@@ -402,7 +401,7 @@ view appView model =
     else
         let
             viewString =
-                UI.toString element
+                UI.toString model.terminalCols element
 
             numLines =
                 countLines viewString

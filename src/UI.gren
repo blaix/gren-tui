@@ -146,12 +146,12 @@ mergeAttributes parentAttrs element =
                 }
 
 
--- TODO: pass maxWidth to this
-toString : Element -> String
-toString element =
+toString : Int -> Element -> String
+toString maxWidth element =
     element
         |> mergeAttributes []
-        |> elementToGrid
+        |> elementToGrid 
+        |> trimGrid maxWidth
         |> gridToString
 
 
@@ -171,6 +171,50 @@ elementToGrid element =
 
         Text { attrs, content } ->
             [[{ attrs = attrs, content = content }]]
+
+
+trimGrid : Int -> Grid -> Grid
+trimGrid maxWidth grid =
+    let
+        width =
+            gridWidth grid
+    in
+    if width <= 0 then
+        grid
+    else if width <= maxWidth then
+        grid
+    else
+        grid
+            |> Array.map (trimGridRow maxWidth)
+            |> trimGrid maxWidth
+
+
+trimGridRow : Int -> Array Cell -> Array Cell
+trimGridRow maxWidth thisRow =
+    let
+        width =
+            gridWidth [thisRow]
+
+        diff =
+            width - maxWidth
+
+        popped =
+            Array.popLast thisRow
+    in
+    case popped of
+        Nothing ->
+            thisRow
+
+        Just { initial, last } ->
+            if diff >= SingleLine.width last.content then
+                trimGridRow maxWidth initial
+            else
+                initial
+                    |> Array.pushLast
+                        { last
+                            | content =
+                                SingleLine.dropRight diff last.content
+                        }
 
 
 joinHorizontal : Array Attribute -> Array Grid -> Grid
