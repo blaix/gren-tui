@@ -85,6 +85,9 @@
 
 Profile with: `node --inspect` then open `chrome://inspect`
 
+Compare benchmarks by creating two small programs (or one program with command line flags) to exercise different implementations and compare with:
+`hyperfine 'node app snippetA' 'node app snippetB'`
+
 Things to try:
 
 * [ ] buffer inputs, on each tick, compress sequentially-repeating inputs, then process
