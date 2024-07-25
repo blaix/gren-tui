@@ -46,7 +46,9 @@
 * [ ] Should I support moving the cursor with ansi? currently can break things (e.g. see missing bottom lines on text-styling example)
     * [ ] Either fix text-styling example or modify it and document the issue
 * [ ] Look into performance on paint example. Think it's input handling. See [[#performance-notes]]
-* [ ] easy way for people to try to test/break UI and open issues
+* [ ] defineProgram withOptions or similar for things like exitOnEscape, etc.?
+* [ ] ^related? some kind of Tick option for updating components (select, etc)?
+* [ ] easy way for people to try to test/break UI and open issues (releast alpha?)
 * [ ] == Release 3.0 ==
 * [ ] Update README and examples to use UI module
 * [ ] Starter repo or project initializer (add `gren run` instead of publishing separate npm package?)
