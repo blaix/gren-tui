@@ -22,25 +22,7 @@
 * [X] == Release 2.0 ==
 * [X] Add `Escape` variant to `Input`
 * [X] Add Tui.exit that returns a task that undoes formatting and shows the cursor
-* [O] Add a `UI` helper: init with `env` and save in your model. `UI.toString` in your view
-    * [X] Work like elm-ui with row, col functions, attributes like backgroundColor, etc
-    * [X] Look at charm.sh libraries (esp. bubbles & lipgloss): https://github.com/charmbracelet/bubbletea?tab=readme-ov-file#libraries-we-use-with-bubble-tea
-    * [X] Look at wolfadex/elm-ansi for string terminal width
-    * [X] Decide on module vs separate package (leaving in this package for now)
-    * [X] Merge ui branch
-    * [X] Release updates to gren-ansi
-    * [X] Emojis?
-    * [X] Point ui example at latest published gren-ansi
-    * [X] Add more Attribute functions 
-    * [X] Fix: newlines in strings between columns breaks layout
-    * [X] Fix: underlines and strikethrough weirdness (removed for now)
-    * [X] bordered boxes
-    * [X] Fix screen flicker (overwrite, don't clear)
-    * [X] Fix: responsiveness of paint example
-    * [X] test UI.grid nested with rows/cols/bordered
-    * [X] Clear screen if resized smaller than view width
-    * [X] Bug: chopping off the "end background color" sequence. Fix: return UI.Element from view instead of String.
-    * [ ] Clean up ui-refactor branch and merge to main
+* [X] Add UI module with elm-ui inspired row/col elements
 * [ ] e2e tests with https://github.com/microsoft/tui-test
     * [ ] screenshot tests
     * [ ] performance benchmarks?
