@@ -82,6 +82,7 @@
     * [ ] readline support?
 * [ ] Can/should I clean up the background color "move over the closing character" logic?
    * [ ] Maybe use some sentinel characters to stand in for bg color until final rendering? https://www.unicode.org/faq/private_use.html
+* [ ] Is this anything? https://nodejs.org/en/learn/asynchronous-work/the-nodejs-event-emitter
 
 ## Performance notes
 
