@@ -9,7 +9,7 @@ examples:
   for example in `ls examples/next`; do just example $example; done
 
 test:
-  cd tests && gren make src/Main.gren && node app
+  cd tests/unit && gren make src/Main.gren && node app
 
 header MSG:
   @echo -e "\n{{green}}{{MSG}}{{nc}}"

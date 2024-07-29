@@ -24,6 +24,7 @@
 * [X] Add Tui.exit that returns a task that undoes formatting and shows the cursor
 * [X] Add UI module with elm-ui inspired row/col elements
 * [ ] Fix?: Compile failures return 0 status, making things hard to test
+* [ ] Fix unit tests
 * [ ] e2e tests with https://github.com/microsoft/tui-test
     * [ ] screenshot tests
     * [ ] performance benchmarks?
