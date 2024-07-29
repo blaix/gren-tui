@@ -48,7 +48,8 @@
     * [ ] Either fix text-styling example or modify it and document the issue
 * [ ] Look into performance on paint example. Think it's input handling. See [[#performance-notes]]
 * [ ] defineProgram withOptions or similar for things like exitOnEscape, etc.?
-* [ ] ^related? some kind of Tick option for updating components (select, etc)?
+* [ ] ^ related? some kind of Tick option for updating components (select, etc)?
+* [ ] ^ see `Pages.Script.Spinner` `withStep` and `runSteps` functions and similar from elm-pages
 * [ ] easy way for people to try to test/break UI and open issues (releast alpha?)
 * [ ] == Release 3.0 ==
 * [ ] Update README and examples to use UI module
