@@ -25,10 +25,10 @@
 * [X] Add UI module with elm-ui inspired row/col elements
 * [X] Fix unit tests
 * [ ] Fix?: Compile failures return 0 status, making things hard to test
-* [ ] e2e tests with https://github.com/microsoft/tui-test
-    * [ ] screenshot tests
+* [ ] e2e tests with clet
+    * [ ] screenshot tests?
     * [ ] performance benchmarks?
-    * [ ] test in different terminals and on windows and linux
+    * [ ] test in different terminals and on windows and linux?
 * [ ] paragraph element that allows text to wrap
     * [ ] Need a way to get element width BEFORE turning into a grid?
     * [ ] ^ If so, refactor other place(s) I'm converting to grid just to get width.
