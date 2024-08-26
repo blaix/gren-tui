@@ -99,6 +99,7 @@ Things to try:
 * [ ] don't check cursorReport every input?
 * [ ] look for other places I'm doing heavy string/array interactions
 * [ ] https://www.textualize.io/blog/7-things-ive-learned-building-a-modern-tui-framework/
+* [ ] https://github.com/janjelinek/elm-performance-debugging/tree/master
 
 [1]: https://github.com/charmbracelet/bubbles
 [2]: https://docs.asciinema.org/getting-started/
