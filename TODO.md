@@ -24,7 +24,7 @@
 * [X] Add Tui.exit that returns a task that undoes formatting and shows the cursor
 * [X] Add UI module with elm-ui inspired row/col elements
 * [X] Fix unit tests
-* [ ] Fix?: Compile failures return 0 status, making things hard to test
+* [X] Fix?: Compile failures return 0 status, making things hard to test
 * [ ] e2e tests with clet
     * [ ] screenshot tests?
     * [ ] performance benchmarks?
