@@ -6,7 +6,7 @@ example NAME:
   cd examples/next/{{NAME}} && gren make src/Main.gren && node app
 
 examples:
-  for example in `ls examples/next`; do just example $example; done
+  for example in `ls examples/next`; do just example $example || exit 1; done
 
 test:
   cd tests/unit && gren make src/Main.gren && node app
