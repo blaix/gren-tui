@@ -59,20 +59,6 @@ update msg model =
 
 view : Model -> UI.Element
 view model =
-    UI.row []
-        [ UI.text [] ""
-        , UI.row []
-            [ UI.column [] 
-                [ UI.column []
-                    [ UI.row [] []
-                    , UI.row [] [ UI.text [] "" ]
-                    , UI.column [] []
-                    , UI.text [] ""
-                    ]
-                ]
-            ]
-        ]
-    {-
     UI.row 
         [ Attribute.color Ansi.Black
         , Attribute.bgColor Ansi.Magenta
@@ -91,7 +77,6 @@ view model =
             UI.text [ Attribute.bgColor Ansi.Green ] " col 3 "
         , UI.text [] " col 4 "
         ]
-    -}
 
 
 subscriptions : Model -> Sub Msg
