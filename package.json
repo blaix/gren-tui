@@ -4,7 +4,7 @@
     "doc-preview": "npx gren-doc-preview"
   },
   "dependencies": {
-    "gren-lang": "^0.4.4"
+    "gren-lang": "^0.4.5"
   },
   "devDependencies": {
     "gren-packages": "^4.1.0"
