@@ -9,6 +9,8 @@ import Time
 import Stream exposing (Stream)
 import Task
 import Tui
+import UI
+import UI.Attribute
 
 
 main : Tui.Program Model Msg
@@ -68,7 +70,7 @@ update msg model =
             }
 
 
-view : Model -> String
+view : Model -> UI.Element
 view model =
     let
         barLength =
@@ -89,11 +91,11 @@ view model =
             else
                 ""
     in
-    String.join "\n"
-        [ "\nHow high can I count? Let's see: " ++ count
-        , Ansi.wrapColor Ansi.Magenta bar
-        , Ansi.wrapColor Ansi.Yellow "Press q to quit."
-        , maybeExtraLine
+    UI.column []
+        [ UI.text [] <| "How high can I count? Let's see: " ++ count
+        , UI.text [ UI.Attribute.color Ansi.Magenta ] bar
+        , UI.text [ UI.Attribute.color Ansi.Yellow ] "Press q to quit."
+        , UI.text [] maybeExtraLine
         ]
 
 
