@@ -400,11 +400,18 @@ view appView model =
         }
     else
         let
-            viewString =
+            lines =
                 UI.toString model.terminalCols element
+                    |> String.lines
 
             numLines =
-                countLines viewString
+                lines
+                    |> Array.length
+
+            viewString =
+                lines
+                    |> Array.map (String.append (Ansi.clearLine Ansi.Down))
+                    |> String.join "\n"
 
             newFirstRow =
                 adjustFirstRow model numLines
@@ -540,13 +547,6 @@ checkCursorReport string =
 
 
 -- UTIL
-
-
-countLines : String -> Int
-countLines string =
-    string
-        |> String.lines
-        |> Array.length
 
 
 {-| Adjust first row to account for scrolling.
