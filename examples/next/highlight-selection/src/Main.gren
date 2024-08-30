@@ -122,27 +122,26 @@ update msg model =
                     }
 
 
-view : Model -> String
+view : Model -> UI.Element
 view model =
-    UI.toString <|
-        UI.row  []
-            [ UI.bordered Border.rounded <|
-                UI.column []
-                    [ UI.text [] " Column 1 "
-                    , UI.text [] "──────────"
-                    , UI.text ( attributes { col = 1, row = 1 } model ) " cool"
-                    , UI.text ( attributes { col = 1, row = 2 } model ) " rad"
-                    , UI.text ( attributes { col = 1, row = 3 } model ) " neat"
-                    ]
-            , UI.bordered Border.rounded <|
-                UI.column []
-                    [ UI.text [] " Column 2 "
-                    , UI.text [] "──────────"
-                    , UI.text ( attributes { col = 2, row = 1 } model ) " whoa"
-                    , UI.text ( attributes { col = 2, row = 2 } model ) " hey"
-                    , UI.text ( attributes { col = 2, row = 3 } model ) " nice"
-                    ]
-            ]
+    UI.row  []
+        [ UI.bordered [] Border.rounded <|
+            UI.column []
+                [ UI.text [] " Column 1 "
+                , UI.text [] "──────────"
+                , UI.text ( attributes { col = 1, row = 1 } model ) " cool"
+                , UI.text ( attributes { col = 1, row = 2 } model ) " rad"
+                , UI.text ( attributes { col = 1, row = 3 } model ) " neat"
+                ]
+        , UI.bordered [] Border.rounded <|
+            UI.column []
+                [ UI.text [] " Column 2 "
+                , UI.text [] "──────────"
+                , UI.text ( attributes { col = 2, row = 1 } model ) " whoa"
+                , UI.text ( attributes { col = 2, row = 2 } model ) " hey"
+                , UI.text ( attributes { col = 2, row = 3 } model ) " nice"
+                ]
+        ]
 
 
 attributes : { col : Int, row : Int } -> Model -> Array Attribute
