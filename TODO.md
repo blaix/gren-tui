@@ -29,7 +29,7 @@
     * [ ] screenshot tests?
     * [ ] performance benchmarks?
     * [ ] test in different terminals and on windows and linux?
-* [ ] paragraph element that allows text to wrap
+* [ ] paragraph element that allows text to wrap?
     * [ ] Need a way to get element width BEFORE turning into a grid?
     * [ ] ^ If so, refactor other place(s) I'm converting to grid just to get width.
     * [ ] Test with multiple paragraphs scattered among rows and cols.
@@ -41,7 +41,6 @@
     * [ ] Input module with Input.escape, Input.arrowUp, etc...
 * [ ] unit tests with gren-test
 * [ ] expand e2e tests
-* [ ] update README and docs for all the new ui stuff
 * [ ] TODO comments
 * [ ] animation example: rotating ascii art in center of screen
 * [ ] Should I support moving the cursor with ansi? currently can break things (e.g. see missing bottom lines on text-styling example)
@@ -51,7 +50,12 @@
 * [ ] ^ related? some kind of Tick option for updating components (select, etc)?
 * [ ] ^ see `Pages.Script.Spinner` `withStep` and `runSteps` functions and similar from elm-pages
 * [ ] easy way for people to try to test/break UI and open issues (releast alpha?)
+* [ ] Overhaul the README for v3
+    * [ ] UI module
+    * [ ] "other packages" section not needed?
+    * [ ] more?
 * [ ] == Release 3.0 ==
+* [ ] Start a branching strategy for major version upgrades that keeps main code and docs compatible with latest published version
 * [ ] Update README and examples to use UI module
 * [ ] Starter repo or project initializer (add `gren run` instead of publishing separate npm package?)
 * [ ] Demos with [asciinema][2] or [freeze][3]
