@@ -4,14 +4,14 @@
     "source-directories": [
         "src"
     ],
-    "gren-version": "0.4.4",
+    "gren-version": "0.4.5",
     "dependencies": {
         "direct": {
             "blaix/gren-tui": "local:../..",
-            "gren-lang/core": "5.0.2",
-            "gren-lang/node": "4.1.1",
+            "gren-lang/core": "5.1.0",
+            "gren-lang/node": "4.2.1",
             "gren-lang/test": "3.0.0",
-            "gren-lang/test-runner-node": "4.0.0"
+            "gren-lang/test-runner-node": "4.0.1"
         },
         "indirect": {
             "blaix/gren-ansi": "2.2.0",
