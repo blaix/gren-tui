@@ -25,14 +25,6 @@
 * [X] Add UI module with elm-ui inspired row/col elements
 * [X] Fix unit tests
 * [X] Fix?: Compile failures return 0 status, making things hard to test
-* [ ] e2e tests with clet
-    * [ ] screenshot tests?
-    * [ ] performance benchmarks?
-    * [ ] test in different terminals and on windows and linux?
-* [ ] paragraph element that allows text to wrap?
-    * [ ] Need a way to get element width BEFORE turning into a grid?
-    * [ ] ^ If so, refactor other place(s) I'm converting to grid just to get width.
-    * [ ] Test with multiple paragraphs scattered among rows and cols.
 * [ ] Take another pass at reviewing lipgloss and bubbles
     * [ ] Replace CharGrid with Table? https://github.com/charmbracelet/lipgloss?tab=readme-ov-file#rendering-tables
     * [ ] List or similar tracking selected item
@@ -89,6 +81,7 @@
 * [ ] Can/should I clean up the background color "move over the closing character" logic?
    * [ ] Maybe use some sentinel characters to stand in for bg color until final rendering? https://www.unicode.org/faq/private_use.html
 * [ ] Is this anything? https://nodejs.org/en/learn/asynchronous-work/the-nodejs-event-emitter
+* [ ] Ongoing: See https://github.com/blaix/gren-tui/issues
 
 ## Performance notes
 
