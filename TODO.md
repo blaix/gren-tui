@@ -25,19 +25,10 @@
 * [X] Add UI module with elm-ui inspired row/col elements
 * [X] Fix unit tests
 * [X] Fix?: Compile failures return 0 status, making things hard to test
-* [ ] Take another pass at reviewing lipgloss and bubbles
-    * [ ] Replace CharGrid with Table? https://github.com/charmbracelet/lipgloss?tab=readme-ov-file#rendering-tables
-    * [ ] List or similar tracking selected item
-    * [ ] Consider wiring effects/messages into elements (recreate classic counter example in terminal)
+* [X] unit tests with gren-test
 * [ ] Don't expose any custom types (e.g. Input variants). Use functions instead, to avoid breaking changes when adding new ones (like Escape).
     * [ ] Input module with Input.escape, Input.arrowUp, etc...
-* [ ] unit tests with gren-test
-* [ ] expand e2e tests
 * [ ] TODO comments
-* [ ] animation example: rotating ascii art in center of screen
-* [ ] Should I support moving the cursor with ansi? currently can break things (e.g. see missing bottom lines on text-styling example)
-    * [ ] Either fix text-styling example or modify it and document the issue
-* [ ] Look into performance on paint example. Think it's input handling. See [[#performance-notes]]
 * [ ] defineProgram withOptions or similar for things like exitOnEscape, etc.?
 * [ ] ^ related? some kind of Tick option for updating components (select, etc)?
 * [ ] ^ see `Pages.Script.Spinner` `withStep` and `runSteps` functions and similar from elm-pages
@@ -51,7 +42,13 @@
 * [ ] Update README and examples to use UI module
 * [ ] Starter repo or project initializer (add `gren run` instead of publishing separate npm package?)
 * [ ] Demos with [asciinema][2] or [freeze][3]
+  * [ ] animation example: rotating ascii art in center of screen
 * [ ] Publish post or video making a dungeon crawler. Look at the UI of Robin's elm-warrior :)
+* [ ] Look into performance on paint example. Think it's input handling. See [[#performance-notes]]
+* [ ] Take another pass at reviewing lipgloss and bubbles
+    * [ ] Replace CharGrid with Table? https://github.com/charmbracelet/lipgloss?tab=readme-ov-file#rendering-tables
+    * [ ] List or similar tracking selected item
+    * [ ] Consider wiring effects/messages into elements (recreate classic counter example in terminal)
 * [ ] More Attributes:
     * [ ] padding
     * [ ] margin
