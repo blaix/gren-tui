@@ -33,6 +33,7 @@
 * [ ] ^ related? some kind of Tick option for updating components (select, etc)?
 * [ ] ^ see `Pages.Script.Spinner` `withStep` and `runSteps` functions and similar from elm-pages
 * [ ] easy way for people to try to test/break UI and open issues (releast alpha?)
+* [ ] Update CHANGELOG
 * [ ] Overhaul the README for v3
     * [ ] UI module
     * [ ] "other packages" section not needed?
