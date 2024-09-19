@@ -27,8 +27,6 @@
 * [X] Fix?: Compile failures return 0 status, making things hard to test
 * [X] unit tests with gren-test
 * [X] TODO comments
-* [ ] Don't expose any custom types (e.g. Input variants). Use functions instead, to avoid breaking changes when adding new ones (like Escape).
-    * [ ] Input module with Input.escape, Input.arrowUp, etc...
 * [ ] defineProgram withOptions or similar for things like exitOnEscape, etc.?
 * [ ] ^ related? some kind of Tick option for updating components (select, etc)?
 * [ ] ^ see `Pages.Script.Spinner` `withStep` and `runSteps` functions and similar from elm-pages
