@@ -1,14 +1,5 @@
 # TODO
  
-* [X] Clear and redraw screen on update
-* [X] onKeyPress event
-* [X] Only clear printed lines by default
-* [X] More robust inputs (arrow keys, etc)
-* [X] Exit on Ctrl-C
-* [X] Docs!
-* [X] Fonts, Bold, etc.
-* [X] Exit on ctrl-c
-* [X] Handle TODO comments in codebase
 * [X] == release 1.0 ==
 * [X] Fix bugs in the 1.0 release: https://github.com/blaix/gren-tui/issues?q=is%3Aissue+is%3Aopen+label%3Abug
 * [X] Use new task-based Stream, etc. to add guarantees (start with Cmd.batch usage where order is important)
@@ -27,23 +18,20 @@
 * [X] Fix?: Compile failures return 0 status, making things hard to test
 * [X] unit tests with gren-test
 * [X] TODO comments
-* [ ] defineProgram withOptions or similar for things like exitOnEscape, etc.?
-* [ ] ^ related? some kind of Tick option for updating components (select, etc)?
-* [ ] ^ see `Pages.Script.Spinner` `withStep` and `runSteps` functions and similar from elm-pages
-* [ ] easy way for people to try to test/break UI and open issues (releast alpha?)
 * [ ] Update CHANGELOG
 * [ ] Overhaul the README for v3
     * [ ] UI module
     * [ ] "other packages" section not needed?
     * [ ] more?
 * [ ] == Release 3.0 ==
-* [ ] Start a branching strategy for major version upgrades that keeps main code and docs compatible with latest published version
-* [ ] Update README and examples to use UI module
 * [ ] Starter repo or project initializer (add `gren run` instead of publishing separate npm package?)
 * [ ] Demos with [asciinema][2] or [freeze][3]
   * [ ] animation example: rotating ascii art in center of screen
 * [ ] Publish post or video making a dungeon crawler. Look at the UI of Robin's elm-warrior :)
 * [ ] Look into performance on paint example. Think it's input handling. See [[#performance-notes]]
+* [ ] defineProgram withOptions or similar for things like exitOnEscape, etc.?
+* [ ] some kind of Tick option for updating components (select, etc)?
+  * [ ] see `Pages.Script.Spinner` `withStep` and `runSteps` functions and similar from elm-pages
 * [ ] Take another pass at reviewing lipgloss and bubbles
     * [ ] Replace CharGrid with Table? https://github.com/charmbracelet/lipgloss?tab=readme-ov-file#rendering-tables
     * [ ] List or similar tracking selected item
