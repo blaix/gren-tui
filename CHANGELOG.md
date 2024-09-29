@@ -1,10 +1,10 @@
-## Next
+## 3.0.0 (coming soon)
 
 * Update to gren 4.4
 * Complete rendering refactor to reduce screen flicker and handle terminal resizes.
-* Your `view` returns a `UI.Element` instead of `String`
 * Your `init` now receives `Tui.Environment` which adds terminal column, row, and color support.
-* Add `Escape` variant to `Tui.Input` (TODO: change to functions)
+* Add `UI` module. Your `view` returns a `UI.Element` instead of `String`
+* Add `Escape` variant to `Tui.Input`
 * Add `Tui.exit`, `Tui.exitWithCode`, and `Tui.hideCursor`
 
 ## 2.0.1 (2024-07-04)
