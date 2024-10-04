@@ -8,10 +8,31 @@ module UI.Attribute exposing
     , italic
     )
 
+{-| Styles that can be applied to attributes.
+
+You will usually pass these to [`UI`](UI) functions.
+
+## Attributes
+
+@docs Attribute, color, bgColor, fontWeight, italic
+
+## Applying Attributes
+
+**You shouldn't need these functions in a normal app.**
+gren-tui will apply them for you when it renders your view.
+But maybe you're writing a package or doing something weird?
+If so, have fun!
+
+@docs apply, applyAll
+
+-}
+
 
 import Ansi
 
 
+{-| Base attribute type.
+-}
 type Attribute
     = Color Ansi.Color
     | BgColor Ansi.Color
@@ -19,6 +40,11 @@ type Attribute
     | Italic
 
 
+{-| Apply attributes to a string.
+
+The string will be returned wrapped in ANSI escape sequences for the specified attributes.
+
+-}
 apply : Attribute -> String -> String
 apply attr string =
     case attr of
@@ -35,22 +61,47 @@ apply attr string =
             Ansi.wrapItalic string
 
 
+{-| Apply attributes to all strings in an array.
+
+The array will be returned with all strings wrapped in ANSI escape sequences for the specified attributes.
+
+-}
 applyAll : Array Attribute -> String -> String
 applyAll attrs str =
     Array.foldr apply str attrs 
 
 
+{-| Get a text color attribute.
+
+See https://packages.gren-lang.org/package/blaix/gren-ansi/latest/module/Ansi#Color
+for available color options.
+
+-}
 color : Ansi.Color -> Attribute
 color = Color
 
 
+{-| Get a background color attribute.
+
+See https://packages.gren-lang.org/package/blaix/gren-ansi/latest/module/Ansi#Color
+for available color options.
+
+-}
 bgColor : Ansi.Color -> Attribute
 bgColor = BgColor
 
 
+{-| Get a font weight attribute.
+
+See https://packages.gren-lang.org/package/blaix/gren-ansi/latest/module/Ansi#FontWeight
+for available font weight options.
+
+-}
 fontWeight : Ansi.FontWeight -> Attribute
 fontWeight = FontWeight
 
 
+{-| Get an attribute to make text italic.
+-}
 italic : Attribute
 italic = Italic

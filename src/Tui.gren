@@ -16,11 +16,15 @@ See [`defineProgram`](#defineProgram) for details, or one of the [examples](http
 
 ## Defining your program
 
-@docs defineProgram, Program
+@docs defineProgram, Program, Environment
 
 ## User Input
 
 @docs Input
+
+## Helpers
+
+@docs exit, exitWithCode, hideCursor
 
 -}
 
@@ -64,6 +68,22 @@ type alias AppConfig model msg =
     }
 
 
+{-| Holds information about the environment your program is running in.
+
+This will be passed to your init function.
+For example:
+
+    init env =
+        Node.startProgram
+            { model = 
+                { maxWidth = env.columns
+                , maxHeight = env.rows
+                }
+            , command =
+                Cmd.none
+            }
+
+-}
 type alias Environment =
     -- Basically merged Node.Environment and Terminal.Configuration
     { platform : Node.Platform
@@ -358,18 +378,65 @@ subscriptions appSubs model =
 -- Tasks
 
 
+{-| Task to hide the cursor.
+
+Here's an example of using it in init to hide the cursor as soon as the program starts:
+
+    init env =
+        Node.startProgram
+            { model = {}
+            , command = 
+                Tui.hideCursor env.stdout
+                    |> Task.execute
+            }
+
+-}
 hideCursor : Stream -> Task Never {}
 hideCursor stdout =
     Ansi.hideCursor
         |> Stream.sendString stdout
 
 
+{-| Task that exits the program.
+
+The stdout argument is needed to clean things up (e.g. restore cursor, unset styles, etc).
+
+The program will exit with a 0 status code.
+If you want something other than zero, use [`exitWithCode`](#exitWithCode).
+
+Here's an example of using it in your update function to exit when the user presses the escape key:
+
+    case input of
+        Tui.Escape ->
+            { model = model
+            , command = 
+                Tui.exit model.stdout
+                    |> Task.execute
+            }
+
+-}
 exit : Stream -> Task Never {}
 exit stdout =
     cleanup stdout
         |> Task.andThen (\_ -> Node.exit)
 
 
+{-| Task that exits the program with a specific exit code.
+
+The stdout argument is needed to clean things up (e.g. restore cursor, unset styles, etc).
+
+Here's an example of using it in your update function to exit if there was a failure:
+
+    case result of
+        Error e ->
+            { model = model
+            , command = 
+                Stream.sendString model.stderr "Failed!"
+                    |> Task.andThen (\_ -> Tui.exitWithCode model.stdout 1)
+                    |> Task.execute
+            }
+
+-}
 exitWithCode : Stream -> Int -> Task Never {}
 exitWithCode stream code =
     cleanup stream

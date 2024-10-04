@@ -9,6 +9,17 @@ module UI.Border exposing
     )
 
 
+{-| Wrap elements in a border.
+
+This module provides the border values to pass to [`UI.bordered`](UI#bordered).
+
+@docs default, rounded, thick, veryThick, double, hidden, Border
+
+-}
+
+
+{-| Type for all bordered.
+-}
 type alias Border =
     { top : String
     , bottom : String
@@ -21,6 +32,15 @@ type alias Border =
     }
 
 
+{-| Default border.
+
+It will look like this:
+
+    ┌───┐
+    │hey│
+    └───┘
+
+-}
 default : Border
 default =
     { top = "─"
@@ -33,6 +53,15 @@ default =
     , bottomRight = "┘"
     }
 
+{-| Border with rounded corners.
+
+It will look like this:
+
+    ╭───╮
+    │hey│
+    ╰───╯
+
+-}
 rounded : Border
 rounded =
     { default
@@ -43,6 +72,15 @@ rounded =
     }
     
 
+{-| Border with thick lines.
+
+It will look like this:
+
+    ┏━━━┓
+    ┃hey┃
+    ┗━━━┛
+
+-}
 thick : Border
 thick =
     { top = "━"
@@ -56,6 +94,15 @@ thick =
     }
 
 
+{-| Border with very thick lines.
+
+It will look like this:
+
+    ▄▄▄▄▄
+    █hey█
+    ▀▀▀▀▀
+
+-}
 veryThick : Border
 veryThick =
     { top = "▄"
@@ -77,6 +124,15 @@ veryThick =
     }
 
 
+{-| A double border.
+
+It will look like this:
+
+    ╔═══╗
+    ║hey║
+    ╚═══╝
+
+-}
 double : Border
 double =
     { top = "═"
@@ -90,6 +146,13 @@ double =
     }
 
 
+{-| An invisible border.
+
+All border characters will render as empty strings.
+
+This is useful if you are trying to line up bordered and unbordered things.
+
+-}
 hidden : Border
 hidden =
     { top = " "
@@ -101,5 +164,4 @@ hidden =
     , bottomLeft = " "
     , bottomRight = " "
     }
-
 

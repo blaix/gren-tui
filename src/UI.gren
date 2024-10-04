@@ -11,6 +11,27 @@ module UI exposing
     )
 
 
+{-| Layout elements for your TUI view
+
+## Rows and Columns
+
+Your primary building blocks are [`row`](#row) and [`column`](#column).
+These can be nested to construct simple or complex layouts.
+
+There's also a special [`bordered`](bordered) element to wrap other elements in a [border](UI.Border).
+
+Your innermost element will be [`text`](#text).
+
+All elements can be styled using [attributes](UI.Attribute).
+
+@docs Element, row, column, bordered, text, toString
+
+## Other Layout Elements
+
+@docs charGrid
+
+-}
+
 import Ansi
 import Array2d exposing (Array2d)
 import SingleLine exposing (SingleLine)
@@ -18,6 +39,8 @@ import UI.Attribute as Attribute exposing (Attribute)
 import UI.Border exposing (Border)
 
 
+{-| Basic building block of of the view.
+-}
 type Element
     = Row { attrs : Array Attribute, children : Array Element }
     | Col { attrs : Array Attribute, children : Array Element }
@@ -47,16 +70,119 @@ emptyCell =
     }
 
 
+{-| Lay out elements horizontally.
+
+For example:
+
+    row [] 
+        [ text [] "one "
+        , text [] "two "
+        , text [] "three " 
+        ]
+
+Would output:
+
+    one two three
+
+This is helpful when you want a columnar layout.
+For example:
+
+    row []
+        [ text [] " one\n two\n three"
+        , text [] " four\n five\n six"
+        ]
+
+Would output:
+
+    one   four
+    two   five
+    three six
+
+Instead of newlines, you could use the [`column`](#column) function:
+
+    row []
+        [ column [] 
+            [ text [] "one"
+            , text [] "two"
+            , text [] "three"
+            ]
+        , column [] 
+            [ text [] "four"
+            , text [] "five"
+            , text [] "six"
+            ]
+        ]
+
+Which would also output:
+
+    one   four
+    two   five
+    three six
+
+This becomes very powerful as you continue to nest rows and columns!
+
+The first argument is an array of [`UI.Attribute`] values.
+Use this to apply styles to all elements in the row, even nested elements.
+
+-}
 row : Array Attribute -> Array Element -> Element
 row attrs children =
     Row { attrs = attrs, children = children }
 
 
+{-| Lay out elements vertically.
+
+For example:
+
+    column [] 
+        [ text [] "one "
+        , text [] "two "
+        , text [] "three " 
+        ]
+
+Would output:
+
+    one
+    two
+    three
+
+This becomes very powerful when nested in a [`row`](#row) function:
+
+    row []
+        [ column [] 
+            [ text [] "one"
+            , text [] "two"
+            , text [] "three"
+            ]
+        , column [] 
+            [ text [] "four"
+            , text [] "five"
+            , text [] "six"
+            ]
+        ]
+
+Which would output output:
+
+    one   four
+    two   five
+    three six
+
+The first argument is an array of [`UI.Attribute`] values.
+Use this to apply styles to all elements in the column, even nested elements.
+
+-}
 column : Array Attribute -> Array Element -> Element
 column attrs children =
     Col { attrs = attrs, children = children }
 
 
+{-| A text element.
+
+The first argument is an array of [`UI.Attribute`] values used to style the text.
+
+Note that text will _not_ wrap automatically, though explicit newlines will be preserved.
+
+-}
 text : Array Attribute -> String -> Element
 text attrs content =
     content
@@ -65,6 +191,8 @@ text attrs content =
         |> column []
 
 
+{-| TODO: remove this
+-}
 charGrid : Array Attribute -> Array2d GridChar -> Element
 charGrid attrs grid =
     grid
@@ -79,6 +207,26 @@ charGrid attrs grid =
         |> text attrs
 
 
+{-| Wrap an element in a border.
+
+The different types of borders are in [`UI.Border`](UI.Border).
+
+Example:
+
+    bordered [] UI.Border.rounded (text [] "hi")
+
+Outputs:
+
+    ╭──╮
+    │hi│
+    ╰──╯
+
+The element you pass to this function can be as large or deeply nested as you want,
+and the border will be around the whole thing.
+
+Borders can also be nested and styled like any other element.
+
+-}
 bordered : Array Attribute -> Border -> Element -> Element
 bordered attrs border element = 
     let
@@ -146,6 +294,46 @@ mergeAttributes parentAttrs element =
                 }
 
 
+{-| Return the element as a string.
+
+It will contain all the newlines, whitespace, and ansi escape sequences needed for the rows, columns, and styles in the element.
+
+**You shouldn't need this in normal apps.**
+gren-tui uses this internally to convert your view to something that can printed to the terminal.
+
+But it may be useful if you're writing a package or doing something weird.
+Have fun!
+
+The first parameter is the maximum width in visible characters.
+You will usually want to use [`Terminal.Configuration.columns`](https://packages.gren-lang.org/package/gren-lang/node/version/4/module/Terminal#Configuration) for this.
+
+For example:
+
+    toString 80 <|
+        column []
+            [ text [] "12"
+            , text [] "1234"
+            ]
+
+will return:
+
+    "12  \n1234"
+
+Any content longer than the maximum visible width will be removed.
+
+For example:
+    
+    toString 3 <|
+        column []
+            [ text [] "12"
+            , text [] "1234"
+            ]
+
+will return:
+    
+    "12 \n123"
+
+-}
 toString : Int -> Element -> String
 toString maxWidth element =
     element
