@@ -1,0 +1,252 @@
+module Main exposing (main)
+
+
+import Ansi exposing (Color)
+import Array2d exposing (Array2d)
+import Init
+import Node
+import Stream exposing (Stream)
+import Task
+import Tui
+import UI exposing (Element)
+import UI.Attribute
+import UI.Border
+
+
+main : Tui.Program Model Msg
+main =
+    Tui.defineProgram
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        , onInput = GotInput
+        }
+
+
+-- MODEL
+
+
+type alias Model =
+    { stdout : Stream
+    , board : Board
+    , player : Point
+    , star : Point
+    , winner : Bool
+    }
+
+
+type alias Board =
+    Array2d Cell
+
+
+type alias Point =
+    { x : Int
+    , y : Int
+    }
+
+
+type alias Cell =
+    { ground : Ground
+    , item : Item
+    }
+
+
+type Ground
+    = Dirt
+    | Grass
+    | Water
+
+
+type Item
+    = Nothing
+    | Tree
+    | Star
+    | Player
+
+
+board : Board
+board =
+    -- A real game should probably be getting this from a tile map file or something.
+    [ [ { ground = Grass, item = Nothing }, { ground = Grass, item = Nothing }, { ground = Grass, item = Nothing }, { ground = Grass, item = Nothing }, { ground = Grass, item = Tree },    { ground = Grass, item = Nothing }, { ground = Water, item = Nothing }, { ground = Water, item = Nothing }, { ground = Water, item = Nothing }, { ground = Water, item = Nothing } ]
+    , [ { ground = Dirt, item = Nothing },  { ground = Dirt, item = Nothing },  { ground = Grass, item = Nothing }, { ground = Grass, item = Tree },    { ground = Grass, item = Nothing }, { ground = Grass, item = Nothing }, { ground = Grass, item = Nothing }, { ground = Water, item = Nothing }, { ground = Water, item = Nothing }, { ground = Water, item = Nothing } ]
+    , [ { ground = Grass, item = Nothing }, { ground = Dirt, item = Nothing },  { ground = Dirt, item = Nothing },  { ground = Dirt, item = Nothing },  { ground = Dirt, item = Nothing },  { ground = Dirt, item = Nothing },  { ground = Grass, item = Nothing }, { ground = Grass, item = Nothing }, { ground = Grass, item = Nothing }, { ground = Grass, item = Nothing } ]
+    , [ { ground = Grass, item = Nothing }, { ground = Grass, item = Nothing }, { ground = Grass, item = Nothing }, { ground = Grass, item = Nothing }, { ground = Grass, item = Nothing }, { ground = Dirt, item = Nothing },  { ground = Grass, item = Nothing }, { ground = Grass, item = Nothing }, { ground = Grass, item = Tree },    { ground = Grass, item = Nothing } ]
+    ]
+
+
+boardWidth : Int
+boardWidth =
+    board
+        |> Array.get 0
+        |> Maybe.withDefault []
+        |> Array.length
+
+
+boardHeight : Int
+boardHeight =
+    Array.length board
+
+
+init : Tui.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Node.startProgram
+        { model = 
+            { stdout = env.stdout 
+            , board = board
+            , player = { x = 0, y = 1 }
+            , star = { x = 5, y = 3 }
+            , winner = False
+            }
+        , command = 
+            Tui.hideCursor env.stdout
+                |> Task.execute
+        }
+
+
+-- UPDATE
+
+
+type Msg
+    = GotInput Tui.Input
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        GotInput input ->
+            case input of
+                Tui.Escape ->
+                    { model = model
+                    , command =
+                        Tui.exit model.stdout
+                            |> Task.execute
+                    }
+
+                Tui.ArrowUp ->
+                    { model = { model | player = moveUp model.player }
+                    , command = Cmd.none
+                    }
+
+                Tui.ArrowDown ->
+                    { model = { model | player = moveDown model.player }
+                    , command = Cmd.none
+                    }
+
+                Tui.ArrowLeft ->
+                    { model = { model | player = moveLeft model.player }
+                    , command = Cmd.none
+                    }
+
+                Tui.ArrowRight ->
+                    { model = { model | player = moveRight model.player }
+                    , command = Cmd.none
+                    }
+
+                _ ->
+                    { model = model
+                    , command = Cmd.none
+                    }
+
+
+moveUp : Point -> Point
+moveUp player =
+    if player.y > 0 then
+        { player | y = player.y - 1 }
+    else
+        player
+
+
+moveDown : Point -> Point
+moveDown player =
+    if player.y < (boardHeight - 1) then
+        { player | y = player.y + 1 }
+    else
+        player
+
+
+moveLeft : Point -> Point
+moveLeft player =
+    if player.x > 0 then
+        { player | x = player.x - 1 }
+    else
+        player
+
+
+moveRight : Point -> Point
+moveRight player =
+    if player.x < (boardWidth - 1) then
+        { player | x = player.x + 1 }
+    else
+        player
+
+
+-- VIEW
+
+
+view : Model -> UI.Element
+view model =
+    model.board
+        |> Array2d.update model.star (\c -> { c | item = Star })
+        |> Array2d.update model.player (\c -> { c | item = Player })
+        |> Array.map mapBoardRow
+        |> Array.pushLast (UI.text [] (winnerText model))
+        |> UI.column []
+        |> UI.bordered [] UI.Border.rounded
+
+
+winnerText : Model -> String
+winnerText model =
+    if model.player == model.star then
+        "You did it"
+    else
+        "Go to star"
+
+
+mapBoardRow : Array Cell -> Element
+mapBoardRow row =
+    row
+        |> Array.map mapBoardCell
+        |> UI.row []
+
+
+mapBoardCell : Cell -> Element
+mapBoardCell cell =
+    UI.text 
+        [ UI.Attribute.bgColor (groundColor cell.ground) 
+        , UI.Attribute.color (itemColor cell.item)
+        , UI.Attribute.fontWeight Ansi.Bold
+        ]
+        (viewItem cell.item)
+
+
+itemColor : Item -> Color
+itemColor item =
+    case item of
+        Player -> Ansi.Red
+        _ -> Ansi.Black
+
+
+groundColor : Ground -> Color
+groundColor ground =
+    case ground of
+        Dirt -> Ansi.Yellow
+        Water -> Ansi.Cyan
+        Grass -> Ansi.Green
+
+
+viewItem : Item -> String
+viewItem item =
+    case item of
+        Tree -> ""
+        Player -> "@"
+        Star -> "✦"
+        Nothing -> " "
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
