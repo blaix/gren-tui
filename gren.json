@@ -4,7 +4,7 @@
     "name": "blaix/gren-tui",
     "summary": "Terminal UIs and Games with The Elm Architecture (Model/View/Update)",
     "license": "BSD-3-Clause",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "exposed-modules": [
         "Tui",
         "UI",
