@@ -4,7 +4,11 @@ Write purely functional, type-safe terminal apps using [The Elm Architecture](ht
 Easily create complex, responsive UIs with an interface inspired by [elm-ui](https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/).
 All in the very pleasant [Gren programming language](https://gren-lang.org/).
 
-## Example
+![menu example](media/menu-example.gif)
+
+(see the [source code](examples/v3/highlight-selection/src/Main.gren) for the above example)
+
+## Basic Example
 
 A full program showing a running clock in the terminal:
 
