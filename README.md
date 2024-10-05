@@ -19,7 +19,6 @@ import Task
 import Time
 import Tui
 import UI
-import UI.Border
 
 
 main : Tui.Program Model Msg
@@ -65,8 +64,7 @@ view model =
         minute = String.fromInt (Time.toMinute Time.utc model.time)
         second = String.fromInt (Time.toSecond Time.utc model.time)
     in
-    UI.bordered [] UI.Border.rounded <|
-        UI.text [] (hour ++ ":" ++ minute ++ ":" ++ second)
+    UI.text [] (hour ++ ":" ++ minute ++ ":" ++ second)
 
 
 -- UPDATE
@@ -104,6 +102,12 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Time.every 1000 Tick
 ```
+
+See [the clock example in the repo](https://github.com/blaix/gren-tui/blob/main/examples/v3/clock/src/Main.gren)
+for a more robust version that captures user input and uses rows and columns for layout
+to offer a menu that switches between UTC and local time zone.
+
+There are also [many other examples](https://github.com/blaix/gren-tui/blob/main/examples/v3) to help you get started.
 
 ## Usage
 
