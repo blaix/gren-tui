@@ -6,7 +6,7 @@ All in the very pleasant [Gren programming language](https://gren-lang.org/).
 
 ## Example
 
-A full program showing a running clock with a border in the terminal:
+A full program showing a running clock in the terminal:
 
 ```elm
 module Main exposing (main)
