@@ -22,18 +22,17 @@
 * [X] Remove charGrid and paint example (realized when writing docs this isn't ready)
 * [X] Update CHANGELOG
 * [X] Overhaul the README for v3
-* [ ] == Release 3.0 ==
+* [X] == Release 3.0 ==
+* [X] Animated Demos
 * [ ] Starter repo or project initializer (add `gren run` instead of publishing separate npm package?)
-* [ ] Demos with [asciinema][2] or [freeze][3]
-  * [ ] animation example: rotating ascii art in center of screen
 * [ ] Publish post or video making a dungeon crawler. Look at the UI of Robin's elm-warrior :)
-* [ ] Look into performance on paint example. Think it's input handling. See [[#performance-notes]]
+* [ ] Look into performance on the old paint example. Think it's input handling. See [[#performance-notes]]
 * [ ] defineProgram withOptions or similar for things like exitOnEscape, etc.?
 * [ ] some kind of Tick option for updating components (select, etc)?
   * [ ] see `Pages.Script.Spinner` `withStep` and `runSteps` functions and similar from elm-pages
 * [ ] Take another pass at reviewing lipgloss and bubbles
-    * [ ] Replace CharGrid with Table? https://github.com/charmbracelet/lipgloss?tab=readme-ov-file#rendering-tables
-    * [ ] List or similar tracking selected item
+    * [ ] Table element? https://github.com/charmbracelet/lipgloss?tab=readme-ov-file#rendering-tables
+    * [ ] List or similar element for tracking selected item?
     * [ ] Consider wiring effects/messages into elements (recreate classic counter example in terminal)
 * [ ] More Attributes:
     * [ ] padding
@@ -41,7 +40,6 @@
     * [ ] centered, centerX, centerY
     * [ ] alignRight, alignLeft, alignTop, alignBottom
 * [ ] More borders (see lipgloss and https://en.wikipedia.org/wiki/Box-drawing_characters#Box_Drawing)
-    * [ ] doubled
     * [ ] dotted
     * [ ] dashed
     * [ ] ascii (`+--+`)
@@ -61,8 +59,6 @@
 * [ ] How to make log messages visible (Debug.log won't work with gren-tui views)? add file logging?
 * [ ] How to have a nice way to read a whole line of input, even in raw mode?
     * [ ] readline support?
-* [ ] Can/should I clean up the background color "move over the closing character" logic?
-   * [ ] Maybe use some sentinel characters to stand in for bg color until final rendering? https://www.unicode.org/faq/private_use.html
 * [ ] Is this anything? https://nodejs.org/en/learn/asynchronous-work/the-nodejs-event-emitter
 * [ ] Ongoing: See https://github.com/blaix/gren-tui/issues
 
