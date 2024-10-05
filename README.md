@@ -6,19 +6,19 @@ All in the very pleasant [Gren programming language](https://gren-lang.org/).
 
 ## Examples
 
-![menu example](media/menu-example.gif)
+![menu example](https://github.com/blaix/gren-tui/raw/main/media/menu-example.gif)
 
 [source](examples/v3/highlight-selection/src/Main.gren)
 
 ---
 
-![progress bar example](media/progress-bar-example.gif)
+![progress bar example](https://github.com/blaix/gren-tui/raw/main/media/progress-bar-example.gif)
 
 [source](examples/v3/progress-bar/src/Main.gren)
 
 ---
 
-![game example](media/game-example.gif)
+![game example](https://github.com/blaix/gren-tui/raw/main/media/game-example.gif)
 
 [source](examples/v3/game/src/Main.gren)
 
