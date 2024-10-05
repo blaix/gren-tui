@@ -7,7 +7,6 @@ module UI exposing
     , column
     , text
     , bordered
-    , charGrid
     )
 
 
@@ -45,10 +44,6 @@ Your innermost element will be [`text`](#text).
 All elements can be styled by passing array of [attributes](UI.Attribute) as the first argument.
 
 @docs Element, row, column, bordered, text, toString
-
-## Other Layout Elements
-
-@docs charGrid
 
 -}
 
@@ -209,22 +204,6 @@ text attrs content =
         |> SingleLine.fromString
         |> Array.map (\l -> Text { attrs = attrs, content = l })
         |> column []
-
-
-{-| TODO: remove this
--}
-charGrid : Array Attribute -> Array2d GridChar -> Element
-charGrid attrs grid =
-    grid
-        |> Array2d.map
-            (\c -> 
-                c.char
-                    |> String.fromChar
-                    |> Attribute.applyAll (attrs ++ c.attrs)
-            )
-        |> Array.map (String.join "")
-        |> String.join "\n"
-        |> text attrs
 
 
 {-| Wrap an element in a border.
