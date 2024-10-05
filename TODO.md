@@ -20,11 +20,8 @@
 * [X] TODO comments
 * [X] Docs
 * [X] Remove charGrid and paint example (realized when writing docs this isn't ready)
-* [ ] Update CHANGELOG
-* [ ] Overhaul the README for v3
-    * [ ] UI module
-    * [ ] "other packages" section not needed?
-    * [ ] more?
+* [X] Update CHANGELOG
+* [X] Overhaul the README for v3
 * [ ] == Release 3.0 ==
 * [ ] Starter repo or project initializer (add `gren run` instead of publishing separate npm package?)
 * [ ] Demos with [asciinema][2] or [freeze][3]
