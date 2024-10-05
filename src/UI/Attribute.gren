@@ -8,9 +8,9 @@ module UI.Attribute exposing
     , italic
     )
 
-{-| Styles that can be applied to attributes.
+{-| Styles that can be applied to elements.
 
-You will usually pass these to [`UI`](UI) functions.
+You will usually pass an array of these as the first argument to your [`UI`](UI) element functions.
 
 ## Attributes
 
@@ -18,7 +18,8 @@ You will usually pass these to [`UI`](UI) functions.
 
 ## Applying Attributes
 
-**You shouldn't need these functions in a normal app.**
+_**You shouldn't need these functions in a normal app.**_
+
 gren-tui will apply them for you when it renders your view.
 But maybe you're writing a package or doing something weird?
 If so, have fun!
@@ -71,9 +72,9 @@ applyAll attrs str =
     Array.foldr apply str attrs 
 
 
-{-| Get a text color attribute.
+{-| Set the text and/or border color of an element.
 
-See https://packages.gren-lang.org/package/blaix/gren-ansi/latest/module/Ansi#Color
+See [blaix/gren-ansi](https://packages.gren-lang.org/package/blaix/gren-ansi/latest/module/Ansi#Color)
 for available color options.
 
 -}
@@ -81,9 +82,9 @@ color : Ansi.Color -> Attribute
 color = Color
 
 
-{-| Get a background color attribute.
+{-| Set the background color of an element.
 
-See https://packages.gren-lang.org/package/blaix/gren-ansi/latest/module/Ansi#Color
+See [blaix/gren-ansi](https://packages.gren-lang.org/package/blaix/gren-ansi/latest/module/Ansi#Color)
 for available color options.
 
 -}
@@ -91,9 +92,9 @@ bgColor : Ansi.Color -> Attribute
 bgColor = BgColor
 
 
-{-| Get a font weight attribute.
+{-| Set the font weight of an element.
 
-See https://packages.gren-lang.org/package/blaix/gren-ansi/latest/module/Ansi#FontWeight
+See [blaix/gren-ansi](https://packages.gren-lang.org/package/blaix/gren-ansi/latest/module/Ansi#FontWeight)
 for available font weight options.
 
 -}
@@ -101,7 +102,7 @@ fontWeight : Ansi.FontWeight -> Attribute
 fontWeight = FontWeight
 
 
-{-| Get an attribute to make text italic.
+{-| Set an element's text to italic.
 -}
 italic : Attribute
 italic = Italic

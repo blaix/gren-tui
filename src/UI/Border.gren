@@ -18,7 +18,7 @@ This module provides the border values to pass to [`UI.bordered`](UI#bordered).
 -}
 
 
-{-| Type for all bordered.
+{-| Type for all borders.
 -}
 type alias Border =
     { top : String
@@ -34,11 +34,9 @@ type alias Border =
 
 {-| Default border.
 
-It will look like this:
-
-    ┌───┐
-    │hey│
-    └───┘
+Thin lines.
+Sharp corners.
+Can't lose.
 
 -}
 default : Border
@@ -54,13 +52,6 @@ default =
     }
 
 {-| Border with rounded corners.
-
-It will look like this:
-
-    ╭───╮
-    │hey│
-    ╰───╯
-
 -}
 rounded : Border
 rounded =
@@ -73,13 +64,6 @@ rounded =
     
 
 {-| Border with thick lines.
-
-It will look like this:
-
-    ┏━━━┓
-    ┃hey┃
-    ┗━━━┛
-
 -}
 thick : Border
 thick =
@@ -95,13 +79,6 @@ thick =
 
 
 {-| Border with very thick lines.
-
-It will look like this:
-
-    ▄▄▄▄▄
-    █hey█
-    ▀▀▀▀▀
-
 -}
 veryThick : Border
 veryThick =
@@ -124,14 +101,7 @@ veryThick =
     }
 
 
-{-| A double border.
-
-It will look like this:
-
-    ╔═══╗
-    ║hey║
-    ╚═══╝
-
+{-| A double-lined border.
 -}
 double : Border
 double =

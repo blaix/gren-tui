@@ -101,16 +101,17 @@ type alias Environment =
 
 {-| Define your Tui program.
 
-Very similar to a normal Node.defineProgram, except for two special functions:
+Very similar to a normal [`Node.defineProgram`](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Node#defineProgram), except for two special functions:
 
-`view`: Return a string for the current model. gren-tui will print this, and
-keep track of how many lines are output so it can clear only those lines and
-print again when the output changes. This lets you do things like render
-progress bars, move characters around the screen, offer menu selections, etc.
+`view`: Takes your Model and returns a [`UI`](UI) element.
+gren-tui will print this to the screen, keeping track of how many lines are
+output so it can clear only those lines and print again when the output
+changes. This lets you do things like render progress bars, move characters
+around the screen, offer menu selections, etc.
 
-`onInput`: Whenever your program receives input (a key is pressed, etc), a
-message is sent to your app with a [`Input`](#Input) value representing the
-input. This lets you capture text, trigger events on certain key presses, etc.
+`onInput`: Whenever a key is pressed, a message is sent to your app with an
+[`Input`](#Input) value. This lets you capture text, trigger events on certain
+key presses, etc.
 -}
 defineProgram :
     { init : Environment -> Init.Task { model : model, command : Cmd msg }
@@ -399,7 +400,8 @@ hideCursor stdout =
 
 {-| Task that exits the program.
 
-The stdout argument is needed to clean things up (e.g. restore cursor, unset styles, etc).
+The Stream argument should be the stdout value you get from [`Environment`](#Environment).
+This is needed to clean things up (e.g. restore cursor, unset styles, etc).
 
 The program will exit with a 0 status code.
 If you want something other than zero, use [`exitWithCode`](#exitWithCode).
@@ -423,7 +425,8 @@ exit stdout =
 
 {-| Task that exits the program with a specific exit code.
 
-The stdout argument is needed to clean things up (e.g. restore cursor, unset styles, etc).
+The Stream argument should be the stdout value you get from [`Environment`](#Environment).
+This is needed to clean things up (e.g. restore cursor, unset styles, etc).
 
 Here's an example of using it in your update function to exit if there was a failure:
 

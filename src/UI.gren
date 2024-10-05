@@ -13,16 +13,36 @@ module UI exposing
 
 {-| Layout elements for your TUI view
 
-## Rows and Columns
+Your view takes a model and returns an [`Element`](#Element).
+The simplest element is [`text`](#text):
+
+    view model =
+        UI.text [] "Hello!"
+
+But you can construct more complex layouts by composing an element out of other elements.
 
 Your primary building blocks are [`row`](#row) and [`column`](#column).
 These can be nested to construct simple or complex layouts.
+For example:
 
-There's also a special [`bordered`](bordered) element to wrap other elements in a [border](UI.Border).
+    UI.row []
+        [ UI.text [] "Left "
+        , UI.column []
+            [ UI.text [] "Right 1"
+            , UI.text [] "Right 2"
+            ]
+        ]
+
+Which would render like this:
+
+    Left Right 1
+         Right 2
+
+There's also a special [`bordered`](#bordered) element to wrap other elements in a [border](UI.Border).
 
 Your innermost element will be [`text`](#text).
 
-All elements can be styled using [attributes](UI.Attribute).
+All elements can be styled by passing array of [attributes](UI.Attribute) as the first argument.
 
 @docs Element, row, column, bordered, text, toString
 
@@ -121,7 +141,7 @@ Which would also output:
 
 This becomes very powerful as you continue to nest rows and columns!
 
-The first argument is an array of [`UI.Attribute`] values.
+The first argument is an array of [`UI.Attribute`](UI.Attribute) values.
 Use this to apply styles to all elements in the row, even nested elements.
 
 -}
@@ -167,7 +187,7 @@ Which would output output:
     two   five
     three six
 
-The first argument is an array of [`UI.Attribute`] values.
+The first argument is an array of [`UI.Attribute`](UI.Attribute) values.
 Use this to apply styles to all elements in the column, even nested elements.
 
 -}
@@ -178,7 +198,7 @@ column attrs children =
 
 {-| A text element.
 
-The first argument is an array of [`UI.Attribute`] values used to style the text.
+The first argument is an array of [`UI.Attribute`](UI.Attribute) values used to style the text.
 
 Note that text will _not_ wrap automatically, though explicit newlines will be preserved.
 
@@ -210,16 +230,6 @@ charGrid attrs grid =
 {-| Wrap an element in a border.
 
 The different types of borders are in [`UI.Border`](UI.Border).
-
-Example:
-
-    bordered [] UI.Border.rounded (text [] "hi")
-
-Outputs:
-
-    ╭──╮
-    │hi│
-    ╰──╯
 
 The element you pass to this function can be as large or deeply nested as you want,
 and the border will be around the whole thing.
@@ -294,11 +304,10 @@ mergeAttributes parentAttrs element =
                 }
 
 
-{-| Return the element as a string.
+{-| Return the element as a string that can be printed to the terminal.
 
-It will contain all the newlines, whitespace, and ansi escape sequences needed for the rows, columns, and styles in the element.
+_**You shouldn't need this in normal apps.**_
 
-**You shouldn't need this in normal apps.**
 gren-tui uses this internally to convert your view to something that can printed to the terminal.
 
 But it may be useful if you're writing a package or doing something weird.

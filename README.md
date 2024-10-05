@@ -1,16 +1,17 @@
 # Gren TUI
 
-Write purely functional, type-safe terminal apps using [The Elm Architecture](https://guide.elm-lang.org/architecture/),
-with an intuitive UI interface inspired by [elm-ui](https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/),
-in the very pleasant [Gren programming language](https://gren-lang.org/).
+Write purely functional, type-safe terminal apps using [The Elm Architecture](https://guide.elm-lang.org/architecture/).
+Easily create complex, responsive UIs with an interface inspired by [elm-ui](https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/).
+All in the very pleasant [Gren programming language](https://gren-lang.org/).
 
 ## Example
+
+A full program showing a running clock with a border in the terminal:
 
 ```elm
 module Main exposing (main)
 
 
-import Ansi
 import Init
 import Node
 import Stream exposing (Stream)
@@ -106,7 +107,7 @@ subscriptions model =
 
 ## Usage
 
-If you haven't already, [install gren](https://gren-lang.org/install)
+If you haven't already, [install node](https://nodejs.org/en), [install gren](https://gren-lang.org/install),
 and take a look at [the book](https://gren-lang.org/book/) if you want to get up to speed with the language.
 
 Then create a gren node application:

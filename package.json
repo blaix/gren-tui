@@ -7,6 +7,6 @@
     "gren-lang": "^0.4.5"
   },
   "devDependencies": {
-    "gren-packages": "^4.1.0"
+    "gren-packages": "^4.1.1"
   }
 }
