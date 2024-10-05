@@ -43,7 +43,6 @@ Then create a `src/Main.gren` file. For a starting point, see:
 
 * The example above.
 * The [examples/](https://github.com/blaix/gren-tui/tree/main/examples) directory.
-* The [API docs](https://packages.gren-lang.org/package/blaix/gren-tui).
 
 Then compile and run with:
 
@@ -51,6 +50,14 @@ Then compile and run with:
 gren make src/Main.gren
 node app
 ```
+
+## Now what?
+
+Check out the [API docs](https://packages.gren-lang.org/package/blaix/gren-tui) and start writing your app!
+
+Feel free to reach out if you need help, or to show off what you're building.
+I'd love to see it!
+See below for contact info.
 
 ## Getting Help or Updates
 
