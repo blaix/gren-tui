@@ -4,114 +4,21 @@ Write purely functional, type-safe terminal apps using [The Elm Architecture](ht
 Easily create complex, responsive UIs with an interface inspired by [elm-ui](https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/).
 All in the very pleasant [Gren programming language](https://gren-lang.org/).
 
+## Examples
+
 ![menu example](media/menu-example.gif)
 
-(see the [source code](examples/v3/highlight-selection/src/Main.gren) for the above example)
+[source](examples/v3/highlight-selection/src/Main.gren)
 
-## Basic Example
+---
 
-A full program showing a running clock in the terminal:
+![progress bar example](media/progress-bar-example.gif)
 
-```elm
-module Main exposing (main)
+[source](examples/v3/progress-bar/src/Main.gren)
 
+---
 
-import Init
-import Node
-import Stream exposing (Stream)
-import Task
-import Time
-import Tui
-import UI
-
-
-main : Tui.Program Model Msg
-main =
-    Tui.defineProgram
-        { init = init
-        , update = update
-        , view = view
-        , subscriptions = subscriptions
-        , onInput = GotInput
-        }
-
-
--- MODEL
-
-
-type alias Model =
-    { time : Time.Posix
-    , stdout : Stream
-    }
-
-
-init : Tui.Environment -> Init.Task { model : Model, command : Cmd Msg }
-init env =
-    Node.startProgram
-        { model = 
-            { time = Time.millisToPosix 0
-            , stdout = env.stdout
-            }
-        , command =
-            Tui.hideCursor env.stdout
-                |> Task.execute
-        }
-
-
--- VIEW
-
-
-view : Model -> UI.Element
-view model =
-    let
-        hour = String.fromInt (Time.toHour Time.utc model.time)
-        minute = String.fromInt (Time.toMinute Time.utc model.time)
-        second = String.fromInt (Time.toSecond Time.utc model.time)
-    in
-    UI.text [] (hour ++ ":" ++ minute ++ ":" ++ second)
-
-
--- UPDATE
-
-
-type Msg
-    = Tick Time.Posix
-    | GotInput Tui.Input
-
-
-update : Msg -> Model -> { model : Model, command : Cmd Msg }
-update msg model =
-    case msg of
-        Tick time ->
-            { model = { model | time = time }
-            , command = Cmd.none
-            }
-
-        GotInput input ->
-            case input of
-                Tui.Escape ->
-                    { model = model
-                    , command = 
-                        Tui.exit model.stdout
-                            |> Task.execute
-                    }
-
-                _ ->
-                    { model = model
-                    , command = Cmd.none
-                    }
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Time.every 1000 Tick
-```
-
-See [the clock example in the repo](https://github.com/blaix/gren-tui/blob/main/examples/v3/clock/src/Main.gren)
-for a more robust version that captures user input and uses rows and columns for layout
-to offer a menu that switches between UTC and local time zone.
-
-There are also [many other examples](https://github.com/blaix/gren-tui/blob/main/examples/v3) to help you get started.
+There are [other example apps here](https://github.com/blaix/gren-tui/blob/main/examples/v3).
 
 ## Usage
 
