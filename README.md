@@ -18,7 +18,7 @@ All in the very pleasant [Gren programming language](https://gren-lang.org/).
 
 ---
 
-There are [other example apps here](https://github.com/blaix/gren-tui/blob/main/examples/v3).
+You can find [all the example apps here](https://github.com/blaix/gren-tui/blob/main/examples/v3).
 
 ## Usage
 
