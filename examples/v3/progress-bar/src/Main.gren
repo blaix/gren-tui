@@ -25,7 +25,7 @@ main =
 
 
 type alias Model =
-    { ticks : Int
+    { progress : Int
     , stdout : Stream
     }
 
@@ -34,11 +34,11 @@ init : Tui.Environment -> Init.Task { model : Model, command : Cmd Msg }
 init env =
     Node.startProgram
         { model = 
-            { ticks = 1
+            { progress = 0
             , stdout = env.stdout
             }
         , command =
-            Stream.sendString env.stdout Ansi.hideCursor 
+            Tui.hideCursor env.stdout
                 |> Task.execute
         }
 
@@ -52,17 +52,21 @@ update : Msg -> Model -> { model : Model, command : Cmd Msg }
 update msg model =
     case msg of
         Tick _ ->
-            { model = { model | ticks = model.ticks + 1 }
-            , command = Cmd.none
+            { model = { model | progress = model.progress + 1 }
+            , command = 
+                if model.progress > 99 then
+                    Tui.exit model.stdout
+                        |> Task.execute 
+                else
+                    Cmd.none
             }
 
         GotInput input ->
             { model = model
             , command = 
                 case input of
-                    Tui.KeyChar "q" ->
-                        Stream.sendString model.stdout Ansi.showCursor
-                            |> Task.andThen (\_ -> Node.exit)
+                    Tui.Escape ->
+                        Tui.exit model.stdout
                             |> Task.execute
 
                     _ ->
@@ -74,28 +78,24 @@ view : Model -> UI.Element
 view model =
     let
         barLength =
-            Math.modBy 36 model.ticks
+            model.progress // 2
 
         bar =
             String.repeat barLength "█"
 
-        count =
-            toFloat model.ticks / 10
-                |> Math.round
-                |> String.fromInt
-
-        -- Test changing number of output lines
-        maybeExtraLine =
-            if Math.modBy 4 barLength == 0 then
-                "boop\n"
+        progress =
+            if model.progress < 100 then
+                model.progress
+                    |> String.fromInt
+                    |> String.padLeft 2 '0'
+                    |> String.append "%"
             else
-                ""
+                "Done!"
     in
     UI.column []
-        [ UI.text [] <| "How high can I count? Let's see: " ++ count
+        [ UI.text [] <| "Progress: " ++ progress
         , UI.text [ UI.Attribute.color Ansi.Magenta ] bar
-        , UI.text [ UI.Attribute.color Ansi.Yellow ] "Press q to quit."
-        , UI.text [] maybeExtraLine
+        , UI.text [ UI.Attribute.color Ansi.Yellow ] "Press Esc to quit."
         ]
 
 
