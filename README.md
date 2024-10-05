@@ -18,6 +18,12 @@ All in the very pleasant [Gren programming language](https://gren-lang.org/).
 
 ---
 
+![game example](media/game-example.gif)
+
+[source](examples/v3/game/src/Main.gren)
+
+---
+
 You can find [all the example apps here](https://github.com/blaix/gren-tui/blob/main/examples/v3).
 
 ## Usage
