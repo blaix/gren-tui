@@ -1,5 +1,6 @@
 .envrc
 .gren
+.obsidian
 docs.json
 examples/**/app
 node_modules
