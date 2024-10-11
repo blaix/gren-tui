@@ -24,6 +24,7 @@
 * [X] Overhaul the README for v3
 * [X] == Release 3.0 ==
 * [X] Animated Demos
+* [ ] Listen to ratatui episode of developer voices and check out the links. eg https://github.com/junkdog/tachyonfx
 * [ ] Starter repo or project initializer (add `gren run` instead of publishing separate npm package?)
 * [ ] Publish post or video making a dungeon crawler. Look at the UI of Robin's elm-warrior :)
 * [ ] Look into performance on the old paint example. Think it's input handling. See [[#performance-notes]]
