@@ -24,6 +24,7 @@
 * [X] Overhaul the README for v3
 * [X] == Release 3.0 ==
 * [X] Animated Demos
+* [ ] Add gren issue for js errors when run in pipeline. See convo: https://discord.com/channels/1250584603085766677/1301468632735551549/1301665363561549886
 * [ ] Listen to ratatui episode of developer voices and check out the links. eg https://github.com/junkdog/tachyonfx
 * [ ] Starter repo or project initializer (add `gren run` instead of publishing separate npm package?)
 * [ ] Publish post or video making a dungeon crawler. Look at the UI of Robin's elm-warrior :)
