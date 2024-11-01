@@ -1,4 +1,12 @@
-## 3.0.0 (coming soon)
+## Next
+
+* Print error message it not in interactive terminal
+
+## 3.0.2 (2024-10-05)
+
+* Doc and example updates
+
+## 3.0.0 (2024-10-04)
 
 * Update to gren 4.4
 * Complete rendering refactor to reduce screen flicker and handle terminal resizes.
