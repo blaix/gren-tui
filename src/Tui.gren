@@ -213,7 +213,10 @@ init appInit env =
                         Nothing ->
                             -- Not in an interactive terminal
                             { model = model
-                            , command = Task.execute <| Node.exitWithCode 1
+                            , command = 
+                                Stream.sendLine env.stderr "gren-tui must be in an interactive terminal"
+                                    |> Task.andThen (\_ -> Node.exitWithCode 1)
+                                    |> Task.execute
                             }
 
 
