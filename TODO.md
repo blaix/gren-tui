@@ -24,6 +24,11 @@
 * [X] Overhaul the README for v3
 * [X] == Release 3.0 ==
 * [X] Animated Demos
+
+try VHS from charm
+
+post snippets of view model and update 
+
 * [ ] Add gren issue for js errors when run in pipeline. See convo: https://discord.com/channels/1250584603085766677/1301468632735551549/1301665363561549886
 * [ ] Easy way for people to try gren-tui / run the examples. devbox? devbox run [example name]? template repo or init script?
 * [ ] Listen to ratatui episode of developer voices and check out the links. eg https://github.com/junkdog/tachyonfx
