@@ -25,6 +25,8 @@
 * [X] == Release 3.0 ==
 * [X] Animated Demos
 
+start posting videos
+
 try VHS from charm
 
 post snippets of view model and update 
