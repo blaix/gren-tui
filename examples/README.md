@@ -1,22 +1,6 @@
-To run an example, from the root project folder (the folder with a `gren.json` file):
-
-Install dependencies:
+To run an example, [install gren](https://gren-lang.org/install/), then navigate to the root of an example (the directory with `gren.json` in it), and compile and run with node:
 
 ```
-npm install
-```
-
-Compile the app:
-
-```
-npx gren make src/Main.gren
-```
-
-Run the app (node 20 or greater):
-
-```
+gren make src/Main.gren
 node app
 ```
-
-Most examples exit on their own, exit with Esc, or tell you how to exit.
-Otherwise, you can just Ctrl-C to exit any gren-tui app.
