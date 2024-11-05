@@ -1,6 +1,6 @@
 # Menu Example
 
-Bare bones example of a two-column menu with highlighted selection that can be moved with the arrow keys.
+Bare bones example of a two-column menu in the terminal with highlighted selection that can be moved with the arrow keys.
 
 ![menu example](https://github.com/blaix/gren-tui/raw/main/media/menu-example.gif)
 
