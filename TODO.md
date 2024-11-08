@@ -24,8 +24,11 @@
 * [X] Overhaul the README for v3
 * [X] == Release 3.0 ==
 * [X] Animated Demos
+* [ ] TodoMVC video as driver for next release
+  * [ ] Will need a way to enter text
+    * [ ] node's readline api?
+    * [ ] add Backspace to Input?
 * [ ] Add gren issue for js errors when run in pipeline. See convo: https://discord.com/channels/1250584603085766677/1301468632735551549/1301665363561549886
-* [ ] start posting videos? ("Stress-free Terminal Apps with Gren TUI")
 * [ ] try VHS from charm
 * [ ] post snippets of view model and update in README
 * [ ] experiment: web renderer for UI
