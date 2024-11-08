@@ -28,6 +28,8 @@
   * [ ] Will need a way to enter text
     * [ ] node's readline api?
     * [ ] add Backspace to Input?
+    * [ ] `read` in a child process?
+    * [ ] switch out of raw mode?
 * [ ] Add gren issue for js errors when run in pipeline. See convo: https://discord.com/channels/1250584603085766677/1301468632735551549/1301665363561549886
 * [ ] try VHS from charm
 * [ ] post snippets of view model and update in README
