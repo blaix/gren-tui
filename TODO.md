@@ -28,7 +28,7 @@
   * [ ] Will need a way to enter text
     * [ ] node's readline api?
     * [ ] add Backspace to Input?
-    * [ ] `read` in a child process?
+    * [ ] `read` in a child process? see https://codeberg.org/blaix/taskfiles/src/commit/3d1d12afde45a8d5aa343c54b1afbea6f83145b1/src/main.rs#L237
     * [ ] switch out of raw mode?
 * [ ] Add gren issue for js errors when run in pipeline. See convo: https://discord.com/channels/1250584603085766677/1301468632735551549/1301665363561549886
 * [ ] try VHS from charm
