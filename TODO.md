@@ -24,7 +24,10 @@
 * [X] Overhaul the README for v3
 * [X] == Release 3.0 ==
 * [X] Animated Demos
-* [ ] Video series building https://github.com/blaix/tooter (will need new release for Backspace input)
+* [ ] Video series building https://github.com/blaix/tooter
+    * [ ] Use this to drive gren 0.5 upgrade and gren-tui 4.0 release
+    * [ ] add Backspace input
+* [ ] Create a starter repo using [github templates](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-template-repository)
 * [ ] Add gren issue for js errors when run in pipeline. See convo: https://discord.com/channels/1250584603085766677/1301468632735551549/1301665363561549886
 * [ ] try VHS from charm
 * [ ] post snippets of view model and update in README
