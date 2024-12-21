@@ -1,0 +1,65 @@
+module Main exposing (main)
+
+
+import Ansi
+import Init
+import Node
+import Stream exposing (Stream)
+import Task
+import Tui
+import UI
+
+
+main : Tui.Program Model Msg
+main =
+    Tui.defineProgram
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        , onInput = GotInput
+        }
+
+
+type alias Model =
+    { stdout : Stream
+    }
+
+
+init : Tui.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Node.startProgram
+        { model = { stdout = env.stdout }
+        , command = 
+            Tui.hideCursor env.stdout
+                |> Task.execute
+        }
+
+
+type Msg
+    = GotInput Tui.Input
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        GotInput input ->
+            { model = model
+            , command = 
+                case input of
+                    Tui.Escape ->
+                        Tui.exit model.stdout
+                            |> Task.execute
+                    _ ->
+                        Cmd.none
+            }
+
+
+view : Model -> UI.Element
+view model =
+    UI.row [] [ UI.text [] "Hello, World!" ]
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
