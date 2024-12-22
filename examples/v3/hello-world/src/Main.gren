@@ -57,7 +57,7 @@ update msg model =
 
 view : Model -> UI.Element
 view model =
-    UI.row [] [ UI.text [] "Hello, World!" ]
+    UI.text [] "Hello, World!"
 
 
 subscriptions : Model -> Sub Msg
