@@ -1,0 +1,100 @@
+
+module Main exposing (main)
+
+
+import Ansi
+import Game
+import Init
+import Node
+import Stream exposing (Stream)
+import Task
+import Time
+import Tui
+import UI
+import UI.Border as Border
+
+
+main : Tui.Program Model Msg
+main =
+    Tui.defineProgram
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        , onInput = GotInput
+        }
+
+
+type alias Model =
+    { stdout : Stream
+    , game : Game.State
+    }
+
+
+width : Int
+width =
+    80
+
+
+height : Int
+height =
+    40
+
+
+fps : Int
+fps =
+    10
+
+
+init : Tui.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Node.startProgram
+        { model = 
+            { stdout = env.stdout 
+            , game = Game.init width height
+            }
+        , command = 
+            Tui.hideCursor env.stdout
+                |> Task.execute
+        }
+
+
+type Msg
+    = GotInput Tui.Input
+    | Tick Time.Posix
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        GotInput input ->
+            { model = 
+                { model | game = Game.handleInput input model.game }
+            , command = 
+                case input of
+                    Tui.Escape ->
+                        Tui.exit model.stdout
+                            |> Task.execute
+                    _ ->
+                        Cmd.none
+            }
+
+        Tick t ->
+            { model =
+                { model | game = Game.tick t model.game }
+            , command =
+                Cmd.none
+            }
+
+
+view : Model -> UI.Element
+view model =
+    model.game
+        |> Game.toString
+        |> UI.text []
+        |> UI.bordered [] Border.rounded
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Time.every (1000 / toFloat fps) Tick

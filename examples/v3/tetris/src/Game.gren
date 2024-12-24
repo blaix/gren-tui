@@ -1,0 +1,186 @@
+module Game exposing
+    ( State
+    , init
+    , isValidMove
+    , handleInput
+    , tick
+    , toString
+    )
+
+import Board exposing (Board)
+import Piece exposing (Piece)
+import Time
+import Tui
+import Util.Array
+import Util.Array2d
+
+
+type alias State =
+    { board : Board
+    , maxX : Int
+    , maxY : Int
+    , activePiece : Piece
+    , lastPieceTick : Time.Posix
+    , speedInMillis : Int
+    , startingPosition : { x : Int, y : Int }
+    }
+
+
+init : Int -> Int -> State
+init width height =
+    let
+        startingPosition =
+            { x = width // 2
+            , y = 0
+            }
+    in
+    { board = 
+        Board.init width height
+    , maxX =
+        width - 1
+    , maxY =
+        height - 1
+    , activePiece = 
+        Piece.t startingPosition
+    , lastPieceTick =
+        Time.millisToPosix 0
+    , speedInMillis =
+        1000
+    , startingPosition = startingPosition
+    }
+
+
+tryMove : { x : Int, y : Int } -> State -> State
+tryMove point state =
+    if isValidMove state point then
+        { state
+            | activePiece =
+                { state.activePiece
+                    | x = point.x
+                    , y = point.y
+                }
+        }
+    else
+        state
+
+
+handleInput : Tui.Input -> State -> State
+handleInput input state =
+    let
+        piece =
+            state.activePiece
+    in
+    case input of
+        Tui.ArrowLeft ->
+            tryMove { x = piece.x - 1, y = piece.y } state
+
+        Tui.ArrowRight ->
+            tryMove { x = piece.x + 1, y = piece.y } state
+            
+        Tui.ArrowDown ->
+            tryMove { x = piece.x, y = piece.y + 1 } state
+
+        Tui.ArrowUp ->
+            let
+                updatedState =
+                    { state | activePiece = Piece.rotate piece }
+
+                valid =
+                    isValidMove 
+                        updatedState 
+                        { x = piece.x, y = piece.y }
+            in
+            if valid then
+                updatedState
+            else
+                state
+                
+        _ ->
+            state
+
+
+isValidMove : State -> { x : Int, y : Int } -> Bool
+isValidMove state { x, y } =
+    let
+        toPoint val =
+            { x = val.x, y = val.y }
+
+        pieceCells =
+            { state.activePiece | x = x, y = y }
+                |> Piece.visibleCells
+                |> Array.map toPoint
+
+        boardCells =
+            state.board
+                |> Board.visibleCells
+                |> Array.map toPoint
+
+        hasOverlaps a b =
+            Util.Array.intersect a b
+                |> Array.length
+                |> (/=) 0
+
+        outOfBounds cell =
+            if cell.x > state.maxX then
+                True
+            else if cell.x < 0 then
+                True
+            else if cell.y > state.maxY then
+                True
+            else if cell.y < 0 then
+                True
+            else
+                False
+
+        anyOutOfBounds =
+            pieceCells
+                |> Array.map outOfBounds
+                |> Array.any identity
+    in 
+    if hasOverlaps pieceCells boardCells then
+        False
+    else if anyOutOfBounds then
+        False
+    else
+        True
+        
+
+tick : Time.Posix -> State -> State
+tick time state =
+    let
+        piece =
+            state.activePiece
+
+        millisSinceLastPieceTick =
+            (Time.posixToMillis time) -
+            (Time.posixToMillis state.lastPieceTick)
+
+        dropPoint =
+            { x = piece.x, y = piece.y + 1 }
+    in
+    if millisSinceLastPieceTick >= state.speedInMillis then
+        if isValidMove state dropPoint then
+            { state
+                | lastPieceTick = time
+                , activePiece =
+                        { state.activePiece | y = dropPoint.y }
+            }
+        else
+            nextPiece state
+    else
+        state
+
+
+nextPiece : State -> State
+nextPiece state =
+    { state
+        | board = Board.placePiece state.activePiece state.board
+        -- TODO: random next piece
+        , activePiece = Piece.t state.startingPosition
+    }
+
+toString : State -> String
+toString state =
+    state.board
+        |> Board.placePiece state.activePiece
+        |> Board.toString
