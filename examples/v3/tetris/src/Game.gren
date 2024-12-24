@@ -64,6 +64,26 @@ tryMove point state =
         state
 
 
+tryRotate : State -> State
+tryRotate state =
+    let
+        piece =
+            state.activePiece
+
+        updatedState =
+            { state | activePiece = Piece.rotate piece }
+
+        valid =
+            isValidMove 
+                updatedState 
+                { x = piece.x, y = piece.y }
+    in
+    if valid then
+        updatedState
+    else
+        state
+
+
 handleInput : Tui.Input -> State -> State
 handleInput input state =
     let
@@ -81,19 +101,7 @@ handleInput input state =
             tryMove { x = piece.x, y = piece.y + 1 } state
 
         Tui.ArrowUp ->
-            let
-                updatedState =
-                    { state | activePiece = Piece.rotate piece }
-
-                valid =
-                    isValidMove 
-                        updatedState 
-                        { x = piece.x, y = piece.y }
-            in
-            if valid then
-                updatedState
-            else
-                state
+            tryRotate state
                 
         _ ->
             state
