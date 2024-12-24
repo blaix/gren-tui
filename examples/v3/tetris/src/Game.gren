@@ -68,10 +68,10 @@ tryRotate : State -> State
 tryRotate state =
     let
         piece =
-            state.activePiece
+            Piece.rotate state.activePiece
 
         updatedState =
-            { state | activePiece = Piece.rotate piece }
+            { state | activePiece = piece }
 
         valid =
             isValidMove 
