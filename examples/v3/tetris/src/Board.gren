@@ -74,11 +74,13 @@ toString board =
 
 cellToString : Cell -> String
 cellToString cell =
-    case cell of
-        Empty ->
-            " "
+    let
+        color =
+            case cell of
+                Empty ->
+                    Ansi.NoColor
 
-        Block color ->
-            "#"
-                |> Ansi.wrapColor Ansi.Black
-                |> Ansi.wrapBgColor color
+                Block c ->
+                    c
+    in
+    Ansi.wrapBgColor color "  " -- two spaces
