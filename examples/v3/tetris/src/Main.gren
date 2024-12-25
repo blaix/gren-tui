@@ -11,6 +11,7 @@ import Task
 import Time
 import Tui
 import UI
+import UI.Attribute as Attr
 import UI.Border as Border
 
 
@@ -89,12 +90,31 @@ update msg model =
 
 view : Model -> UI.Element
 view model =
-    model.game
-        |> Game.toString
-        |> UI.text []
-        |> UI.bordered [] Border.rounded
+    let
+        borderColor =
+            if model.game.gameOver then
+                Ansi.Red
+            else
+                Ansi.NoColor
+    in
+    UI.column []
+        [ model.game
+            |> Game.toString
+            |> UI.text []
+            |> UI.bordered
+                [ Attr.color borderColor ]
+                Border.rounded
+        , UI.text [] <|
+            if model.game.gameOver then
+                "Game Over. Escape to exit."
+            else
+                ""
+        ]
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Time.every (1000 / toFloat fps) Tick
+    if model.game.gameOver then
+        Sub.none
+    else
+        Time.every (1000 / toFloat fps) Tick

@@ -23,6 +23,7 @@ type alias State =
     , lastPieceTick : Time.Posix
     , speedInMillis : Int
     , startingPosition : { x : Int, y : Int }
+    , gameOver : Bool
     }
 
 
@@ -47,6 +48,7 @@ init width height =
     , speedInMillis =
         1000
     , startingPosition = startingPosition
+    , gameOver = False
     }
 
 
@@ -181,11 +183,22 @@ tick time state =
 
 nextPiece : State -> State
 nextPiece state =
-    { state
-        | board = Board.placePiece state.activePiece state.board
-        -- TODO: random next piece
-        , activePiece = Piece.t state.startingPosition
-    }
+    let
+        newPiece =
+            -- TODO: random next piece
+            Piece.t state.startingPosition
+
+        newState =
+            { state
+                | board = Board.placePiece state.activePiece state.board
+                , activePiece = newPiece
+            }
+    in
+    if isValidMove newState { x = newPiece.x, y = newPiece.y } then
+        newState
+    else
+        { newState | gameOver = True }
+
 
 toString : State -> String
 toString state =
