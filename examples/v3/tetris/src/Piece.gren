@@ -45,7 +45,6 @@ type alias Point =
 rotate : Piece -> Piece
 rotate piece =
     -- https://tetris.wiki/Super_Rotation_System
-    -- TODO: make sure rotation is a valid move
     let
         currentIndex =
             piece.shapes
