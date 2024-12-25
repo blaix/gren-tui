@@ -24,6 +24,7 @@
 * [X] Overhaul the README for v3
 * [X] == Release 3.0 ==
 * [X] Animated Demos
+* [ ] Finish tetris example
 * [ ] Video series building https://github.com/blaix/tooter
     * [ ] Use this to drive gren 0.5 upgrade and gren-tui 4.0 release
     * [ ] add Backspace input
