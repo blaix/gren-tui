@@ -194,7 +194,7 @@ nextPiece state =
                 , activePiece = newPiece
             }
     in
-    if isValidMove newState { x = newPiece.x, y = newPiece.y } then
+    if isValidMove newState state.startingPosition  then
         newState
     else
         { newState | gameOver = True }
