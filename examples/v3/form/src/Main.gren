@@ -1,0 +1,92 @@
+module Main exposing (main)
+
+
+import Init
+import Node
+import Stream exposing (Stream)
+import Task
+import Tui
+import UI
+import UI.Attribute as Attribute
+
+
+main : Tui.Program Model Msg
+main =
+    Tui.defineProgram
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        , onInput = GotInput
+        }
+
+
+type alias Model =
+    { name : String
+    , submitted : Bool
+    , stdout : Stream
+    }
+
+
+init : Tui.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Node.startProgram
+        { model = 
+            { name = ""
+            , submitted = False
+            , stdout = env.stdout
+            }
+        , command =
+            Tui.hideCursor env.stdout
+                |> Task.execute
+        }
+
+
+type Msg
+    = GotInput Tui.Input
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    case msg of
+        GotInput input ->
+            case input of
+                Tui.KeyChar key ->
+                    { model = { model | name = model.name ++ key }
+                    , command = Cmd.none
+                    }
+
+                Tui.Return ->
+                    { model = { model | submitted = True }
+                    , command = Cmd.none
+                    }
+
+                Tui.Escape ->
+                    { model = model
+                    , command = 
+                        Tui.exit model.stdout 
+                            |> Task.execute
+                    }
+
+                -- TODO: Handle backspace, arrow keys, etc...
+                _ ->
+                    { model = model
+                    , command = Cmd.none
+                    }
+
+
+view : Model -> UI.Element
+view model =
+    UI.column []
+        [ UI.text [] <| "Name: " ++ model.name
+        , UI.text [ Attribute.italic ] <|
+            if model.submitted then
+                "Hi, " ++ model.name ++ "! Press esc to quit."
+            else
+                "Type your name and hit enter."
+        ]
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
