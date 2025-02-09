@@ -65,6 +65,18 @@ Feel free to reach out if you need help, or to show off what you're building.
 I'd love to see it!
 See below for contact info.
 
+## Working on this package
+
+This project uses [devbox](https://www.jetify.com/devbox).
+If you install devbox and start a `devbox shell`
+(or set up [direnv](https://www.jetify.com/docs/devbox/ide_configuration/direnv/) - highly recommended!),
+you will have the correct version of `gren` on your path,
+you can run tests with `just test`,
+and you can run examples with `just [example-name]`.
+
+If you don't want to use devbox,
+see `devbox.json` for a list of dependencies if you will need to install.
+
 ## Getting Help or Updates
 
 If you have questions, suggestions, find a bug, or want to follow updates to the package, you can:
