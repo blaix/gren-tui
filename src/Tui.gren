@@ -30,13 +30,14 @@ See [`defineProgram`](#defineProgram) for details, or one of the [examples](http
 
 
 import Ansi
+import Ansi.Screen
 import Bytes exposing (Bytes)
 import Bytes.Decode
 import Bytes.Encode
 import FileSystem.Path exposing (Path)
 import Init
 import Node
-import Stream exposing (Stream)
+import Stream
 import Task exposing (Task)
 import Terminal
 import Time
@@ -90,9 +91,9 @@ type alias Environment =
     , cpuArchitecture : Node.CpuArchitecture
     , applicationPath : Path
     , args : Array String
-    , stdout : Stream
-    , stderr : Stream
-    , stdin : Stream
+    , stdout : Stream.Writable Bytes
+    , stderr : Stream.Writable Bytes
+    , stdin : Stream.Readable Bytes
     , colorDepth : Int
     , columns : Int
     , rows : Int
@@ -129,9 +130,9 @@ defineProgram appConfig =
 
 
 type alias Model appModel appMsg =
-    { stdin : Stream
-    , stdout : Stream
-    , stderr : Stream
+    { stdin : Stream.Readable Bytes
+    , stdout : Stream.Writable Bytes
+    , stderr : Stream.Writable Bytes
     , appModel : appModel
     , appInitCmd : Maybe (Cmd appMsg)
     , appReady : Bool
@@ -151,7 +152,7 @@ init appInit env =
     Init.await Terminal.initialize <| \termConfig ->
         let
             termConfigForApp =
-                case termConfig of
+                when termConfig is
                     Just tConfig ->
                         { rows = tConfig.rows
                         , columns = tConfig.columns
@@ -196,7 +197,7 @@ init appInit env =
                         }
                 in
                 Node.startProgram <|
-                    case termConfig of
+                    when termConfig is
                         Just config ->
                             { model = 
                                 { model 
@@ -205,16 +206,20 @@ init appInit env =
                                     , terminalPermission = Just config.permission
                                 }
                             , command =
-                                Terminal.setStdInRawMode config.permission True
-                                    |> Task.andThen (\_ -> Stream.sendString env.stdout Ansi.getCursorReport)
-                                    |> Task.execute
+                                Cmd.batch
+                                    [ Terminal.setStdInRawMode config.permission True
+                                        |> Task.andThen (\_ -> print env.stdout Ansi.getCursorReport)
+                                        |> Task.execute
+                                    , Stream.read env.stdin
+                                        |> Task.attempt GotStdin
+                                    ]
                             }
 
                         Nothing ->
                             -- Not in an interactive terminal
                             { model = model
                             , command = 
-                                Stream.sendLine env.stderr "gren-tui must be in an interactive terminal"
+                                printLine env.stderr "gren-tui must be in an interactive terminal"
                                     |> Task.andThen (\_ -> Node.exitWithCode 1)
                                     |> Task.execute
                             }
@@ -224,7 +229,7 @@ init appInit env =
 
 
 type Msg appMsg
-    = GotStdin Bytes
+    = GotStdin (Result Stream.Error Bytes)
     | TerminalResized Terminal.Size
     | AppMsg appMsg
     | Tick Time.Posix
@@ -236,8 +241,16 @@ update :
     -> Model appModel appMsg
     -> { model : Model appModel appMsg, command : Cmd (Msg appMsg) }
 update appConfig msg model =
-    case msg of
-        GotStdin bytes ->
+    when msg is
+        GotStdin (Err e) ->
+            { model = model
+            , command =
+                print model.stderr "Failed to read from stdin"
+                    |> Task.andThen (\_ -> Node.exitWithCode 1)
+                    |> Task.execute
+            }
+                    
+        GotStdin (Ok bytes) ->
             let
                 input =
                     bytesToInput bytes
@@ -248,7 +261,7 @@ update appConfig msg model =
                         (appConfig.onInput input)
                         model
             in
-            case input of
+            when input is
                 CtrlC ->
                     { model = model
                     , command = 
@@ -256,7 +269,7 @@ update appConfig msg model =
                             |> Task.execute
                     }
 
-                CursorReport row col ->
+                CursorReport { row, column } ->
                     -- The first report is gren-tui getting initial cursor
                     -- position. Subsequent reports were requested by the app.
                     if model.appReady then
@@ -268,7 +281,7 @@ update appConfig msg model =
                                 , appReady = True
                             }
                         , command =
-                            Stream.sendString model.stdout (Ansi.clearLine Ansi.Up)
+                            print model.stdout (Ansi.Screen.clearLine Ansi.Screen.before)
                                 |> Task.execute
                         }
 
@@ -302,9 +315,9 @@ update appConfig msg model =
                 cmd =
                     if wrappedLines then
                         Task.execute <|
-                            Stream.sendString 
+                            print 
                                 model.stdout 
-                                (Ansi.clearScreen Ansi.Full)
+                                (Ansi.Screen.clear Ansi.Screen.full)
                     else
                         Cmd.none
             in
@@ -328,7 +341,7 @@ update appConfig msg model =
                     view appConfig.view model
             in
             -- Don't run the app's init cmd until we're ready
-            case { ready = model.appReady, appInit = model.appInitCmd } of
+            when { ready = model.appReady, appInit = model.appInitCmd } is
                 { ready = True, appInit = Just cmd } ->
                     { model =
                         { viewResult.model | appInitCmd = Nothing }
@@ -365,13 +378,12 @@ appUpdate appUpdate_ appMsg model =
 subscriptions : (appModel -> Sub appMsg) -> Model appModel appMsg -> Sub (Msg appMsg)
 subscriptions appSubs model =
     Sub.batch
-        [ Stream.listen model.stdin GotStdin
-        , Sub.map AppMsg (appSubs model.appModel)
+        [ Sub.map AppMsg (appSubs model.appModel)
         , if model.appReady then
             Time.every (1000 / framesPerSecond) Tick
           else
             Sub.none
-        , case model.terminalPermission of
+        , when model.terminalPermission is
             Just termPermission ->
                 Terminal.onResize termPermission TerminalResized
             Nothing ->
@@ -395,10 +407,10 @@ Here's an example of using it in init to hide the cursor as soon as the program 
             }
 
 -}
-hideCursor : Stream -> Task Never {}
+hideCursor : Stream.Writable Bytes-> Task Never {}
 hideCursor stdout =
     Ansi.hideCursor
-        |> Stream.sendString stdout
+        |> print stdout
 
 
 {-| Task that exits the program.
@@ -411,7 +423,7 @@ If you want something other than zero, use [`exitWithCode`](#exitWithCode).
 
 Here's an example of using it in your update function to exit when the user presses the escape key:
 
-    case input of
+    when input is
         Tui.Escape ->
             { model = model
             , command = 
@@ -420,7 +432,7 @@ Here's an example of using it in your update function to exit when the user pres
             }
 
 -}
-exit : Stream -> Task Never {}
+exit : Stream.Writable Bytes -> Task Never {}
 exit stdout =
     cleanup stdout
         |> Task.andThen (\_ -> Node.exit)
@@ -430,29 +442,17 @@ exit stdout =
 
 The Stream argument should be the stdout value you get from [`Environment`](#Environment).
 This is needed to clean things up (e.g. restore cursor, unset styles, etc).
-
-Here's an example of using it in your update function to exit if there was a failure:
-
-    case result of
-        Error e ->
-            { model = model
-            , command = 
-                Stream.sendString model.stderr "Failed!"
-                    |> Task.andThen (\_ -> Tui.exitWithCode model.stdout 1)
-                    |> Task.execute
-            }
-
 -}
-exitWithCode : Stream -> Int -> Task Never {}
+exitWithCode : Stream.Writable Bytes -> Int -> Task Never {}
 exitWithCode stream code =
     cleanup stream
         |> Task.andThen (\_ -> Node.exitWithCode code)
 
 
-cleanup : Stream -> Task Never {}
+cleanup : Stream.Writable Bytes -> Task Never {}
 cleanup stream =
     "\n" ++ Ansi.reset ++ Ansi.showCursor
-        |> Stream.sendString stream
+        |> print stream
 
 
 -- VIEW
@@ -483,7 +483,7 @@ view appView model =
 
             viewString =
                 lines
-                    |> Array.map (String.append (Ansi.clearLine Ansi.Down))
+                    |> Array.map (String.append (Ansi.Screen.clearLine Ansi.Screen.after))
                     |> String.join "\n"
 
             newFirstRow =
@@ -506,8 +506,8 @@ render model viewString =
     --   * Draw from the model's OLD first row, or you'll draw over non-tui terminal lines instead of scrolling.
     viewString
         |> String.prepend (Ansi.moveTo model.firstRow 0)
-        |> String.append (Ansi.clearScreen Ansi.Down)
-        |> Stream.sendString model.stdout
+        |> String.append (Ansi.Screen.clear Ansi.Screen.after)
+        |> print model.stdout
 
 
 -- INPUT
@@ -540,7 +540,7 @@ type Input
     | ArrowDown
     | ArrowLeft
     | ArrowRight
-    | CursorReport Int Int
+    | CursorReport { row : Int, column : Int }
     | CtrlC
     | UnknownInput
 
@@ -564,7 +564,7 @@ bytesToInput bytes =
 
 stringToInput : String -> Input
 stringToInput string =
-    case checkCursorReport string of
+    when checkCursorReport string is
         Just cursorReport ->
             cursorReport
         Nothing ->
@@ -602,7 +602,7 @@ checkCursorReport string =
                 |> Array.map (String.split "R")
                 |> Array.flatten
     in
-    case parts of
+    when parts is
         [ "\u{001b}", row, col, "" ] ->
             let
                 parsed =
@@ -610,9 +610,9 @@ checkCursorReport string =
                     , col = String.toInt col
                     }
             in
-            case parsed of
+            when parsed is
                 { row = Just r, col = Just c } ->
-                    Just (CursorReport r c)
+                    Just (CursorReport { row = r, column = c })
                 _ ->
                     Nothing
         _ ->
@@ -640,3 +640,31 @@ adjustFirstRow model numLines =
         1
     else
         firstRowAdjusted
+
+
+{-| Mimic the old Stream.sendString behavior:
+
+Write to the stream, resolve to nothing, and ignore errors.
+With the order of arguments appropriate for chaining (stream -> string instead of string -> stream).
+
+I should probably eventually handle failures better...
+-}
+print : Stream.Writable Bytes -> String -> Task Never {}
+print stream string =
+    Stream.writeStringAsBytes string stream
+        |> Task.map (\_ -> {})
+        |> Task.onError (\_ -> Task.succeed {})
+
+
+{-| Mimic the old Stream.sendLine behavior:
+
+Write to the stream, resolve to nothing, and ignore errors.
+With the order of arguments appropriate for chaining (stream -> string instead of string -> stream).
+
+I should probably eventually handle failures better...
+-}
+printLine : Stream.Writable Bytes -> String -> Task Never {}
+printLine stream string =
+    Stream.writeLineAsBytes string stream
+        |> Task.map (\_ -> {})
+        |> Task.onError (\_ -> Task.succeed {})

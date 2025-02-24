@@ -259,7 +259,7 @@ bordered attrs border element =
 
 mergeAttributes : Array Attribute -> Element -> Element
 mergeAttributes parentAttrs element =
-    case element of
+    when element is
         Row { attrs, children } ->
             Row 
                 { attrs = parentAttrs ++ attrs
@@ -333,7 +333,7 @@ toString maxWidth element =
 
 elementToGrid : Element -> Grid
 elementToGrid element =
-    case element of
+    when element is
         Row { attrs, children } ->
             children
                 |> Array.map elementToGrid
@@ -377,7 +377,7 @@ trimGridRow maxWidth thisRow =
         popped =
             Array.popLast thisRow
     in
-    case popped of
+    when popped is
         Nothing ->
             thisRow
 

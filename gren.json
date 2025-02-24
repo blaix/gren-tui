@@ -11,11 +11,11 @@
         "UI.Attribute",
         "UI.Border"
     ],
-    "gren-version": "0.4.5 <= v < 0.5.0",
+    "gren-version": "0.5.0 <= v < 0.6.0",
     "dependencies": {
-        "blaix/gren-ansi": "2.2.0 <= v < 3.0.0",
-        "blaix/gren-array2d": "3.0.0 <= v < 4.0.0",
-        "gren-lang/core": "5.1.0 <= v < 6.0.0",
-        "gren-lang/node": "4.2.0 <= v < 5.0.0"
+        "blaix/gren-ansi": "3.0.0 <= v < 4.0.0",
+        "blaix/gren-array2d": "4.0.0 <= v < 5.0.0",
+        "gren-lang/core": "6.0.0 <= v < 7.0.0",
+        "gren-lang/node": "5.0.0 <= v < 6.0.0"
     }
 }

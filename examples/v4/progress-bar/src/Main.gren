@@ -1,0 +1,104 @@
+module Main exposing (main)
+
+
+import Ansi
+import Init
+import Math
+import Node
+import Time
+import Stream exposing (Stream)
+import Task
+import Tui
+import UI
+import UI.Attribute
+
+
+main : Tui.Program Model Msg
+main =
+    Tui.defineProgram
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        , onInput = GotInput
+        }
+
+
+type alias Model =
+    { progress : Int
+    , stdout : Stream
+    }
+
+
+init : Tui.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Node.startProgram
+        { model = 
+            { progress = 0
+            , stdout = env.stdout
+            }
+        , command =
+            Tui.hideCursor env.stdout
+                |> Task.execute
+        }
+
+
+type Msg
+    = Tick Time.Posix
+    | GotInput Tui.Input
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    when msg is
+        Tick _ ->
+            { model = { model | progress = model.progress + 1 }
+            , command = 
+                if model.progress > 99 then
+                    Tui.exit model.stdout
+                        |> Task.execute 
+                else
+                    Cmd.none
+            }
+
+        GotInput input ->
+            { model = model
+            , command = 
+                when input is
+                    Tui.Escape ->
+                        Tui.exit model.stdout
+                            |> Task.execute
+
+                    _ ->
+                        Cmd.none
+            }
+
+
+view : Model -> UI.Element
+view model =
+    let
+        barLength =
+            model.progress // 2
+
+        bar =
+            String.repeat barLength "█"
+
+        progress =
+            if model.progress < 100 then
+                model.progress
+                    |> String.fromInt
+                    |> String.padLeft 2 '0'
+                    |> String.append "%"
+            else
+                "Done!"
+    in
+    UI.column []
+        [ UI.text [] <| "Progress: " ++ progress
+        , UI.text [ UI.Attribute.color Ansi.Magenta ] bar
+        , UI.text [ UI.Attribute.color Ansi.Yellow ] "Press Esc to quit."
+        ]
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Time.every 40 Tick

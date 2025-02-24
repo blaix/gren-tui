@@ -1,0 +1,65 @@
+module Main exposing (main)
+
+
+import Ansi
+import Init
+import Node
+import Task
+import Tui
+import UI
+import UI.Attribute
+
+
+main : Tui.Program Model Msg
+main =
+    Tui.defineProgram
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        , onInput = GotInput
+        }
+
+
+type alias Model =
+    { keypress : Tui.Input
+    }
+
+
+init : Tui.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Node.startProgram
+        { model = { keypress = Tui.UnknownInput }
+        , command = Cmd.none
+        }
+
+
+type Msg
+    = GotInput Tui.Input
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    when msg is
+        GotInput input ->
+            { model = { keypress = input }
+            , command = 
+                when input is
+                    Tui.KeyChar "q" ->
+                        Task.execute Node.exit
+                    _ ->
+                        Cmd.none
+            }
+
+
+view : Model -> UI.Element
+view model =
+    UI.column []
+        [ UI.text [] <| "You pressed: " ++ (Debug.toString model.keypress)
+        , UI.text [ UI.Attribute.color Ansi.Yellow ] "\nPress q to quit."
+        ]
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none

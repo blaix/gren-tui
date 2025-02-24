@@ -60,4 +60,4 @@ width (SingleLine string) =
 
 dropRight : Int -> SingleLine -> SingleLine
 dropRight n (SingleLine string) =
-    SingleLine (String.dropRight n string)
+    SingleLine (String.dropLast n string)

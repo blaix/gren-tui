@@ -48,7 +48,7 @@ The string will be returned wrapped in ANSI escape sequences for the specified a
 -}
 apply : Attribute -> String -> String
 apply attr string =
-    case attr of
+    when attr is
         Color c ->
             Ansi.wrapColor c string
 

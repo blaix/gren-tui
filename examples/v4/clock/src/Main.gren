@@ -1,0 +1,133 @@
+module Main exposing (main)
+
+
+import Ansi
+import Bytes exposing (Bytes)
+import Init
+import Node
+import Time
+import Stream
+import Task
+import Tui
+import UI
+import UI.Attribute exposing (Attribute)
+import UI.Border
+
+
+main : Tui.Program Model Msg
+main =
+    Tui.defineProgram
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        , onInput = GotInput
+        }
+
+
+type alias Model =
+    { time : Time.Posix
+    , zone : Time.Zone
+    , stdout : Stream.Writable Bytes
+    , isUtc : Bool
+    }
+
+
+init : Tui.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Node.startProgram
+        { model = 
+            { time = Time.millisToPosix 0
+            , zone = Time.utc
+            , stdout = env.stdout
+            , isUtc = True
+            }
+        , command =
+            Cmd.batch
+                [ Time.here
+                    |> Task.perform GotZone
+                , Tui.hideCursor env.stdout
+                    |> Task.execute
+                ]
+        }
+
+
+type Msg
+    = Tick Time.Posix
+    | GotZone Time.Zone
+    | GotInput Tui.Input
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    when msg is
+        Tick time ->
+            { model = { model | time = time }
+            , command = Cmd.none
+            }
+
+        GotZone zone ->
+            { model = { model | zone = zone }
+            , command = Cmd.none
+            }
+
+        GotInput input ->
+            when input is
+                Tui.Escape ->
+                    { model = model
+                    , command = 
+                        Tui.exit model.stdout
+                            |> Task.execute
+                    }
+
+                Tui.ArrowRight ->
+                    { model = { model | isUtc = not model.isUtc }
+                    , command = Cmd.none
+                    }
+
+                Tui.ArrowLeft ->
+                    { model = { model | isUtc = not model.isUtc }
+                    , command = Cmd.none
+                    }
+
+                _ ->
+                    { model = model
+                    , command = Cmd.none
+                    }
+
+
+view : Model -> UI.Element
+view model =
+    let
+        zone = if model.isUtc then Time.utc else model.zone
+        format = (\i -> String.padLeft 2 '0' <| String.fromInt i)
+        hour = format (Time.toHour zone model.time)
+        minute = format (Time.toMinute zone model.time)
+        second = format (Time.toSecond zone model.time)
+    in
+    UI.column 
+        [ UI.Attribute.color Ansi.White
+        , UI.Attribute.bgColor Ansi.Black 
+        ]
+        [ UI.bordered [] UI.Border.rounded <|
+            UI.text [] (hour ++ ":" ++ minute ++ ":" ++ second)
+        , UI.row []
+            [ UI.text ( highlight True model.isUtc ) " UTC "
+            , UI.text ( highlight False model.isUtc ) " Local "
+            ]
+        ]
+
+
+highlight : Bool -> Bool -> Array Attribute
+highlight labelIsUtc modelIsUtc =
+    if labelIsUtc == modelIsUtc then
+        [ UI.Attribute.color Ansi.Black
+        , UI.Attribute.bgColor Ansi.White
+        ]
+    else
+        []
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Time.every 1000 Tick
