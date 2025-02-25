@@ -206,12 +206,10 @@ init appInit env =
                                     , terminalPermission = Just config.permission
                                 }
                             , command =
-                                Cmd.batch
-                                    [ Terminal.setStdInRawMode config.permission True
-                                        |> Task.andThen (\_ -> Stream.writeStringAsBytes Ansi.getCursorReport env.stdout)
-                                        |> Task.andThen (\_ -> Stream.read env.stdin)
-                                        |> Task.attempt GotStdin
-                                    ]
+                                Terminal.setStdInRawMode config.permission True
+                                    |> Task.andThen (\_ -> Stream.writeStringAsBytes Ansi.getCursorReport env.stdout)
+                                    |> Task.andThen (\_ -> Stream.read env.stdin)
+                                    |> Task.attempt GotStdin
                             }
 
                         Nothing ->
