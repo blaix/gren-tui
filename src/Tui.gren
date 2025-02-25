@@ -208,9 +208,8 @@ init appInit env =
                             , command =
                                 Cmd.batch
                                     [ Terminal.setStdInRawMode config.permission True
-                                        |> Task.andThen (\_ -> print env.stdout Ansi.getCursorReport)
-                                        |> Task.execute
-                                    , Stream.read env.stdin
+                                        |> Task.andThen (\_ -> Stream.writeStringAsBytes Ansi.getCursorReport env.stdout)
+                                        |> Task.andThen (\_ -> Stream.read env.stdin)
                                         |> Task.attempt GotStdin
                                     ]
                             }
@@ -260,33 +259,44 @@ update appConfig msg model =
                         appConfig.update
                         (appConfig.onInput input)
                         model
-            in
-            when input is
-                CtrlC ->
-                    { model = model
-                    , command = 
-                        exit model.stdout
-                            |> Task.execute
-                    }
 
-                CursorReport { row, column } ->
-                    -- The first report is gren-tui getting initial cursor
-                    -- position. Subsequent reports were requested by the app.
-                    if model.appReady then
-                        doAppUpdate
-                    else
-                        { model =
-                            { model
-                                | firstRow = row
-                                , appReady = True
+                { model = newModel, command = command } =
+                    when input is
+                        CtrlC ->
+                            { model = model
+                            , command = 
+                                exit model.stdout
+                                    |> Task.execute
                             }
-                        , command =
-                            print model.stdout (Ansi.Screen.clearLine Ansi.Screen.before)
-                                |> Task.execute
-                        }
 
-                _ ->
-                    doAppUpdate
+                        CursorReport { row, column } ->
+                            -- The first report is gren-tui getting initial cursor
+                            -- position. Subsequent reports were requested by the app.
+                            if model.appReady then
+                                doAppUpdate
+                            else
+                                { model =
+                                    { model
+                                        | firstRow = row
+                                        , appReady = True
+                                    }
+                                , command =
+                                    -- cursor report is visible characters on the screen, clear them
+                                    print model.stdout (Ansi.Screen.clearLine Ansi.Screen.before)
+                                        |> Task.execute
+                                }
+
+                        _ ->
+                            doAppUpdate
+            in
+            { model = newModel
+            , command =
+                Cmd.batch
+                    [ command
+                    , Stream.read model.stdin
+                        |> Task.attempt GotStdin
+                    ]
+            }
 
         TerminalResized { rows, columns } ->
             let
