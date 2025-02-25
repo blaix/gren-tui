@@ -8,7 +8,7 @@
     "dependencies": {
         "direct": {
             "blaix/gren-ansi": "2.2.0",
-            "blaix/gren-tui": "local:../../..",
+            "blaix/gren-tui": "3.0.2",
             "gren-lang/core": "5.1.0",
             "gren-lang/node": "4.2.0"
         },
