@@ -134,8 +134,7 @@ type alias Model appModel appMsg =
     , stdout : Stream.Writable Bytes
     , stderr : Stream.Writable Bytes
     , appModel : appModel
-    , appInitCmd : Maybe (Cmd appMsg)
-    , appReady : Bool
+    , appInitCmd : Cmd appMsg
     , terminalRows : Int
     , terminalCols : Int
     , terminalPermission : Maybe Terminal.Permission
@@ -208,17 +207,15 @@ init appInit env =
                             , command =
                                 Terminal.setStdInRawMode config.permission True
                                     |> Task.andThen (\_ -> Stream.writeStringAsBytes Ansi.getCursorReport env.stdout)
-                                    |> Task.andThen (\_ -> Stream.read env.stdin)
-                                    |> Task.attempt GotStdin
+                                    |> Task.attempt WroteCursorReport
                             }
 
                         Nothing ->
-                            -- Not in an interactive terminal
                             { model = model
                             , command = 
-                                printLine env.stderr "gren-tui must be in an interactive terminal"
-                                    |> Task.andThen (\_ -> Node.exitWithCode 1)
-                                    |> Task.execute
+                                exit 1 model.stderr
+                                    "Failed to start program"
+                                    "gren-tui can only run in an interactive terminal"
                             }
 
 
@@ -226,7 +223,13 @@ init appInit env =
 
 
 type Msg appMsg
-    = GotStdin (Result Stream.Error Bytes)
+    -- Setup
+    | WroteCursorReport (Result Stream.Error (Stream.Writable Bytes))
+    | GotCursorReport (Result Stream.Error (Stream.Writable Bytes))
+    | AppReady {}
+
+    -- Runtime messages
+    | GotStdin (Result Stream.Error Bytes)
     | TerminalResized Terminal.Size
     | AppMsg appMsg
     | Tick Time.Posix
@@ -239,12 +242,65 @@ update :
     -> { model : Model appModel appMsg, command : Cmd (Msg appMsg) }
 update appConfig msg model =
     when msg is
+        WroteCursorReport (Err e) ->
+            { model = model
+            , command =
+                exit 1 model.stderr 
+                    "Failed to write cursor report request"
+                    (streamError e)
+            }
+
+        WroteCursorReport (Ok _) ->
+            le            { model = model
+            , command =
+                Stream.read model.stdin
+                    |> Task.attempt GotCursorReport
+            }
+
+        GotCursorReport (Err e) ->
+            { model = model
+            , command =
+                exit 1 model.stderr
+                    "Failed to read cursor report"
+                    (streamError e)
+            }
+
+        GotCursorReport (Ok _) ->
+            let
+                input =
+                    bytesToInput bytes
+            in
+            when input is ->
+                CursorReport { row, column } ->
+                    { model = { model | firstRow = row }
+                    , command =
+                        Task.succeed {} |> Task.perform AppReady
+                    }
+
+                _ ->
+                    { model = model
+                    , command =
+                        exit 1 model.stderr
+                            "Failed to read cursor report"
+                            ("Expected cursor report sequence, got: " ++ (inputToString input))
+                    }
+
+        AppReady _ ->
+            { model = model
+            , command =
+                Cmd.batch
+                    [ model.appInitCmd
+                    , Stream.read model.stdin
+                        |> Task.attempt GotStdin
+                    ]
+            }
+
         GotStdin (Err e) ->
             { model = model
             , command =
-                print model.stderr "Failed to read from stdin"
-                    |> Task.andThen (\_ -> Node.exitWithCode 1)
-                    |> Task.execute
+                exit 1 model.stderr
+                    "Failed reading input"
+                    (streamError e)
             }
                     
         GotStdin (Ok bytes) ->
@@ -252,49 +308,32 @@ update appConfig msg model =
                 input =
                     bytesToInput bytes
 
-                doAppUpdate =
-                    appUpdate
-                        appConfig.update
-                        (appConfig.onInput input)
-                        model
-
-                { model = newModel, command = command } =
-                    when input is
-                        CtrlC ->
-                            { model = model
-                            , command = 
-                                exit model.stdout
-                                    |> Task.execute
-                            }
-
-                        CursorReport { row, column } ->
-                            -- The first report is gren-tui getting initial cursor
-                            -- position. Subsequent reports were requested by the app.
-                            if model.appReady then
-                                doAppUpdate
-                            else
-                                { model =
-                                    { model
-                                        | firstRow = row
-                                        , appReady = True
-                                    }
-                                , command =
-                                    -- cursor report is visible characters on the screen, clear them
-                                    print model.stdout (Ansi.Screen.clearLine Ansi.Screen.before)
-                                        |> Task.execute
-                                }
-
-                        _ ->
-                            doAppUpdate
             in
-            { model = newModel
-            , command =
-                Cmd.batch
-                    [ command
-                    , Stream.read model.stdin
-                        |> Task.attempt GotStdin
-                    ]
-            }
+            when input is
+                CtrlC ->
+                    { model = model
+                    , command = 
+                        exit 1 model.stdout
+                            "Received SIGINT"
+                            "exiting"
+                    }
+
+                _ ->
+                    let
+                        appUpdateReturn =
+                            appUpdate
+                                appConfig.update
+                                (appConfig.onInput input)
+                                model
+                    in
+                    { model = appUpdateReturn.model
+                    , command =
+                        Cmd.batch
+                            [ appUpdateReturn.command
+                            , Stream.read model.stdin
+                                |> Task.attempt GotStdin
+                            ]
+                    }
 
         TerminalResized { rows, columns } ->
             let
@@ -344,24 +383,7 @@ update appConfig msg model =
             appUpdate appConfig.update appMsg model
 
         Tick _ ->
-            let
-                viewResult =
-                    view appConfig.view model
-            in
-            -- Don't run the app's init cmd until we're ready
-            when { ready = model.appReady, appInit = model.appInitCmd } is
-                { ready = True, appInit = Just cmd } ->
-                    { model =
-                        { viewResult.model | appInitCmd = Nothing }
-                    , command =
-                        Cmd.batch
-                            [ viewResult.command
-                            , Cmd.map AppMsg cmd
-                            ]
-                    }
-
-                _ ->
-                    viewResult
+            view appConfig.view model
 
 
 appUpdate :
