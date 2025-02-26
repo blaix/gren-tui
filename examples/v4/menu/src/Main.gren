@@ -2,9 +2,10 @@ module Main exposing (main)
 
 
 import Ansi
+import Bytes exposing (Bytes)
 import Init
 import Node
-import Stream exposing (Stream)
+import Stream
 import Task
 import Tui
 import UI
@@ -24,7 +25,7 @@ main =
 
 
 type alias Model =
-    { stdout : Stream
+    { stdout : Stream.Writable Bytes
     , selectedRow : Int
     , selectedColumn : Int
     }

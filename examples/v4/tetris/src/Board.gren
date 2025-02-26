@@ -59,7 +59,7 @@ placePiece piece =
                         (Piece.visibleCells piece)
             in
             when pieceInCell is
-                Just p -> Block p.color
+                Just p -> Block p.value.color
                 Nothing -> boardCell
         )
 

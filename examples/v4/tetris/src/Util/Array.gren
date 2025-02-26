@@ -25,7 +25,7 @@ indexOf a array =
 intersect : Array a -> Array a -> Array a
 intersect a b =
     a
-        |> Array.filterMap
+        |> Array.mapAndKeepJust
             (\val1 ->
                 b
                     |> Array.findFirst 
@@ -33,5 +33,6 @@ intersect a b =
                             val1 == val2
                         )
             )
+        |> Array.map (\{ value } -> value)
 
 

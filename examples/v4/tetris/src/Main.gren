@@ -3,10 +3,11 @@ module Main exposing (main)
 
 
 import Ansi
+import Bytes exposing (Bytes)
 import Game
 import Init
 import Node
-import Stream exposing (Stream)
+import Stream
 import Task
 import Time
 import Tui
@@ -27,7 +28,7 @@ main =
 
 
 type alias Model =
-    { stdout : Stream
+    { stdout : Stream.Writable Bytes
     , game : Game.State
     }
 

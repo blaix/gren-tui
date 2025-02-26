@@ -2,11 +2,12 @@ module Main exposing (main)
 
 
 import Ansi
+import Bytes exposing (Bytes)
 import Init
 import Math
 import Node
 import Time
-import Stream exposing (Stream)
+import Stream
 import Task
 import Tui
 import UI
@@ -26,7 +27,7 @@ main =
 
 type alias Model =
     { progress : Int
-    , stdout : Stream
+    , stdout : Stream.Writable Bytes
     }
 
 

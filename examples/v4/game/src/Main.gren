@@ -3,9 +3,10 @@ module Main exposing (main)
 
 import Ansi exposing (Color)
 import Array2d exposing (Array2d)
+import Bytes exposing (Bytes)
 import Init
 import Node
-import Stream exposing (Stream)
+import Stream
 import Task
 import Tui
 import UI exposing (Element)
@@ -28,7 +29,7 @@ main =
 
 
 type alias Model =
-    { stdout : Stream
+    { stdout : Stream.Writable Bytes
     , board : Board
     , player : Point
     , star : Point

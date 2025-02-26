@@ -9,4 +9,4 @@ indexedFilterMap : ({ x : Int, y : Int } -> a -> Maybe b) -> Array2d a -> Array2
 indexedFilterMap mapper arrays =
     arrays
         |> Array2d.indexedMap mapper
-        |> Array2d.filterMap identity
+        |> Array2d.mapAndKeepJust identity
