@@ -57,6 +57,18 @@ update msg model =
                     , command = Cmd.none
                     }
 
+                Tui.Space ->
+                    { model = { model | name = model.name ++ " " }
+                    , command = Cmd.none
+                    }
+
+                Tui.Backspace ->
+                    { model = { model | name = String.dropLast 1 model.name }
+                    , command = Cmd.none
+                    }
+
+                -- TODO: track a cursor and handle arrow keys and delete
+
                 Tui.Return ->
                     { model = { model | submitted = True }
                     , command = Cmd.none
@@ -69,7 +81,6 @@ update msg model =
                             |> Task.execute
                     }
 
-                -- TODO: Handle backspace, arrow keys, etc...
                 _ ->
                     { model = model
                     , command = Cmd.none

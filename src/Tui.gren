@@ -11,8 +11,11 @@ module Tui exposing
 
 {-| Model/View/Update for the command line.
 
-Use this module to define a command-line program that uses [the elm architecture](https://guide.elm-lang.org/architecture/).
-See [`defineProgram`](#defineProgram) for details, or one of the [examples](https://github.com/blaix/gren-tui/tree/main/examples).
+Use this module to define a command-line program that uses [the elm architecture](https://gren-lang.org/book/applications/tea/).
+See [`defineProgram`](#defineProgram),
+the [repo README](https://github.com/blaix/gren-tui?tab=readme-ov-file#gren-tui),
+or one of the [examples](https://github.com/blaix/gren-tui/tree/main/examples)
+for more details.
 
 ## Defining your program
 
@@ -74,6 +77,7 @@ type alias AppConfig model msg =
 This will be passed to your init function.
 For example:
 
+    init : Environment -> Init.Task { model : Model, command : Cmd Msg }
     init env =
         Node.startProgram
             { model = 
@@ -83,7 +87,6 @@ For example:
             , command =
                 Cmd.none
             }
-
 -}
 type alias Environment =
     -- Basically merged Node.Environment and Terminal.Configuration
@@ -102,7 +105,8 @@ type alias Environment =
 
 {-| Define your Tui program.
 
-Very similar to a normal [`Node.defineProgram`](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Node#defineProgram), except for two special functions:
+Very similar to a normal [`Node.defineProgram`](https://packages.gren-lang.org/package/gren-lang/node/version/latest/module/Node#defineProgram),
+except for two special functions:
 
 `view`: Takes your Model and returns a [`UI`](UI) element.
 gren-tui will print this to the screen, keeping track of how many lines are
@@ -135,6 +139,7 @@ type alias Model appModel appMsg =
     , stderr : Stream.Writable Bytes
     , appModel : appModel
     , appInitCmd : Cmd appMsg
+    , appReady : Bool
     , terminalRows : Int
     , terminalCols : Int
     , terminalPermission : Maybe Terminal.Permission
@@ -186,7 +191,7 @@ init appInit env =
                         , stdout = env.stdout
                         , stderr = env.stderr
                         , appModel = app.model
-                        , appInitCmd = Just app.command
+                        , appInitCmd = app.command
                         , appReady = False
                         , terminalRows = 0
                         , terminalCols = 0
@@ -213,7 +218,7 @@ init appInit env =
                         Nothing ->
                             { model = model
                             , command = 
-                                exit 1 model.stderr
+                                crash 1 model.stderr
                                     "Failed to start program"
                                     "gren-tui can only run in an interactive terminal"
                             }
@@ -224,8 +229,8 @@ init appInit env =
 
 type Msg appMsg
     -- Setup
-    | WroteCursorReport (Result Stream.Error (Stream.Writable Bytes))
-    | GotCursorReport (Result Stream.Error (Stream.Writable Bytes))
+    = WroteCursorReport (Result Stream.Error (Stream.Writable Bytes))
+    | GotCursorReport (Result Stream.Error Bytes)
     | AppReady {}
 
     -- Runtime messages
@@ -245,13 +250,13 @@ update appConfig msg model =
         WroteCursorReport (Err e) ->
             { model = model
             , command =
-                exit 1 model.stderr 
+                crash 1 model.stderr 
                     "Failed to write cursor report request"
-                    (streamError e)
+                    (Stream.errorToString e)
             }
 
         WroteCursorReport (Ok _) ->
-            le            { model = model
+            { model = model
             , command =
                 Stream.read model.stdin
                     |> Task.attempt GotCursorReport
@@ -260,17 +265,17 @@ update appConfig msg model =
         GotCursorReport (Err e) ->
             { model = model
             , command =
-                exit 1 model.stderr
+                crash 1 model.stderr
                     "Failed to read cursor report"
-                    (streamError e)
+                    (Stream.errorToString e)
             }
 
-        GotCursorReport (Ok _) ->
+        GotCursorReport (Ok bytes) ->
             let
                 input =
                     bytesToInput bytes
             in
-            when input is ->
+            when input is
                 CursorReport { row, column } ->
                     { model = { model | firstRow = row }
                     , command =
@@ -280,16 +285,16 @@ update appConfig msg model =
                 _ ->
                     { model = model
                     , command =
-                        exit 1 model.stderr
+                        crash 1 model.stderr
                             "Failed to read cursor report"
                             ("Expected cursor report sequence, got: " ++ (inputToString input))
                     }
 
         AppReady _ ->
-            { model = model
+            { model = { model | appReady = True }
             , command =
                 Cmd.batch
-                    [ model.appInitCmd
+                    [ Cmd.map AppMsg model.appInitCmd
                     , Stream.read model.stdin
                         |> Task.attempt GotStdin
                     ]
@@ -298,9 +303,9 @@ update appConfig msg model =
         GotStdin (Err e) ->
             { model = model
             , command =
-                exit 1 model.stderr
+                crash 1 model.stderr
                     "Failed reading input"
-                    (streamError e)
+                    (Stream.errorToString e)
             }
                     
         GotStdin (Ok bytes) ->
@@ -313,7 +318,7 @@ update appConfig msg model =
                 CtrlC ->
                     { model = model
                     , command = 
-                        exit 1 model.stdout
+                        crash 1 model.stdout
                             "Received SIGINT"
                             "exiting"
                     }
@@ -479,6 +484,13 @@ exitWithCode stream code =
         |> Task.andThen (\_ -> Node.exitWithCode code)
 
 
+crash : Int -> Stream.Writable Bytes -> String -> String -> Cmd (Msg appMsg)
+crash status stream error explanation =
+    print stream (error ++ ": " ++ explanation)
+        |> Task.andThen (\_ -> exitWithCode stream status)
+        |> Task.execute
+
+
 cleanup : Stream.Writable Bytes -> Task Never {}
 cleanup stream =
     "\n" ++ Ansi.reset ++ Ansi.showCursor
@@ -574,20 +586,35 @@ type Input
     | CtrlC
     | UnknownInput
 
+    -- Technically, according to the names of the ansi escape codes:
+    --  * backspace = move cursor back but don't delete
+    --  * delete = delete backwards (what the backspace key usually does)
+    --  * forward delete = delete forwards (what the del key usually does)
+    -- But I'm naming the inputs below according to what usually happens with
+    -- the keyboard key names, not the ansi code names. So:
+    --  * Backspace = delete (backwards)
+    --  * Delete = forward delete
+    | Backspace
+    | Delete
+
 
 ctrlC =
     Bytes.Encode.encode (Bytes.Encode.unsignedInt8 3)
+
+
+backspace =
+    Bytes.Encode.encode (Bytes.Encode.unsignedInt8 127)
 
 
 bytesToInput : Bytes -> Input
 bytesToInput bytes =
     if bytes == ctrlC then
         CtrlC
+    else if bytes == backspace then
+        Backspace
     else
         bytes
-            |> Bytes.length
-            |> Bytes.Decode.string
-            |> (\decoder -> Bytes.Decode.decode decoder bytes)
+            |> Bytes.toString
             |> Maybe.map stringToInput
             |> Maybe.withDefault UnknownInput
 
@@ -608,6 +635,8 @@ stringToInput string =
                 ArrowLeft
             else if string == Ansi.escape then
                 Escape
+            else if string == Ansi.escape ++ "[3~" then
+                Delete
             else if string == "\t" then
                 Tab
             else if string == "\r" then
@@ -616,6 +645,58 @@ stringToInput string =
                 Space
             else
                 KeyChar string
+
+
+inputToString : Input -> String
+inputToString input =
+    when input is
+        KeyChar key ->
+            "Key: " ++ key
+
+        Tab ->
+            "Tab key"
+
+        Space ->
+            "Space key"
+
+        Backspace ->
+            "Backspace key"
+
+        Delete ->
+            "Delete key"
+
+        Return ->
+            "Return key"
+
+        Escape ->
+            "Escape key"
+
+        ArrowUp ->
+            "Up arrow"
+
+        ArrowDown ->
+            "Down arrow"
+
+        ArrowLeft ->
+            "Left arrow"
+
+        ArrowRight ->
+            "Right error"
+
+        CursorReport { row, column } ->
+            let
+                { r, c } =
+                    { r = String.fromInt row
+                    , c = String.fromInt column
+                    }
+            in
+            "Cursor report: row=" ++ r ++ " column=" ++ c
+
+        CtrlC ->
+            "Ctrl-C (SIGINT)"
+
+        UnknownInput ->
+            "Unknown input"
 
 
 checkCursorReport : String -> Maybe Input
