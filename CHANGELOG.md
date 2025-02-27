@@ -1,6 +1,9 @@
 ## Next
 
-* Print error message it not in interactive terminal
+* Update to Gren 0.5
+* New `Input` variants: `Backspace` and `Delete`
+* Crash with error message if not able to start up properly
+* Minor bugfixes
 
 ## 3.0.2 (2024-10-05)
 
