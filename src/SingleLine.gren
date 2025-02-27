@@ -46,11 +46,19 @@ toString (SingleLine string) =
     string
 
 
+{-| Pad the right side with spaces until the SingleLine is the desired width in *visible characters*,
+correctly accounting for the visible width of things like emojis and unicode characters.
+-}
 padRight : Int -> SingleLine -> SingleLine
 padRight desiredWidth (SingleLine string) =
-    string
-        |> String.padRight desiredWidth ' '
-        |> SingleLine
+    let
+        padCount =
+            desiredWidth - (Ansi.width string)
+
+        padded =
+            string ++ String.repeat padCount " "
+    in
+    SingleLine padded
 
 
 width : SingleLine -> Int
@@ -61,3 +69,5 @@ width (SingleLine string) =
 dropRight : Int -> SingleLine -> SingleLine
 dropRight n (SingleLine string) =
     SingleLine (String.dropLast n string)
+
+

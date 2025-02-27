@@ -2,6 +2,7 @@ module Main exposing (main)
 
 import Test exposing (describe)
 import Test.Runner.Node exposing (Program, run)
+import Test.SingleLine
 import Test.UI
 
 
@@ -10,6 +11,6 @@ main =
     run <| 
         describe "All tests"
             [ describe "UI tests" Test.UI.tests
-            --, describe "Input tests" Test.Input.tests
+            , describe "SingleLine tests" Test.SingleLine.tests
             ]
 

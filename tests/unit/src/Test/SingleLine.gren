@@ -1,0 +1,44 @@
+module Test.SingleLine exposing (tests)
+
+import SingleLine
+import Expect exposing (Expectation)
+import Fuzz exposing (Fuzzer)
+import Test exposing (describe, test, fuzz, Test)
+
+
+tests : Array Test
+tests =
+    [ describe "padRight"
+        [ test "with desired width less than string" <| \_ ->
+            SingleLine.fromString "123"
+                |> Array.map (SingleLine.padRight 2)
+                |> Expect.equal (SingleLine.fromString "123")
+
+        , test "with desired width same as string" <| \_ ->
+            SingleLine.fromString "123"
+                |> Array.map (SingleLine.padRight 3)
+                |> Expect.equal (SingleLine.fromString "123")
+
+        , test "with desired width greater than string" <| \_ ->
+            SingleLine.fromString "123"
+                |> Array.map (SingleLine.padRight 4)
+                |> Expect.equal (SingleLine.fromString "123 ")
+        ]
+
+    , describe "padRight with emoji"
+        [ test "with desired width less than string" <| \_ ->
+            SingleLine.fromString "🌈"
+                |> Array.map (SingleLine.padRight 1)
+                |> Expect.equal (SingleLine.fromString "🌈")
+
+        , test "with desired width same as string" <| \_ ->
+            SingleLine.fromString "🌈"
+                |> Array.map (SingleLine.padRight 2)
+                |> Expect.equal (SingleLine.fromString "🌈")
+
+        , test "with desired width greater than string" <| \_ ->
+            SingleLine.fromString "🌈"
+                |> Array.map (SingleLine.padRight 3)
+                |> Expect.equal (SingleLine.fromString "🌈 ")
+        ]
+    ] 
