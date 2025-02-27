@@ -11,7 +11,7 @@
 
 ## 3.0.0 (2024-10-04)
 
-* Update to gren 4.4
+* Update to gren 0.4.4
 * Complete rendering refactor to reduce screen flicker and handle terminal resizes.
 * Your `init` now receives `Tui.Environment` which adds terminal column, row, and color support.
 * Add `UI` module. Your `view` returns a `UI.Element` instead of `String`
