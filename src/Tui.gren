@@ -282,12 +282,21 @@ update appConfig msg model =
                         Task.succeed {} |> Task.perform AppReady
                     }
 
+                CtrlC ->
+                    { model = model
+                    , command = 
+                        crash 1 model.stdout
+                            "Received SIGINT"
+                            "exiting"
+                    }
+
                 _ ->
                     { model = model
                     , command =
-                        crash 1 model.stderr
-                            "Failed to read cursor report"
-                            ("Expected cursor report sequence, got: " ++ (inputToString input))
+                        -- We got some other input before the cursor report.
+                        -- Ignore it and try again.
+                        Stream.writeStringAsBytes Ansi.getCursorReport model.stdout
+                            |> Task.attempt WroteCursorReport
                     }
 
         AppReady _ ->
