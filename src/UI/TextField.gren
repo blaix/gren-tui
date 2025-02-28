@@ -1,0 +1,140 @@
+module UI.TextField exposing
+    ( TextField
+    , init
+    , update
+    , view
+    , toString
+    )
+
+
+import Ansi
+import Tui
+
+
+type TextField =
+    TextField
+        { value : String
+        , cursor : Int
+        }
+
+
+init : String -> TextField
+init value =
+    TextField
+        { value = value
+        , cursor = String.count value
+        }
+
+
+update : Tui.Input -> TextField -> TextField
+update input field =
+    let
+        f =
+            split field
+
+        (TextField { cursor }) =
+            field
+    in
+    when input is
+        Tui.KeyChar key ->
+            TextField
+                { value = f.first ++ key ++ f.last
+                , cursor = cursor + 1
+                }
+
+        Tui.Space ->
+            TextField
+                { value = f.first ++ " " ++ f.last
+                , cursor = cursor + 1
+                }
+
+        Tui.Backspace ->
+            TextField
+                { value = String.dropLast 1 f.first ++ f.last
+                , cursor =
+                    if cursor > 0 then
+                        cursor - 1
+                    else
+                        0
+                }
+
+        Tui.ArrowLeft ->
+            TextField
+                { value = f.first ++ f.last
+                , cursor =
+                    if cursor > 0 then
+                        cursor - 1
+                    else
+                        0
+                }
+
+        Tui.ArrowRight ->
+            let
+                value =
+                    f.first ++ f.last
+
+                length =
+                    String.count value
+            in
+            TextField
+                { value = f.first ++ f.last
+                , cursor =
+                    if cursor < length then
+                        cursor + 1
+                    else
+                        cursor
+                }
+
+        _ ->
+            field
+
+
+split : TextField -> { first : String, last : String }
+split (TextField { value, cursor }) =
+    let
+        length =
+            String.count value
+    in
+    { first =
+        String.takeFirst cursor value
+    , last =
+        String.takeLast (length - cursor) value
+    }
+
+
+view : TextField -> String
+view (TextField { value, cursor })=
+    let
+        field =
+            split <|
+                TextField
+                    { value = value ++ " "
+                    , cursor = cursor
+                    }
+
+        first =
+            field.first
+
+        middle =
+            String.takeFirst 1 field.last
+
+        last =
+            String.dropFirst 1 field.last
+
+        cursorChar =
+            -- invert colors
+            -- https://gist.github.com/ConnerWill/d4b6c776b509add763e17f9f113fd25b#colors--graphics-mode
+            String.join ""
+                [ Ansi.escape
+                , "[7m"
+                , middle
+                , Ansi.escape
+                , "[27m"
+                ]
+    in
+    first ++ cursorChar ++ last
+
+
+toString : TextField -> String
+toString (TextField { value }) =
+    value

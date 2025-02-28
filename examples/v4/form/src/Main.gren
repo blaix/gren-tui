@@ -9,6 +9,7 @@ import Task
 import Tui
 import UI
 import UI.Attribute as Attribute
+import UI.TextField as TextField exposing (TextField)
 
 
 main : Tui.Program Model Msg
@@ -23,7 +24,7 @@ main =
 
 
 type alias Model =
-    { name : String
+    { name : TextField
     , submitted : Bool
     , stdout : Stream.Writable Bytes
     }
@@ -33,7 +34,7 @@ init : Tui.Environment -> Init.Task { model : Model, command : Cmd Msg }
 init env =
     Node.startProgram
         { model = 
-            { name = ""
+            { name = TextField.init ""
             , submitted = False
             , stdout = env.stdout
             }
@@ -52,23 +53,6 @@ update msg model =
     when msg is
         GotInput input ->
             when input is
-                Tui.KeyChar key ->
-                    { model = { model | name = model.name ++ key }
-                    , command = Cmd.none
-                    }
-
-                Tui.Space ->
-                    { model = { model | name = model.name ++ " " }
-                    , command = Cmd.none
-                    }
-
-                Tui.Backspace ->
-                    { model = { model | name = String.dropLast 1 model.name }
-                    , command = Cmd.none
-                    }
-
-                -- TODO: track a cursor and handle arrow keys and delete
-
                 Tui.Return ->
                     { model = { model | submitted = True }
                     , command = Cmd.none
@@ -82,7 +66,10 @@ update msg model =
                     }
 
                 _ ->
-                    { model = model
+                    { model = 
+                        { model 
+                            | name = TextField.update input model.name 
+                        }
                     , command = Cmd.none
                     }
 
@@ -90,10 +77,12 @@ update msg model =
 view : Model -> UI.Element
 view model =
     UI.column []
-        [ UI.text [] <| "Name: " ++ model.name
+        [ UI.text [] <| "Name: " ++ TextField.view model.name
         , UI.text [ Attribute.italic ] <|
             if model.submitted then
-                "Hi, " ++ model.name ++ "! Press esc to quit."
+                "Hi, " ++
+                TextField.toString model.name ++
+                "! Press esc to quit."
             else
                 "Type your name and hit enter."
         ]
