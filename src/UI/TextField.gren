@@ -9,6 +9,7 @@ module UI.TextField exposing
 
 import Ansi
 import Tui
+import UI
 
 
 type TextField =
@@ -58,6 +59,12 @@ update input field =
                         0
                 }
 
+        Tui.Delete ->
+            TextField
+                { value = f.first ++ String.dropFirst 1 f.last
+                , cursor = cursor
+                }
+
         Tui.ArrowLeft ->
             TextField
                 { value = f.first ++ f.last
@@ -102,7 +109,7 @@ split (TextField { value, cursor }) =
     }
 
 
-view : TextField -> String
+view : TextField -> UI.Element
 view (TextField { value, cursor })=
     let
         field =
@@ -132,7 +139,8 @@ view (TextField { value, cursor })=
                 , "[27m"
                 ]
     in
-    first ++ cursorChar ++ last
+    UI.text [] <|
+        first ++ cursorChar ++ last
 
 
 toString : TextField -> String

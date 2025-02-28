@@ -77,14 +77,19 @@ update msg model =
 view : Model -> UI.Element
 view model =
     UI.column []
-        [ UI.text [] <| "Name: " ++ TextField.view model.name
-        , UI.text [ Attribute.italic ] <|
+        [ UI.row []
+            [ UI.text [] "Name: "
+            , TextField.view model.name
+            ]
+        , UI.row [ Attribute.italic ] <|
             if model.submitted then
-                "Hi, " ++
-                TextField.toString model.name ++
-                "! Press esc to quit."
+                [ UI.text [] "Hi, "
+                , UI.text [] (TextField.toString model.name)
+                , UI.text [] "! Press esc to quit."
+                ]
             else
-                "Type your name and hit enter."
+                [ UI.text [] "Type your name and hit enter."
+                ]
         ]
 
 
