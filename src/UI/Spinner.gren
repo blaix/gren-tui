@@ -1,0 +1,62 @@
+module UI.Spinner exposing
+    ( Spinner
+    , init
+    , update
+    , view
+    , toString
+    , subscribe
+    )
+
+
+import Math
+import Time
+import UI
+import UI.Spinner.Variant as Variant exposing (Variant)
+
+
+type Spinner =
+    Spinner
+        { frames : Array String
+        , ticks : Int
+        , interval : Int
+        }
+
+
+init : Variant -> Spinner
+init { interval, frames } =
+    Spinner
+        { frames = frames
+        , interval = interval
+        , ticks = 0
+        }
+
+
+update : Spinner -> Spinner
+update (Spinner { frames, ticks, interval }) =
+    Spinner
+        { frames = frames
+        , ticks = ticks + 1
+        , interval = interval
+        }
+
+
+view : Spinner -> UI.Element
+view spinner =
+    UI.text [] (toString spinner)
+
+
+toString : Spinner -> String
+toString (Spinner { frames, ticks }) =
+    let
+        index =
+            ticks
+                |> Math.remainderBy (Array.length frames)
+    in
+    frames
+        |> Array.get index
+        |> Maybe.withDefault ""
+
+
+subscribe : msg -> Spinner -> Sub msg
+subscribe msg (Spinner { interval }) =
+    Time.every (toFloat interval) (\_ -> msg)

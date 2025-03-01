@@ -100,7 +100,7 @@ view model =
                 [ Attribute.bgColor Ansi.Green
                 , Attribute.fontWeight Ansi.NormalWeight
                 ] 
-                " col 3 ⛄ "
+                " col 3 ⛄️ "
             , UI.text [] " col 4 "
             ]
         ]

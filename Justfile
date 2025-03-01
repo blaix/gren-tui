@@ -13,3 +13,6 @@ test:
 
 header MSG:
   @echo -e "\n{{green}}{{MSG}}{{nc}}"
+
+gen-spinner-variants:
+  node scripts/gen-spinner-variants.js > src/UI/Spinner/Variant.gren

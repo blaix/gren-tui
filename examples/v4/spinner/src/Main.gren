@@ -1,0 +1,87 @@
+module Main exposing (main)
+
+
+import Ansi
+import Bytes exposing (Bytes)
+import Dict exposing (Dict)
+import Init
+import Node
+import Stream
+import Task
+import Time
+import Tui
+import UI
+import UI.Attribute as Attribute
+import UI.Spinner as Spinner exposing (Spinner)
+import UI.Spinner.Variant as Variant exposing (Variant)
+
+
+main : Tui.Program Model Msg
+main =
+    Tui.defineProgram
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        , onInput = GotInput
+        }
+
+
+type alias Model =
+    { stdout : Stream.Writable Bytes
+    , spinner : Spinner
+    }
+
+
+init : Tui.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Node.startProgram
+        { model = 
+            { stdout = env.stdout
+            , spinner = Spinner.init Variant.dots2
+            }
+        , command = 
+            Tui.hideCursor env.stdout
+                |> Task.execute
+        }
+
+
+type Msg
+    = GotInput Tui.Input
+    | SpinnerTick
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    when msg is
+        GotInput input ->
+            { model = model
+            , command = 
+                when input is
+                    Tui.Escape ->
+                        Tui.exit model.stdout
+                            |> Task.execute
+                    _ ->
+                        Cmd.none
+            }
+
+        SpinnerTick ->
+            { model = 
+                { model 
+                    | spinner = Spinner.update model.spinner
+                }
+            , command = Cmd.none
+            }
+
+
+view : Model -> UI.Element
+view model =
+    UI.row [ Attribute.color Ansi.Green ]
+        [ Spinner.view model.spinner
+        , UI.text [] " Loading "
+        ]
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Spinner.subscribe SpinnerTick model.spinner
