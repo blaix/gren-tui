@@ -1,8 +1,8 @@
 ## Next
 
 * Update to Gren 0.5
-* New `Input` variants: `Backspace` and `Delete`
-* New `UI.TextField` component
+* New `Input` variants: `Backspace`, `Delete`, and `F1`-`F4`
+* New `UI.TextField` and `UI.Spinner` components
 * Crash with error message if not able to start up properly
 * Minor bugfixes
 

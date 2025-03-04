@@ -593,6 +593,10 @@ type Input
     | ArrowRight
     | CursorReport { row : Int, column : Int }
     | CtrlC
+    | F1
+    | F2
+    | F3
+    | F4
     | UnknownInput
 
     -- Technically, according to the names of the ansi escape codes:
@@ -642,6 +646,14 @@ stringToInput string =
                 ArrowRight
             else if string == Ansi.arrowLeft then
                 ArrowLeft
+            else if string == Ansi.f1 then
+                F1
+            else if string == Ansi.f2 then
+                F2
+            else if string == Ansi.f3 then
+                F3
+            else if string == Ansi.f4 then
+                F4
             else if string == Ansi.escape then
                 Escape
             else if string == Ansi.escape ++ "[3~" then
@@ -691,6 +703,18 @@ inputToString input =
 
         ArrowRight ->
             "Right error"
+
+        F1 ->
+            "F1 key"
+
+        F2 ->
+            "F2 key"
+
+        F3 ->
+            "F3 key"
+
+        F4 ->
+            "F4 key"
 
         CursorReport { row, column } ->
             let
