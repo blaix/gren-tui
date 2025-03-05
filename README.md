@@ -1,8 +1,8 @@
 # Gren TUI
 
-Write purely functional, type-safe terminal apps using [The Elm Architecture](https://guide.elm-lang.org/architecture/).
-Easily create complex, responsive UIs with an interface inspired by [elm-ui](https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/).
-All in the very pleasant [Gren programming language](https://gren-lang.org/).
+Build interactive terminal apps using [The Elm Architecture](https://gren-lang.org/book/applications/tea/).
+Easily create complex, reactive layouts with a DSL inspired by [elm-ui](https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/).
+Code and refactor with confidence thanks to type-safety and purity of the [Gren programming language](https://gren-lang.org/).
 
 ## Examples
 
