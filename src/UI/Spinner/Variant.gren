@@ -1,28 +1,123 @@
-module UI.Spinner.Variant exposing (..)
-
-
-------------------------------------------------------
--- THIS IS A GENERATED MODULE!
--- See Justfile and scripts/gen-spinner-variants.js
-------------------------------------------------------
-
+module UI.Spinner.Variant exposing
+    ( Variant
+    , aesthetic
+    , arc
+    , arrow
+    , arrow3
+    , balloon
+    , balloon2
+    , betaWave
+    , binary
+    , bluePulse
+    , bounce
+    , bouncingBall
+    , bouncingBar
+    , boxBounce
+    , boxBounce2
+    , christmas
+    , circle
+    , circleHalves
+    , circleQuarters
+    , clock
+    , dots
+    , dots10
+    , dots11
+    , dots12
+    , dots13
+    , dots14
+    , dots2
+    , dots3
+    , dots4
+    , dots5
+    , dots6
+    , dots7
+    , dots8
+    , dots8Bit
+    , dots9
+    , dotsCircle
+    , dqpb
+    , earth
+    , fingerDance
+    , fistBump
+    , flip
+    , grenade
+    , growHorizontal
+    , growVertical
+    , hamburger
+    , hearts
+    , layer
+    , line
+    , material
+    , mindblown
+    , monkey
+    , moon
+    , noise
+    , orangeBluePulse
+    , orangePulse
+    , pipe
+    , point
+    , pong
+    , runner
+    , sand
+    , shark
+    , simpleDots
+    , simpleDotsScrolling
+    , smiley
+    , soccerHeader
+    , speaker
+    , squareCorners
+    , squish
+    , star
+    , star2
+    , timeTravel
+    , toggle
+    , toggle10
+    , toggle11
+    , toggle12
+    , toggle13
+    , toggle2
+    , toggle3
+    , toggle4
+    , toggle5
+    , toggle6
+    , toggle7
+    , toggle8
+    , toggle9
+    , triangle
+    )
 
 {-| These are most of the spinners from
 https://github.com/sindresorhus/cli-spinners
 
 See demos at https://jsfiddle.net/sindresorhus/2eLtsbey/embedded/result/
+
+@docs Variant, aesthetic, arc, arrow, arrow3, balloon, balloon2, betaWave, binary, bluePulse, bounce, bouncingBall, bouncingBar, boxBounce, boxBounce2, christmas, circle, circleHalves, circleQuarters, clock, dots, dots10, dots11, dots12, dots13, dots14, dots2, dots3, dots4, dots5, dots6, dots7, dots8, dots8Bit, dots9, dotsCircle, dqpb, earth, fingerDance, fistBump, flip, grenade, growHorizontal, growVertical, hamburger, hearts, layer, line, material, mindblown, monkey, moon, noise, orangeBluePulse, orangePulse, pipe, point, pong, runner, sand, shark, simpleDots, simpleDotsScrolling, smiley, soccerHeader, speaker, squareCorners, squish, star, star2, timeTravel, toggle, toggle10, toggle11, toggle12, toggle13, toggle2, toggle3, toggle4, toggle5, toggle6, toggle7, toggle8, toggle9, triangle
 -}
+
+
+------------------------------------------------------
+------------------------------------------------------
+-- THIS IS A GENERATED MODULE!
+-- See Justfile and scripts/gen-spinner-variants.js
+------------------------------------------------------
+------------------------------------------------------
 
 
 import Dict exposing (Dict)
 
 
+{-| Type alias for a spinner variant.
+
+`frames` is an array of strings to rotate through for the animation.
+`interval` is the number of milliseconds before advancing to the next frame.
+-}
 type alias Variant =
     { interval : Int
     , frames : Array String
     }
 
 
+{-|-}
 dots : Variant
 dots =
     { interval = 80
@@ -30,6 +125,7 @@ dots =
     }
 
 
+{-|-}
 dots2 : Variant
 dots2 =
     { interval = 80
@@ -37,6 +133,7 @@ dots2 =
     }
 
 
+{-|-}
 dots3 : Variant
 dots3 =
     { interval = 80
@@ -44,6 +141,7 @@ dots3 =
     }
 
 
+{-|-}
 dots4 : Variant
 dots4 =
     { interval = 80
@@ -51,6 +149,7 @@ dots4 =
     }
 
 
+{-|-}
 dots5 : Variant
 dots5 =
     { interval = 80
@@ -58,6 +157,7 @@ dots5 =
     }
 
 
+{-|-}
 dots6 : Variant
 dots6 =
     { interval = 80
@@ -65,6 +165,7 @@ dots6 =
     }
 
 
+{-|-}
 dots7 : Variant
 dots7 =
     { interval = 80
@@ -72,6 +173,7 @@ dots7 =
     }
 
 
+{-|-}
 dots8 : Variant
 dots8 =
     { interval = 80
@@ -79,6 +181,7 @@ dots8 =
     }
 
 
+{-|-}
 dots9 : Variant
 dots9 =
     { interval = 80
@@ -86,6 +189,7 @@ dots9 =
     }
 
 
+{-|-}
 dots10 : Variant
 dots10 =
     { interval = 80
@@ -93,6 +197,7 @@ dots10 =
     }
 
 
+{-|-}
 dots11 : Variant
 dots11 =
     { interval = 100
@@ -100,6 +205,7 @@ dots11 =
     }
 
 
+{-|-}
 dots12 : Variant
 dots12 =
     { interval = 80
@@ -107,6 +213,7 @@ dots12 =
     }
 
 
+{-|-}
 dots13 : Variant
 dots13 =
     { interval = 80
@@ -114,6 +221,7 @@ dots13 =
     }
 
 
+{-|-}
 dots14 : Variant
 dots14 =
     { interval = 80
@@ -121,6 +229,7 @@ dots14 =
     }
 
 
+{-|-}
 dots8Bit : Variant
 dots8Bit =
     { interval = 80
@@ -128,6 +237,7 @@ dots8Bit =
     }
 
 
+{-|-}
 dotsCircle : Variant
 dotsCircle =
     { interval = 80
@@ -135,6 +245,7 @@ dotsCircle =
     }
 
 
+{-|-}
 sand : Variant
 sand =
     { interval = 80
@@ -142,6 +253,7 @@ sand =
     }
 
 
+{-|-}
 line : Variant
 line =
     { interval = 130
@@ -149,6 +261,7 @@ line =
     }
 
 
+{-|-}
 pipe : Variant
 pipe =
     { interval = 100
@@ -156,6 +269,7 @@ pipe =
     }
 
 
+{-|-}
 simpleDots : Variant
 simpleDots =
     { interval = 400
@@ -163,6 +277,7 @@ simpleDots =
     }
 
 
+{-|-}
 simpleDotsScrolling : Variant
 simpleDotsScrolling =
     { interval = 200
@@ -170,6 +285,7 @@ simpleDotsScrolling =
     }
 
 
+{-|-}
 star : Variant
 star =
     { interval = 70
@@ -177,6 +293,7 @@ star =
     }
 
 
+{-|-}
 star2 : Variant
 star2 =
     { interval = 80
@@ -184,6 +301,7 @@ star2 =
     }
 
 
+{-|-}
 flip : Variant
 flip =
     { interval = 70
@@ -191,6 +309,7 @@ flip =
     }
 
 
+{-|-}
 hamburger : Variant
 hamburger =
     { interval = 100
@@ -198,6 +317,7 @@ hamburger =
     }
 
 
+{-|-}
 growVertical : Variant
 growVertical =
     { interval = 120
@@ -205,6 +325,7 @@ growVertical =
     }
 
 
+{-|-}
 growHorizontal : Variant
 growHorizontal =
     { interval = 120
@@ -212,6 +333,7 @@ growHorizontal =
     }
 
 
+{-|-}
 balloon : Variant
 balloon =
     { interval = 140
@@ -219,6 +341,7 @@ balloon =
     }
 
 
+{-|-}
 balloon2 : Variant
 balloon2 =
     { interval = 120
@@ -226,6 +349,7 @@ balloon2 =
     }
 
 
+{-|-}
 noise : Variant
 noise =
     { interval = 100
@@ -233,6 +357,7 @@ noise =
     }
 
 
+{-|-}
 bounce : Variant
 bounce =
     { interval = 120
@@ -240,6 +365,7 @@ bounce =
     }
 
 
+{-|-}
 boxBounce : Variant
 boxBounce =
     { interval = 120
@@ -247,6 +373,7 @@ boxBounce =
     }
 
 
+{-|-}
 boxBounce2 : Variant
 boxBounce2 =
     { interval = 100
@@ -254,6 +381,7 @@ boxBounce2 =
     }
 
 
+{-|-}
 triangle : Variant
 triangle =
     { interval = 50
@@ -261,6 +389,7 @@ triangle =
     }
 
 
+{-|-}
 binary : Variant
 binary =
     { interval = 80
@@ -268,6 +397,7 @@ binary =
     }
 
 
+{-|-}
 arc : Variant
 arc =
     { interval = 100
@@ -275,6 +405,7 @@ arc =
     }
 
 
+{-|-}
 circle : Variant
 circle =
     { interval = 120
@@ -282,6 +413,7 @@ circle =
     }
 
 
+{-|-}
 squareCorners : Variant
 squareCorners =
     { interval = 180
@@ -289,6 +421,7 @@ squareCorners =
     }
 
 
+{-|-}
 circleQuarters : Variant
 circleQuarters =
     { interval = 120
@@ -296,6 +429,7 @@ circleQuarters =
     }
 
 
+{-|-}
 circleHalves : Variant
 circleHalves =
     { interval = 50
@@ -303,6 +437,7 @@ circleHalves =
     }
 
 
+{-|-}
 squish : Variant
 squish =
     { interval = 100
@@ -310,6 +445,7 @@ squish =
     }
 
 
+{-|-}
 toggle : Variant
 toggle =
     { interval = 250
@@ -317,6 +453,7 @@ toggle =
     }
 
 
+{-|-}
 toggle2 : Variant
 toggle2 =
     { interval = 80
@@ -324,6 +461,7 @@ toggle2 =
     }
 
 
+{-|-}
 toggle3 : Variant
 toggle3 =
     { interval = 120
@@ -331,6 +469,7 @@ toggle3 =
     }
 
 
+{-|-}
 toggle4 : Variant
 toggle4 =
     { interval = 100
@@ -338,6 +477,7 @@ toggle4 =
     }
 
 
+{-|-}
 toggle5 : Variant
 toggle5 =
     { interval = 100
@@ -345,6 +485,7 @@ toggle5 =
     }
 
 
+{-|-}
 toggle6 : Variant
 toggle6 =
     { interval = 300
@@ -352,6 +493,7 @@ toggle6 =
     }
 
 
+{-|-}
 toggle7 : Variant
 toggle7 =
     { interval = 80
@@ -359,6 +501,7 @@ toggle7 =
     }
 
 
+{-|-}
 toggle8 : Variant
 toggle8 =
     { interval = 100
@@ -366,6 +509,7 @@ toggle8 =
     }
 
 
+{-|-}
 toggle9 : Variant
 toggle9 =
     { interval = 100
@@ -373,6 +517,7 @@ toggle9 =
     }
 
 
+{-|-}
 toggle10 : Variant
 toggle10 =
     { interval = 100
@@ -380,6 +525,7 @@ toggle10 =
     }
 
 
+{-|-}
 toggle11 : Variant
 toggle11 =
     { interval = 50
@@ -387,6 +533,7 @@ toggle11 =
     }
 
 
+{-|-}
 toggle12 : Variant
 toggle12 =
     { interval = 120
@@ -394,6 +541,7 @@ toggle12 =
     }
 
 
+{-|-}
 toggle13 : Variant
 toggle13 =
     { interval = 80
@@ -401,6 +549,7 @@ toggle13 =
     }
 
 
+{-|-}
 arrow : Variant
 arrow =
     { interval = 100
@@ -408,6 +557,7 @@ arrow =
     }
 
 
+{-|-}
 arrow3 : Variant
 arrow3 =
     { interval = 120
@@ -415,6 +565,7 @@ arrow3 =
     }
 
 
+{-|-}
 bouncingBar : Variant
 bouncingBar =
     { interval = 80
@@ -422,6 +573,7 @@ bouncingBar =
     }
 
 
+{-|-}
 bouncingBall : Variant
 bouncingBall =
     { interval = 80
@@ -429,6 +581,7 @@ bouncingBall =
     }
 
 
+{-|-}
 smiley : Variant
 smiley =
     { interval = 200
@@ -436,6 +589,7 @@ smiley =
     }
 
 
+{-|-}
 monkey : Variant
 monkey =
     { interval = 300
@@ -443,6 +597,7 @@ monkey =
     }
 
 
+{-|-}
 hearts : Variant
 hearts =
     { interval = 100
@@ -450,6 +605,7 @@ hearts =
     }
 
 
+{-|-}
 clock : Variant
 clock =
     { interval = 100
@@ -457,6 +613,7 @@ clock =
     }
 
 
+{-|-}
 earth : Variant
 earth =
     { interval = 180
@@ -464,6 +621,7 @@ earth =
     }
 
 
+{-|-}
 material : Variant
 material =
     { interval = 17
@@ -471,6 +629,7 @@ material =
     }
 
 
+{-|-}
 moon : Variant
 moon =
     { interval = 80
@@ -478,6 +637,7 @@ moon =
     }
 
 
+{-|-}
 runner : Variant
 runner =
     { interval = 140
@@ -485,6 +645,7 @@ runner =
     }
 
 
+{-|-}
 pong : Variant
 pong =
     { interval = 80
@@ -492,6 +653,7 @@ pong =
     }
 
 
+{-|-}
 shark : Variant
 shark =
     { interval = 120
@@ -499,6 +661,7 @@ shark =
     }
 
 
+{-|-}
 dqpb : Variant
 dqpb =
     { interval = 100
@@ -506,6 +669,7 @@ dqpb =
     }
 
 
+{-|-}
 christmas : Variant
 christmas =
     { interval = 400
@@ -513,6 +677,7 @@ christmas =
     }
 
 
+{-|-}
 grenade : Variant
 grenade =
     { interval = 80
@@ -520,6 +685,7 @@ grenade =
     }
 
 
+{-|-}
 point : Variant
 point =
     { interval = 125
@@ -527,6 +693,7 @@ point =
     }
 
 
+{-|-}
 layer : Variant
 layer =
     { interval = 150
@@ -534,6 +701,7 @@ layer =
     }
 
 
+{-|-}
 betaWave : Variant
 betaWave =
     { interval = 80
@@ -541,6 +709,7 @@ betaWave =
     }
 
 
+{-|-}
 fingerDance : Variant
 fingerDance =
     { interval = 160
@@ -548,6 +717,7 @@ fingerDance =
     }
 
 
+{-|-}
 fistBump : Variant
 fistBump =
     { interval = 80
@@ -555,6 +725,7 @@ fistBump =
     }
 
 
+{-|-}
 soccerHeader : Variant
 soccerHeader =
     { interval = 80
@@ -562,6 +733,7 @@ soccerHeader =
     }
 
 
+{-|-}
 mindblown : Variant
 mindblown =
     { interval = 160
@@ -569,6 +741,7 @@ mindblown =
     }
 
 
+{-|-}
 speaker : Variant
 speaker =
     { interval = 160
@@ -576,6 +749,7 @@ speaker =
     }
 
 
+{-|-}
 orangePulse : Variant
 orangePulse =
     { interval = 100
@@ -583,6 +757,7 @@ orangePulse =
     }
 
 
+{-|-}
 bluePulse : Variant
 bluePulse =
     { interval = 100
@@ -590,6 +765,7 @@ bluePulse =
     }
 
 
+{-|-}
 orangeBluePulse : Variant
 orangeBluePulse =
     { interval = 100
@@ -597,6 +773,7 @@ orangeBluePulse =
     }
 
 
+{-|-}
 timeTravel : Variant
 timeTravel =
     { interval = 100
@@ -604,6 +781,7 @@ timeTravel =
     }
 
 
+{-|-}
 aesthetic : Variant
 aesthetic =
     { interval = 80

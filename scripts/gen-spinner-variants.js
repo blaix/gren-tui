@@ -9,25 +9,36 @@ async function main() {
     delete spinners.dwarfFortress;
     delete spinners.weather;
     
-    console.log(`module UI.Spinner.Variant exposing (..)
-
-
-------------------------------------------------------
--- THIS IS A GENERATED MODULE!
--- See Justfile and scripts/gen-spinner-variants.js
-------------------------------------------------------
-
+    console.log(`module UI.Spinner.Variant exposing
+    ( Variant
+    , ` + Object.keys(spinners).sort().join("\n    , ") + `
+    )
 
 {-| These are most of the spinners from
 https://github.com/sindresorhus/cli-spinners
 
 See demos at https://jsfiddle.net/sindresorhus/2eLtsbey/embedded/result/
+
+@docs Variant, ` + Object.keys(spinners).sort().join(", ") + `
 -}
+
+
+------------------------------------------------------
+------------------------------------------------------
+-- THIS IS A GENERATED MODULE!
+-- See Justfile and scripts/gen-spinner-variants.js
+------------------------------------------------------
+------------------------------------------------------
 
 
 import Dict exposing (Dict)
 
 
+{-| Type alias for a spinner variant.
+
+\`frames\` is an array of strings to rotate through for the animation.
+\`interval\` is the number of milliseconds before advancing to the next frame.
+-}
 type alias Variant =
     { interval : Int
     , frames : Array String
@@ -37,6 +48,7 @@ type alias Variant =
     for (name in spinners) {
         //console.log(spinners[name]);
         console.log(`
+{-|-}
 ${name} : Variant
 ${name} =
     { interval = ${spinners[name]['interval']}
