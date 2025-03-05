@@ -18,4 +18,4 @@ gen-spinner-variants:
   node scripts/gen-spinner-variants.js > src/UI/Spinner/Variant.gren
 
 docs:
-  npm run doc-preview
+  npx gren-packages

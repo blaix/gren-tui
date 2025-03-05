@@ -1,9 +1,0 @@
-{
-  "private": true,
-  "scripts": {
-    "doc-preview": "npx gren-doc-preview"
-  },
-  "devDependencies": {
-    "gren-packages": "^5.0.1"
-  }
-}
