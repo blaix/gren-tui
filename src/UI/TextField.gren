@@ -7,6 +7,21 @@ module UI.TextField exposing
     )
 
 
+{-| UI Component for entering text.
+
+The component handles the normal input functionality, like backspace, delete, and moving the cursor with arrow keys.
+
+The important functions you'll need are:
+
+- [`init`](#init): Initialize the field.
+- [`update`](#update): Update the field when you receive input that you want to attribute to it.
+- [`toString`](#toString): Get the string value of the field.
+- [`view`](#view): Render the field as part of your application's `view`.
+
+Look for the latest "form" example in the [repo's example folder](https://github.com/blaix/gren-tui/tree/main/examples)
+for a full working example.
+-}
+
 import Ansi
 import Tui
 import UI
