@@ -9,7 +9,7 @@ module UI.TextField exposing
 
 {-| UI Component for entering text.
 
-The component handles the normal input functionality, like backspace, delete, and moving the cursor with arrow keys.
+The component handles the normal text input functionality, like backspace, delete, and moving the cursor with arrow keys.
 
 The important functions you'll need are:
 
@@ -20,6 +20,8 @@ The important functions you'll need are:
 
 Look for the latest "form" example in the [repo's example folder](https://github.com/blaix/gren-tui/tree/main/examples)
 for a full working example.
+
+@docs TextField, init, update, view, toString
 -}
 
 import Ansi
@@ -27,6 +29,7 @@ import Tui
 import UI
 
 
+{-|-}
 type TextField =
     TextField
         { value : String
@@ -34,6 +37,10 @@ type TextField =
         }
 
 
+{-| Initialize a TextField component.
+
+The passed string will be the starting value.
+-}
 init : String -> TextField
 init value =
     TextField
@@ -42,6 +49,10 @@ init value =
         }
 
 
+{-| Update a TextField component with the given [Input](Tui.Input).
+
+You would normally call this in your `update` function when you receive an input event that you want to attribute to the text field.
+-}
 update : Tui.Input -> TextField -> TextField
 update input field =
     let
@@ -124,6 +135,8 @@ split (TextField { value, cursor }) =
     }
 
 
+{-| Render a TextField in your `view`.
+-}
 view : TextField -> UI.Element
 view (TextField { value, cursor })=
     let
@@ -158,6 +171,8 @@ view (TextField { value, cursor })=
         first ++ cursorChar ++ last
 
 
+{-| Get the current value of a TextField as a String.
+-}
 toString : TextField -> String
 toString (TextField { value }) =
     value
