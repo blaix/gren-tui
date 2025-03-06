@@ -59,11 +59,17 @@ node app
 
 ## Now what?
 
-Check out the [API docs](https://packages.gren-lang.org/package/blaix/gren-tui) and start writing your app!
+Check out the [API docs](https://packages.gren-lang.org/package/blaix/gren-tui)
+and [examples/](https://github.com/blaix/gren-tui/tree/main/examples)
+and start writing your app!
 
-Feel free to reach out if you need help, or to show off what you're building.
-I'd love to see it!
-See below for contact info.
+Feel free to reach out if you need help, have suggestions, or want to show off what you're building.
+I'd love to see it! You can find me:
+
+* on mastodon at [@blaix@hachyderm.io](https://hachyderm.io/@blaix).
+* in the [`#gren-tui`](https://discord.gg/etMAVy2YKf) channel on the gren discord.
+
+Or you can file an [issue](https://github.com/blaix/gren-tui/issues) on github. Even if you just have a question or suggestion.
 
 ## Working on this package
 
@@ -76,11 +82,3 @@ and you can run examples with `just [example-name]`.
 
 If you don't want to use devbox,
 see `devbox.json` for a list of dependencies if you will need to install.
-
-## Getting Help or Updates
-
-If you have questions, suggestions, find a bug, or want to follow updates to the package, you can:
-
-* Follow me on mastodon at [@blaix@hachyderm.io](https://hachyderm.io/@blaix).
-* Join the [`#gren-tui`](https://discord.gg/etMAVy2YKf) channel on the gren discord.
-* File an [issue](https://github.com/blaix/gren-tui/issues) on github.
