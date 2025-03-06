@@ -84,14 +84,17 @@ module UI.Spinner.Variant exposing
     , toggle8
     , toggle9
     , triangle
+    , all
     )
 
-{-| These are most of the spinners from
-https://github.com/sindresorhus/cli-spinners
+{-| Spinner variants.
 
-See demos at https://jsfiddle.net/sindresorhus/2eLtsbey/embedded/result/
+These are _most_ of the spinners from
+<https://github.com/sindresorhus/cli-spinners>
 
-@docs Variant, aesthetic, arc, arrow, arrow3, balloon, balloon2, betaWave, binary, bluePulse, bounce, bouncingBall, bouncingBar, boxBounce, boxBounce2, christmas, circle, circleHalves, circleQuarters, clock, dots, dots10, dots11, dots12, dots13, dots14, dots2, dots3, dots4, dots5, dots6, dots7, dots8, dots8Bit, dots9, dotsCircle, dqpb, earth, fingerDance, fistBump, flip, grenade, growHorizontal, growVertical, hamburger, hearts, layer, line, material, mindblown, monkey, moon, noise, orangeBluePulse, orangePulse, pipe, point, pong, runner, sand, shark, simpleDots, simpleDotsScrolling, smiley, soccerHeader, speaker, squareCorners, squish, star, star2, timeTravel, toggle, toggle10, toggle11, toggle12, toggle13, toggle2, toggle3, toggle4, toggle5, toggle6, toggle7, toggle8, toggle9, triangle
+See demos at <https://jsfiddle.net/sindresorhus/2eLtsbey/embedded/result/>
+
+@docs Variant, aesthetic, arc, arrow, arrow3, balloon, balloon2, betaWave, binary, bluePulse, bounce, bouncingBall, bouncingBar, boxBounce, boxBounce2, christmas, circle, circleHalves, circleQuarters, clock, dots, dots10, dots11, dots12, dots13, dots14, dots2, dots3, dots4, dots5, dots6, dots7, dots8, dots8Bit, dots9, dotsCircle, dqpb, earth, fingerDance, fistBump, flip, grenade, growHorizontal, growVertical, hamburger, hearts, layer, line, material, mindblown, monkey, moon, noise, orangeBluePulse, orangePulse, pipe, point, pong, runner, sand, shark, simpleDots, simpleDotsScrolling, smiley, soccerHeader, speaker, squareCorners, squish, star, star2, timeTravel, toggle, toggle10, toggle11, toggle12, toggle13, toggle2, toggle3, toggle4, toggle5, toggle6, toggle7, toggle8, toggle9, triangle, all
 -}
 
 
@@ -106,10 +109,11 @@ See demos at https://jsfiddle.net/sindresorhus/2eLtsbey/embedded/result/
 import Dict exposing (Dict)
 
 
-{-| Type alias for a spinner variant.
+{-| A spinner variant is just an array of strings (one string for each frame of the animation)
+and an interval specifying the number of milliseconds before advancing a frame.
 
-`frames` is an array of strings to rotate through for the animation.
-`interval` is the number of milliseconds before advancing to the next frame.
+That means you aren't bound to the variants in this module.
+You can create your own! Just pass a record like this to [Spinner.init](UI.Spinner#init).
 -}
 type alias Variant =
     { interval : Int
@@ -789,6 +793,8 @@ aesthetic =
     }
 
 
+{-| A Dict holding all spinner variants.
+-}
 all : Dict String Variant
 all =
     Dict.empty

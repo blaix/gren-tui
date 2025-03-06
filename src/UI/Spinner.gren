@@ -8,12 +8,29 @@ module UI.Spinner exposing
     )
 
 
+{-| UI component for a loading spinner.
+
+See [UI.Spinner.Variant](UI.Spinner.Variant) for the different types of spinners available.
+
+To include a spinner in your view:
+
+- Initialize a spinner variant with [init](#init).
+- Render the spinner with [view](#view).
+- [Subscribe](#subscribe) to the spinner's events to keep it [updated](#update).
+
+See the spinner examples in the [repo's example folder](https://github.com/blaix/gren-tui/tree/main/examples)
+for full usage examples.
+
+@docs Spinner, init, view, update, subscribe, toString
+-}
+
 import Math
 import Time
 import UI
 import UI.Spinner.Variant as Variant exposing (Variant)
 
 
+{-|-}
 type Spinner =
     Spinner
         { frames : Array String
@@ -22,6 +39,8 @@ type Spinner =
         }
 
 
+{-| Initialize a spinner [Variant](UI.Spinner.Variant).
+-}
 init : Variant -> Spinner
 init { interval, frames } =
     Spinner
@@ -31,6 +50,10 @@ init { interval, frames } =
         }
 
 
+{-| Update a spinner.
+
+Normally you would call this in your `update` function when you receive the message you passed to [subscribe](#subscribe).
+-}
 update : Spinner -> Spinner
 update (Spinner { frames, ticks, interval }) =
     Spinner
@@ -40,11 +63,18 @@ update (Spinner { frames, ticks, interval }) =
         }
 
 
+{-| Render a spinner in your `view`.
+-}
 view : Spinner -> UI.Element
 view spinner =
     UI.text [] (toString spinner)
 
 
+{-| Get the current frame of a spinner as a String.
+
+Normally you shouldn't need this function,
+but don't let me stop you from doing something weird and cool.
+-}
 toString : Spinner -> String
 toString (Spinner { frames, ticks }) =
     let
@@ -57,6 +87,8 @@ toString (Spinner { frames, ticks }) =
         |> Maybe.withDefault ""
 
 
+{-| Subscribe to spinner events so you can keep it updated with [`update`](#updated).
+-}
 subscribe : msg -> Spinner -> Sub msg
 subscribe msg (Spinner { interval }) =
     Time.every (toFloat interval) (\_ -> msg)

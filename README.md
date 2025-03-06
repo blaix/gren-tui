@@ -2,7 +2,7 @@
 
 Build interactive terminal apps using [The Elm Architecture](https://gren-lang.org/book/applications/tea/).
 Easily create complex, reactive layouts with a DSL inspired by [elm-ui](https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/).
-Code and refactor with confidence thanks to type-safety and purity of the [Gren programming language](https://gren-lang.org/).
+Code and refactor with confidence thanks to the type-safety and purity of the [Gren programming language](https://gren-lang.org/).
 
 ## Examples
 

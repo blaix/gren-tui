@@ -12,14 +12,17 @@ async function main() {
     console.log(`module UI.Spinner.Variant exposing
     ( Variant
     , ` + Object.keys(spinners).sort().join("\n    , ") + `
+    , all
     )
 
-{-| These are most of the spinners from
-https://github.com/sindresorhus/cli-spinners
+{-| Spinner variants.
 
-See demos at https://jsfiddle.net/sindresorhus/2eLtsbey/embedded/result/
+These are _most_ of the spinners from
+<https://github.com/sindresorhus/cli-spinners>
 
-@docs Variant, ` + Object.keys(spinners).sort().join(", ") + `
+See demos at <https://jsfiddle.net/sindresorhus/2eLtsbey/embedded/result/>
+
+@docs Variant, ` + Object.keys(spinners).sort().join(", ") + `, all
 -}
 
 
@@ -34,10 +37,11 @@ See demos at https://jsfiddle.net/sindresorhus/2eLtsbey/embedded/result/
 import Dict exposing (Dict)
 
 
-{-| Type alias for a spinner variant.
+{-| A spinner variant is just an array of strings (one string for each frame of the animation)
+and an interval specifying the number of milliseconds before advancing a frame.
 
-\`frames\` is an array of strings to rotate through for the animation.
-\`interval\` is the number of milliseconds before advancing to the next frame.
+That means you aren't bound to the variants in this module.
+You can create your own! Just pass a record like this to [Spinner.init](UI.Spinner#init).
 -}
 type alias Variant =
     { interval : Int
@@ -58,6 +62,8 @@ ${name} =
     }
     
     console.log(`
+{-| A Dict holding all spinner variants.
+-}
 all : Dict String Variant
 all =
     Dict.empty`);

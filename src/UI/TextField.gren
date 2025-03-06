@@ -49,7 +49,7 @@ init value =
         }
 
 
-{-| Update a TextField component with the given [Input](Tui.Input).
+{-| Update a TextField component with the given [Input](Tui#Input).
 
 You would normally call this in your `update` function when you receive an input event that you want to attribute to the text field.
 -}
