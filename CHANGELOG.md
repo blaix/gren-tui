@@ -1,4 +1,4 @@
-## Next
+## 4.0.0 (2025-03-05)
 
 * Update to Gren 0.5
 * New `Input` variants: `Backspace`, `Delete`, and `F1`-`F4`
