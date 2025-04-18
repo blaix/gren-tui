@@ -26,7 +26,7 @@ Code and refactor with confidence thanks to the type-safety and purity of the [G
 
 More examples:
 
-- You can find [all the example apps here](https://github.com/blaix/gren-tui/blob/main/examples/v3).
+- You can find [all the example apps here](https://github.com/blaix/gren-tui/blob/main/examples).
 - Watch a video about gren tui in [episode 19 of the Gren Twigs series](https://www.youtube.com/watch?v=zBrjKJiy6rI&list=PLflA5Q354D42Zxi6KiLmNVNzQHINQ51U-&index=19).
 
 ## Usage
