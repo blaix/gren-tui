@@ -45,15 +45,19 @@ update : Msg -> Model -> { model : Model, command : Cmd Msg }
 update msg model =
     when msg is
         GotInput input ->
-            { model = model
-            , command = 
-                when input is
-                    Tui.Escape ->
+            when input is
+                Tui.Escape ->
+                    { model = model
+                    , command = 
                         Tui.exit model.stdout
                             |> Task.execute
-                    _ ->
+                    }
+
+                _ ->
+                    { model = model
+                    , command = 
                         Cmd.none
-            }
+                    }
 
 
 view : Model -> UI.Element
