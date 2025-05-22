@@ -451,7 +451,7 @@ Here's an example of using it in init to hide the cursor as soon as the program 
             }
 
 -}
-hideCursor : Stream.Writable Bytes-> Task Never {}
+hideCursor : Stream.Writable Bytes-> Task x {}
 hideCursor stdout =
     Ansi.hideCursor
         |> print stdout
@@ -476,7 +476,7 @@ Here's an example of using it in your update function to exit when the user pres
             }
 
 -}
-exit : Stream.Writable Bytes -> Task Never {}
+exit : Stream.Writable Bytes -> Task x {}
 exit stdout =
     cleanup stdout
         |> Task.andThen (\_ -> Node.exit)
@@ -487,7 +487,7 @@ exit stdout =
 The Stream argument should be the stdout value you get from [`Environment`](#Environment).
 This is needed to clean things up (e.g. restore cursor, unset styles, etc).
 -}
-exitWithCode : Stream.Writable Bytes -> Int -> Task Never {}
+exitWithCode : Stream.Writable Bytes -> Int -> Task x {}
 exitWithCode stream code =
     cleanup stream
         |> Task.andThen (\_ -> Node.exitWithCode code)
@@ -500,7 +500,7 @@ crash status stream error explanation =
         |> Task.execute
 
 
-cleanup : Stream.Writable Bytes -> Task Never {}
+cleanup : Stream.Writable Bytes -> Task x {}
 cleanup stream =
     "\n" ++ Ansi.reset ++ Ansi.showCursor
         |> print stream
@@ -550,7 +550,7 @@ view appView model =
         }
 
 
-render : Model appModel appMsg -> String -> Task Never {}
+render : Model appModel appMsg -> String -> Task x {}
 render model viewString =
     -- IMPORTANT!
     --   * Draw over the old view, don't clear then draw, or you'll get screen flicker.
@@ -793,7 +793,7 @@ With the order of arguments appropriate for chaining (stream -> string instead o
 
 I should probably eventually handle failures better...
 -}
-print : Stream.Writable Bytes -> String -> Task Never {}
+print : Stream.Writable Bytes -> String -> Task x {}
 print stream string =
     Stream.writeStringAsBytes string stream
         |> Task.map (\_ -> {})
@@ -807,7 +807,7 @@ With the order of arguments appropriate for chaining (stream -> string instead o
 
 I should probably eventually handle failures better...
 -}
-printLine : Stream.Writable Bytes -> String -> Task Never {}
+printLine : Stream.Writable Bytes -> String -> Task x {}
 printLine stream string =
     Stream.writeLineAsBytes string stream
         |> Task.map (\_ -> {})
