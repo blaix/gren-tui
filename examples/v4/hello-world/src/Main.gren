@@ -1,7 +1,6 @@
 module Main exposing (main)
 
 
-import Ansi
 import Bytes exposing (Bytes)
 import Init
 import Node
