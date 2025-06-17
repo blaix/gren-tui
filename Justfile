@@ -9,7 +9,8 @@ examples:
   for example in `ls examples/v4 | grep -v README`; do just example $example || exit 1; done
 
 test:
-  cd tests/unit && gren make src/Main.gren && node app
+  # won't work until gren run support:
+  gren run Tests
 
 header MSG:
   @echo -e "\n{{green}}{{MSG}}{{nc}}"

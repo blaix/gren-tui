@@ -1,4 +1,4 @@
-module Test.UI exposing (tests)
+module Tests.UI exposing (tests)
 
 import UI.Border as Border exposing (Border)
 import Expect exposing (Expectation)
