@@ -72,7 +72,8 @@
     * [ ] readline support?
 * [ ] Is this anything? https://nodejs.org/en/learn/asynchronous-work/the-nodejs-event-emitter
 * [ ] Ongoing: See https://github.com/blaix/gren-tui/issues
-* [ ] Consider: conditoinally running gren-tui. For example, a script that could run as part of a build pipeline, but with an interactive frontend if running in an interactive terminal. Currently gren-tui just exits with an error if there is no tty (simulate this by triggering a gren-tui app via `child_process` in a node shell).
+* [ ] Consider: conditionally running gren-tui. For example, a script that could run as part of a build pipeline, but with an interactive frontend if running in an interactive terminal. Currently gren-tui just exits with an error if there is no tty (simulate this by triggering a gren-tui app via `child_process` in a node shell).
+* [ ] terminal-specific escape codes for things like native progress bars and gui prompts? https://hachyderm.io/@mitchellh/114905177452974872
 
 ## Performance notes
 
