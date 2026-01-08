@@ -1,0 +1,110 @@
+module Main exposing (main)
+
+
+import Ansi
+import Array2d
+import Bytes exposing (Bytes)
+import Init
+import Node
+import Stream
+import Task
+import Tui
+import UI
+import UI.Attribute as Attribute
+import UI.Border as Border
+
+
+main : Tui.Program Model Msg
+main =
+    Tui.defineProgram
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        , onInput = GotInput
+        }
+
+
+type alias Model =
+    { stdout : Stream.Writable Bytes
+    }
+
+
+init : Tui.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Node.startProgram
+        { model = { stdout = env.stdout }
+        , command = 
+            Tui.hideCursor env.stdout
+                |> Task.execute
+        }
+
+
+type Msg
+    = GotInput Tui.Input
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    when msg is
+        GotInput input ->
+            { model = model
+            , command = 
+                when input is
+                    Tui.Escape ->
+                        Tui.exit model.stdout
+                    _ ->
+                        Cmd.none
+            }
+
+
+view : Model -> UI.Element
+view model =
+    UI.row 
+        [ Attribute.color Ansi.Black
+        , Attribute.bgColor Ansi.Magenta
+        , Attribute.fontWeight Ansi.Bold
+        ]
+        [ UI.column [] 
+            [ UI.text [] " col 1\n with a newline in it! "
+            , UI.bordered [] Border.rounded <|
+                UI.text [] " cool "
+            ]
+        , UI.column 
+            [ Attribute.color Ansi.Red
+            , Attribute.bgColor Ansi.Yellow
+            ]
+            [ UI.text [] " col 2 row 1 "
+            , UI.row []
+                [ UI.bordered [] Border.thick <|
+                    UI.row [ Attribute.bgColor Ansi.Blue ]
+                        [ UI.text [] "inner col 1 "
+                        , UI.column []
+                            [ UI.text [] "inner col 2 \nwith newline "
+                            , UI.text [] "inner bottom row "
+                            ]
+                        ]
+                , UI.row [] 
+                    [ UI.text [] " omg "
+                    , UI.column [] 
+                        [ UI.text [] "emojis 🌈 in\nit with "
+                        , UI.text [] "nested columns oh my! "
+                        ]
+                    ]
+                ]
+            , UI.text [] " col 2 row 3 "
+            ]
+        , UI.row []
+            [ UI.text 
+                [ Attribute.bgColor Ansi.Green
+                , Attribute.fontWeight Ansi.NormalWeight
+                ] 
+                " col 3 ⛄️ "
+            , UI.text [] " col 4 "
+            ]
+        ]
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none

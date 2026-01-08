@@ -1,0 +1,147 @@
+module Main exposing (main)
+
+
+import Ansi
+import Bytes exposing (Bytes)
+import Dict exposing (Dict)
+import Init
+import Node
+import Stream
+import Task
+import Time
+import Tui
+import UI
+import UI.Border as Border
+import UI.Spinner as Spinner exposing (Spinner)
+import UI.Spinner.Variant as Variant exposing (Variant)
+
+
+main : Tui.Program Model Msg
+main =
+    Tui.defineProgram
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        , onInput = GotInput
+        }
+
+
+type alias Model =
+    { stdout : Stream.Writable Bytes
+    , spinners : Dict String Spinner
+    }
+
+
+init : Tui.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Node.startProgram
+        { model = 
+            { stdout = env.stdout
+            , spinners = 
+                Variant.all
+                    |> Dict.map
+                        (\_ variant ->
+                            Spinner.init variant
+                        )
+            }
+        , command = 
+            Tui.hideCursor env.stdout
+                |> Task.execute
+        }
+
+
+type Msg
+    = GotInput Tui.Input
+    | SpinnerTick String
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    when msg is
+        GotInput input ->
+            { model = model
+            , command = 
+                when input is
+                    Tui.Escape ->
+                        Tui.exit model.stdout
+                    _ ->
+                        Cmd.none
+            }
+
+        SpinnerTick spinnerName ->
+            let
+                spinner =
+                    Dict.get spinnerName model.spinners
+
+                newModel =
+                    when spinner is
+                        Just s ->
+                            { model
+                                | spinners =
+                                    model.spinners
+                                        |> Dict.set spinnerName
+                                            (Spinner.update s) 
+                            }
+
+                        _ ->
+                            model
+            in
+            { model = newModel
+            , command = Cmd.none
+            }
+
+
+view : Model -> UI.Element
+view model =
+    let
+        names =
+            Dict.keys model.spinners
+                |> Array.map (String.append " ")
+                |> Array.map (UI.text [])
+
+        length =
+            Array.length names
+
+        colSize =
+            length // 2
+
+        namesCol1 =
+            Array.takeFirst colSize names
+
+        namesCol2 =
+            Array.dropFirst colSize names
+
+        spinners =
+            Dict.values model.spinners
+                |> Array.map Spinner.view
+
+        spinnersCol1 =
+            Array.takeFirst colSize spinners
+
+        spinnersCol2 =
+            Array.dropFirst colSize spinners
+    in
+    UI.row []
+        [ UI.bordered [] Border.rounded <|
+            UI.row []
+                [ UI.column [] namesCol1
+                , UI.column [] spinnersCol1
+                ]
+        , UI.bordered [] Border.rounded <|
+            UI.row []
+                [ UI.column [] namesCol2
+                , UI.column [] spinnersCol2
+                ]
+        ]
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    model.spinners
+        |> Dict.map 
+            (\name spinner ->
+                Spinner.subscribe (SpinnerTick name) spinner
+            )
+        |> Dict.values
+        |> Sub.batch

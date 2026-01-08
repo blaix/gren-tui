@@ -1,0 +1,97 @@
+module Main exposing (main)
+
+
+import Bytes exposing (Bytes)
+import Init
+import Node
+import Stream
+import Task
+import Tui
+import UI
+import UI.Attribute as Attribute
+import UI.TextField as TextField exposing (TextField)
+
+
+main : Tui.Program Model Msg
+main =
+    Tui.defineProgram
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        , onInput = GotInput
+        }
+
+
+type alias Model =
+    { name : TextField
+    , submitted : Bool
+    , stdout : Stream.Writable Bytes
+    }
+
+
+init : Tui.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Node.startProgram
+        { model = 
+            { name = TextField.init ""
+            , submitted = False
+            , stdout = env.stdout
+            }
+        , command =
+            Tui.hideCursor env.stdout
+                |> Task.execute
+        }
+
+
+type Msg
+    = GotInput Tui.Input
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    when msg is
+        GotInput input ->
+            when input is
+                Tui.Return ->
+                    { model = { model | submitted = True }
+                    , command = Cmd.none
+                    }
+
+                Tui.Escape ->
+                    { model = model
+                    , command =
+                        Tui.exit model.stdout
+                    }
+
+                _ ->
+                    { model = 
+                        { model 
+                            | name = TextField.update input model.name 
+                        }
+                    , command = Cmd.none
+                    }
+
+
+view : Model -> UI.Element
+view model =
+    UI.column []
+        [ UI.row []
+            [ UI.text [] "Name: "
+            , TextField.view model.name
+            ]
+        , UI.row [ Attribute.italic ] <|
+            if model.submitted then
+                [ UI.text [] "Hi, "
+                , UI.text [] (TextField.toString model.name)
+                , UI.text [] "! Press esc to quit."
+                ]
+            else
+                [ UI.text [] "Type your name and hit enter."
+                ]
+        ]
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none

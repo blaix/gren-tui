@@ -1,0 +1,84 @@
+module Main exposing (main)
+
+
+import Ansi
+import Bytes exposing (Bytes)
+import Init
+import Node
+import Stream
+import Task
+import Tui
+import UI
+import UI.Attribute as Attribute
+import UI.Border as Border
+
+
+main : Tui.Program Model Msg
+main =
+    Tui.defineProgram
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        , onInput = GotInput
+        }
+
+
+type alias Model =
+    { stdout : Stream.Writable Bytes
+    }
+
+
+init : Tui.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Node.startProgram
+        { model = { stdout = env.stdout }
+        , command = 
+            Tui.hideCursor env.stdout
+                |> Task.execute
+        }
+
+
+type Msg
+    = GotInput Tui.Input
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    when msg is
+        GotInput input ->
+            { model = model
+            , command = 
+                when input is
+                    Tui.Escape ->
+                        Tui.exit model.stdout
+                    _ ->
+                        Cmd.none
+            }
+
+
+view : Model -> UI.Element
+view model =
+    UI.row 
+        [ Attribute.color Ansi.Black
+        , Attribute.bgColor Ansi.Magenta
+        , Attribute.fontWeight Ansi.Bold
+        ]
+        [ UI.text [] " col 1 "
+        , UI.column 
+            [ Attribute.color Ansi.Red
+            , Attribute.bgColor Ansi.Yellow
+            ]
+            [ UI.text [] " col 2 row 1 "
+            , UI.text [] " col 2 row 2 with extra text "
+            , UI.text [] " col 2 row 3 "
+            ]
+        , UI.bordered [] Border.veryThick <|
+            UI.text [ Attribute.bgColor Ansi.Green ] " col 3 "
+        , UI.text [] " col 4 "
+        ]
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none

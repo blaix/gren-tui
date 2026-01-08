@@ -1,0 +1,130 @@
+module Main exposing (main)
+
+
+import Ansi
+import Bytes exposing (Bytes)
+import Init
+import Node
+import Stream
+import Task
+import Tui
+import UI
+import UI.Attribute as Attribute
+
+
+main : Tui.Program Model Msg
+main =
+    Tui.defineProgram
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        , onInput = GotInput
+        }
+
+
+type alias Model =
+    { stdout : Stream.Writable Bytes
+    , row : Int
+    , col : Int
+    , maxCol : Int
+    }
+
+
+init : Tui.Environment -> Init.Task { model : Model, command : Cmd Msg }
+init env =
+    Node.startProgram
+        { model = 
+            { stdout = env.stdout
+            , row = 1
+            , col = 1
+            , maxCol = env.columns
+            }
+        , command = 
+            Tui.hideCursor env.stdout
+                |> Task.execute
+        }
+
+
+type Msg
+    = GotInput Tui.Input
+
+
+update : Msg -> Model -> { model : Model, command : Cmd Msg }
+update msg model =
+    when msg is
+        GotInput input ->
+            when input is
+                Tui.Escape ->
+                    { model = model
+                    , command =
+                        Tui.exit model.stdout
+                    }
+
+                Tui.ArrowUp ->
+                    let
+                        newRow =
+                            if model.row > 1 then
+                                model.row - 1
+                            else
+                                model.row
+                    in
+                    { model = { model | row = newRow }
+                    , command = Cmd.none
+                    }
+
+                Tui.ArrowDown ->
+                    let
+                        newRow =
+                            model.row + 1
+                    in
+                    { model = { model | row = newRow }
+                    , command = Cmd.none
+                    }
+
+                Tui.ArrowLeft ->
+                    let
+                        newCol =
+                            if model.col > 1 then
+                                model.col - 1
+                            else
+                                model.col
+                    in
+                    { model = { model | col = newCol }
+                    , command = Cmd.none
+                    }
+
+                Tui.ArrowRight ->
+                    let
+                        newCol =
+                            if model.col < model.maxCol then
+                                model.col + 1
+                            else
+                                model.col
+                    in
+                    { model = { model | col = newCol }
+                    , command = Cmd.none
+                    }
+
+                _ ->
+                    { model = model
+                    , command = Cmd.none
+                    }
+
+
+view : Model -> UI.Element
+view model =
+    UI.column []
+        [ UI.text [] "Move the box with the arrow keys."
+        , UI.text [] "Press Esc to exit."
+        , UI.column [] (Array.repeat (model.row - 1) (UI.text [] " "))
+        , UI.row []
+            [ UI.row [] (Array.repeat (model.col - 1) (UI.text [] " "))
+            , UI.text [ Attribute.bgColor Ansi.Blue ] " "
+            ]
+        ]
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
