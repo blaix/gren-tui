@@ -77,11 +77,11 @@ Or you can file an [issue](https://github.com/blaix/gren-tui/issues) on github. 
 ## Working on this package
 
 This project uses [devbox](https://www.jetify.com/devbox).
-If you install devbox and start a `devbox shell`
-(or set up [direnv](https://www.jetify.com/docs/devbox/ide_configuration/direnv/) - highly recommended!),
-you will have the correct version of `gren` on your path,
-you can run tests with `just test`,
-and you can run examples with `just [example-name]`.
+
+You can run tests with `devbox run test`.
+
+You can run an [example](examples/) with `devbox run [example-name]`
+or all examples with `devbox run examples`.
 
 If you don't want to use devbox,
 see `devbox.json` for a list of dependencies if you will need to install.

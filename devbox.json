@@ -10,7 +10,20 @@
     ],
     "scripts": {
       "test": [
-        "echo \"Error: no test specified\" && exit 1"
+        "cd tests/unit && gren make src/Main.gren && node app"
+      ],
+      "example": [
+        "echo -e '\\n\\033[0;32mRUNNING EXAMPLE: '$1'\\033[0m'",
+        "cd examples/v4/$1 && gren make src/Main.gren && node app"
+      ],
+      "examples": [
+        "for example in $(ls examples/v4 | grep -v README); do devbox run example $example || exit 1; done"
+      ],
+      "gen-spinner-variants": [
+        "node scripts/gen-spinner-variants.js > src/UI/Spinner/Variant.gren"
+      ],
+      "docs": [
+        "npx gren-packages"
       ]
     }
   }
