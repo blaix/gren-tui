@@ -1,4 +1,4 @@
-module Tests.SingleLine exposing (tests)
+module Test.SingleLine exposing (tests)
 
 import SingleLine
 import Expect exposing (Expectation)

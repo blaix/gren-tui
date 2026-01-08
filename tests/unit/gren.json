@@ -1,0 +1,22 @@
+{
+    "type": "application",
+    "platform": "node",
+    "source-directories": [
+        "src",
+        "../../src"
+    ],
+    "gren-version": "0.5.3",
+    "dependencies": {
+        "direct": {
+            "blaix/gren-ansi": "3.0.0",
+            "blaix/gren-array2d": "4.0.0",
+            "gren-lang/core": "6.0.1",
+            "gren-lang/node": "5.0.2",
+            "gren-lang/test": "4.1.0",
+            "gren-lang/test-runner-node": "6.0.0"
+        },
+        "indirect": {
+            "gren-lang/url": "5.0.0"
+        }
+    }
+}

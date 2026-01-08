@@ -19,8 +19,6 @@
         "blaix/gren-ansi": "3.2.0 <= v < 4.0.0",
         "blaix/gren-array2d": "4.0.0 <= v < 5.0.0",
         "gren-lang/core": "6.0.0 <= v < 7.0.0",
-        "gren-lang/node": "5.0.0 <= v < 6.0.0",
-        "gren-lang/test": "4.1.0 <= v < 5.0.0",
-        "gren-lang/test-runner-node": "6.0.0 <= v < 7.0.0"
+        "gren-lang/node": "5.0.0 <= v < 6.0.0"
     }
 }
