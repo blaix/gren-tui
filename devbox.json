@@ -1,8 +1,8 @@
 {
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.13.6/.schema/devbox.schema.json",
   "packages": [
-    "nodejs@20",
-    "github:gren-lang/nix/0.5.4"
+    "nodejs@24",
+    "gren@0.6.3"
   ],
   "shell": {
     "init_hook": [
@@ -10,11 +10,14 @@
     ],
     "scripts": {
       "test": [
-        "cd tests/unit && gren make src/Main.gren && node app"
+        "cd tests/unit && gren run Main"
+      ],
+      "build": [
+        "gren make --optimize"
       ],
       "example": [
         "echo -e '\\n\\033[0;32mRUNNING EXAMPLE: '$1'\\033[0m'",
-        "cd examples/v4/$1 && gren make src/Main.gren && node app"
+        "cd examples/v5/$1 && gren run Main"
       ],
       "examples": [
         "for example in $(ls examples/v4 | grep -v README); do devbox run example $example || exit 1; done"

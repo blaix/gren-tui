@@ -476,10 +476,11 @@ Here's an example of using it in your update function to exit when the user pres
             }
 
 -}
-exit : Stream.Writable Bytes -> Task x {}
+exit : Stream.Writable Bytes -> Cmd msg
 exit stdout =
     cleanup stdout
-        |> Task.andThen (\_ -> Node.exit)
+        |> Task.map (\_ -> Node.exit)
+        |> Task.executeCmd
 
 
 {-| Task that exits the program with a specific exit code.
@@ -487,17 +488,19 @@ exit stdout =
 The Stream argument should be the stdout value you get from [`Environment`](#Environment).
 This is needed to clean things up (e.g. restore cursor, unset styles, etc).
 -}
-exitWithCode : Stream.Writable Bytes -> Int -> Task x {}
+exitWithCode : Stream.Writable Bytes -> Int -> Cmd msg
 exitWithCode stream code =
     cleanup stream
-        |> Task.andThen (\_ -> Node.exitWithCode code)
+        |> Task.map (\_ -> Node.exitWithCode code)
+        |> Task.executeCmd
 
 
 crash : Int -> Stream.Writable Bytes -> String -> String -> Cmd (Msg appMsg)
 crash status stream error explanation =
     print stream (error ++ ": " ++ explanation)
-        |> Task.andThen (\_ -> exitWithCode stream status)
-        |> Task.execute
+        |> Task.andThen (\_ -> cleanup stream)
+        |> Task.map (\_ -> Node.exitWithCode status)
+        |> Task.executeCmd
 
 
 cleanup : Stream.Writable Bytes -> Task x {}

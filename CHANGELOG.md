@@ -1,5 +1,6 @@
-## Next Release
+## 5.0.0 (2026-01-08)
 
+* Update to Gren 0.6
 * Use generic error type instead of `Never` for `exit`, `exitWithCode`, and `hideCursor` (makes it easier to have in pipelines).
 
 ## 4.0.0 (2025-03-05)
